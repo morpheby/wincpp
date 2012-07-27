@@ -2395,10 +2395,10 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
 
-VERSION_4D="0.0.0.3"
+VERSION_4D="0.0.1.0"
 
 
-$as_echo "#define PACKAGE_VERSION_NUM 0,0,0,3" >>confdefs.h
+$as_echo "#define PACKAGE_VERSION_NUM 0,0,1,0" >>confdefs.h
 
 
 $as_echo "#define VERSION_NUM PACKAGE_VERSION_NUM" >>confdefs.h
@@ -5599,7 +5599,7 @@ $as_echo "no" >&6; }
 
 
 
-ac_config_files="$ac_config_files Makefile src/Makefile src/WCppUtils/Makefile src/EventSystem/Makefile src/Window/Makefile src/CommonControls/Makefile src/GeneralControls/Makefile"
+ac_config_files="$ac_config_files Makefile src/Makefile src/WCppUtils/Makefile src/EventSystem/Makefile src/Window/Makefile src/CommonControls/Makefile src/GeneralControls/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -6336,13 +6336,13 @@ do
   case $ac_config_target in
     "config.h") CONFIG_HEADERS="$CONFIG_HEADERS config.h" ;;
     "depfiles") CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
-    "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
-    "src/Makefile") CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
-    "src/WCppUtils/Makefile") CONFIG_FILES="$CONFIG_FILES src/WCppUtils/Makefile" ;;
-    "src/EventSystem/Makefile") CONFIG_FILES="$CONFIG_FILES src/EventSystem/Makefile" ;;
-    "src/Window/Makefile") CONFIG_FILES="$CONFIG_FILES src/Window/Makefile" ;;
-    "src/CommonControls/Makefile") CONFIG_FILES="$CONFIG_FILES src/CommonControls/Makefile" ;;
-    "src/GeneralControls/Makefile") CONFIG_FILES="$CONFIG_FILES src/GeneralControls/Makefile" ;;
+    "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
+    "src/Makefile") CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
+    "src/WCppUtils/Makefile") CONFIG_FILES="$CONFIG_FILES src/WCppUtils/Makefile" ;;
+    "src/EventSystem/Makefile") CONFIG_FILES="$CONFIG_FILES src/EventSystem/Makefile" ;;
+    "src/Window/Makefile") CONFIG_FILES="$CONFIG_FILES src/Window/Makefile" ;;
+    "src/CommonControls/Makefile") CONFIG_FILES="$CONFIG_FILES src/CommonControls/Makefile" ;;
+    "src/GeneralControls/Makefile") CONFIG_FILES="$CONFIG_FILES src/GeneralControls/Makefile" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5 ;;
   esac

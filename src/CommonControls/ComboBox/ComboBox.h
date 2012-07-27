@@ -111,8 +111,6 @@ private:
 	vector<_Mapper> dataContainer;
 	WndEventExtCaller<T> onItemChange_;
 };
-
-/*
 template <class _ComboBoxT, typename T,
 	class _Cmp = std::less<T>, class _Eq = std::equal_to<T>>
 class Selector<_ComboBoxT, T, _ConstNamer<T>, _Cmp, _Eq>  : public _ComboBoxT {
@@ -128,8 +126,7 @@ public:
 		this->setStrings(dataContainer);
 	}
 
-	template<class _ContainerT, class _Namer>
-	void setItems(_ContainerT container, _Namer namer) {
+	void setItems(initializer_list<pair<wstring, T>> l) {
 		dataContainer.clear();
 		for(auto& i : container)
 			dataContainer.push_back(_Mapper(namer, i));
@@ -221,15 +218,9 @@ protected:
 
 private:
 	set<_Mapper> dataContainer;
-	unordered_map<wstring, T> dataMap;
 	WndEventExtCaller<T> onItemChange_;
 
-	void RebuildMap() {
-		dataMap.clear();
-		for(auto& i : dataContainer)
-			dataMap[(wstring)i] = i.getData();
-	}
-};*/
+};
 
 }
 
