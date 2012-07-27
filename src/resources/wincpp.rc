@@ -1,0 +1,66 @@
+//Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#ifndef APSTUDIO_INVOKED
+#define WINVER 0x0501
+#endif
+#define APSTUDIO_HIDDEN_SYMBOLS
+#include "windows.h"
+#undef APSTUDIO_HIDDEN_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE 9, 1
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// MANIFEST
+#define DLL_LOAD_MF_ID 123
+DLL_LOAD_MF_ID RT_MANIFEST "main.manifest"
+
+// VERSION
+VS_VERSION_INFO VERSIONINFO
+FILEVERSION    	VER_FILEVERSION
+PRODUCTVERSION 	VER_PRODUCTVERSION
+FILEFLAGSMASK  	VS_FFI_FILEFLAGSMASK
+FILEFLAGS      	(VER_PRERELEASE|VER_DEBUG)
+FILEOS         	VOS__WINDOWS32
+FILETYPE       	VFT_DLL
+FILESUBTYPE    	VFT2_UNKNOWN
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904E4"
+        BEGIN
+            VALUE "CompanyName",      VER_COMPANYNAME_STR "\0"
+            VALUE "FileDescription",  VER_FILEDESCRIPTION_STR "\0"
+            VALUE "FileVersion",      VER_FILEVERSION_STR "\0"
+            VALUE "InternalName",     VER_INTERNALNAME_STR "\0"
+            VALUE "LegalCopyright",   VER_LEGALCOPYRIGHT_STR "\0"
+            VALUE "LegalTrademarks1", VER_LEGALTRADEMARKS1_STR "\0"
+            VALUE "LegalTrademarks2", VER_LEGALTRADEMARKS2_STR "\0"
+            VALUE "OriginalFilename", VER_ORIGINALFILENAME_STR "\0"
+            VALUE "ProductName",      VER_PRODUCTNAME_STR "\0"
+            VALUE "ProductVersion",   VER_PRODUCTVERSION_STR "\0"
+        END
+    END
+
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", VER_APPLANG, VER_APPENCODING
+
+    END
+END
+
+
+#endif

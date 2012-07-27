@@ -1,0 +1,53 @@
+#if HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#define ID_VERSION				129
+#ifndef IDC_STATIC
+#define IDC_STATIC				-1
+#endif
+
+// Version information
+#define VER_FILEVERSION             VERSION_NUM
+#define VER_FILEVERSION_STR         VERSION
+
+#define VER_PRODUCTVERSION          PACKAGE_VERSION_NUM
+#define VER_PRODUCTVERSION_STR      PACKAGE_VERSION
+
+#ifndef DEBUG
+#define VER_DEBUG                   0
+#else
+#define VER_DEBUG                   VS_FF_DEBUG
+#endif
+
+#if PACKAGE_IS_RELEASE
+#define VER_PRERELEASE 0
+#else
+#define VER_PRERELEASE VS_FF_PRERELEASE
+#endif
+
+#define VER_COMPANYNAME_STR PACKAGE_AUTHOR
+#define VER_FILEDESCRIPTION_STR "C++ bindings for win32 window system" ". Report bugs to: " PACKAGE_BUGREPORT
+#define VER_INTERNALNAME_STR "libwincpp.dll"
+#define VER_LEGALCOPYRIGHT_STR PACKAGE_COPYRIGHT
+#define VER_LEGALTRADEMARKS1_STR
+#define VER_LEGALTRADEMARKS2_STR
+#define VER_ORIGINALFILENAME_STR VER_INTERNALNAME_STR
+#define VER_PRODUCTNAME_STR PACKAGE_STRING
+
+// Russian
+#define VER_APPLANG 0x419
+// Unicode
+#define VER_APPENCODING 1200
+
+
+#ifdef APSTUDIO_INVOKED
+#ifndef APSTUDIO_READONLY_SYMBOLS
+
+#define _APS_NO_MFC					130
+#define _APS_NEXT_RESOURCE_VALUE	129
+#define _APS_NEXT_COMMAND_VALUE		32771
+#define _APS_NEXT_CONTROL_VALUE		1000
+#define _APS_NEXT_SYMED_VALUE		110
+#endif
+#endif

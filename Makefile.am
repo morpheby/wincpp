@@ -1,0 +1,4 @@
+EXTRA_DIST = reconf
+SUBDIRS=src
+
+ACLOCAL_AMFLAGS = -I m4

@@ -1,0 +1,6 @@
+vsstyle.h
+vssym32.h
+Bitmap.h
+CommonControlsInit.h
+DPIScaler.h
+Window.h
