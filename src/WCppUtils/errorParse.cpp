@@ -1,10 +1,10 @@
 
-#include "errorParse.h"
-
-#if HAVE_WINDOWS_H
-#include <windows.h>
+#if HAVE_CONFIG_H
+#	include "config.h"
 #endif
 
+#include "errorParse.h"
+#include <windows.h>
 #include <sstream>
 
 using namespace std;
