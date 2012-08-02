@@ -48,7 +48,7 @@ __bins__wincpp_dll_DEPENDENCIES = $(BUILT_LIBS)
 							  
 
 EXTRA_DIST				   += app.premf
-BUILT_SOURCES 				= resources/main.manifest app.manifest
+BUILT_SOURCES 				= app.manifest
 CLEANFILES					= resources/main.manifest app.manifest
 
 # Wincpp.dll generates an implib, which shall be installed to the libdir
@@ -94,13 +94,13 @@ $(bins)/labeltest.exe.manifest: app.manifest
 __bins__cbtest_exe_SOURCES		= test/cbtest.cpp test/cbtest.h
 __bins__cbtest_exe_LDADD		= -lwincpp -L$(bins)
 __bins__cbtest_exe_LDFLAGS		= -municode -mwindows
-CLEANFILES					   += cbtest.exe.manifest
+CLEANFILES					   += $(bins)/cbtest.exe.manifest
 cbtest.$(OBJEXT): $(bins)/cbtest.exe.manifest
 $(bins)/cbtest.exe.manifest: app.manifest
 	$(LN_S) $< $@
 
 # dependencies for resource file
 resources/wincpp.$(OBJEXT): $(srcdir)/resources/wincpp.rc \
-				$(srcdir)/resources/Resource.h $(srcdir)/resources/main.manifest
+				$(srcdir)/resources/Resource.h resources/main.manifest
 
 

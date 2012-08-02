@@ -314,11 +314,11 @@ __bins__wincpp_dll_LDFLAGS = -shared -Wl,--out-implib=$(bins)/libwincpp.a -Wl,--
 
 __bins__wincpp_dll_LDADD = -luxtheme -lgdi32 -lole32
 __bins__wincpp_dll_DEPENDENCIES = $(BUILT_LIBS)
-BUILT_SOURCES = resources/main.manifest app.manifest
+BUILT_SOURCES = app.manifest
 CLEANFILES = resources/main.manifest app.manifest \
 	$(bins)/windowtest.exe.manifest \
 	$(bins)/editboxtest.exe.manifest \
-	$(bins)/labeltest.exe.manifest cbtest.exe.manifest
+	$(bins)/labeltest.exe.manifest $(bins)/cbtest.exe.manifest
 
 # Wincpp.dll generates an implib, which shall be installed to the libdir
 lib_LIBRARIES = $(bins)/libwincpp.a
@@ -1015,7 +1015,7 @@ $(bins)/cbtest.exe.manifest: app.manifest
 
 # dependencies for resource file
 resources/wincpp.$(OBJEXT): $(srcdir)/resources/wincpp.rc \
-				$(srcdir)/resources/Resource.h $(srcdir)/resources/main.manifest
+				$(srcdir)/resources/Resource.h resources/main.manifest
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
