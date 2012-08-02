@@ -17,6 +17,20 @@ template <typename T>
 std::shared_ptr<T> SharePtr(T* ptr) {
 	return std::shared_ptr<T> (ptr);
 }
+
 #endif
+
+template <typename _PtrType>
+struct _PtrLess {
+	bool operator() (_PtrType a, _PtrType b) const {
+		return *a < *b;
+	}
+};
+template <typename _PtrType>
+struct _PtrEq {
+	bool operator() (_PtrType a, _PtrType b) const {
+		return *a == *b;
+	}
+};
 
 #endif /* SHAREDPTR_H_ */

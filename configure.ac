@@ -2,10 +2,10 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.60])
-AC_INIT([WinCpp], [0.1], [morpheby@gmail.com])
+AC_INIT([WinCpp], [0.0.1.1], [morpheby@gmail.com])
 
-AC_SUBST([VERSION_4D], ["0.0.1.0"])
-AC_DEFINE([PACKAGE_VERSION_NUM], [0,0,1,0],
+AC_SUBST([VERSION_4D], ["0.0.1.1"])
+AC_DEFINE([PACKAGE_VERSION_NUM], [0,0,1,1],
 	[Define to the version number (acceptable by rc or windres) of this package.])
 AC_DEFINE([VERSION_NUM], PACKAGE_VERSION_NUM,
 	[Version number (acceptable by rc or windres) of this package.])

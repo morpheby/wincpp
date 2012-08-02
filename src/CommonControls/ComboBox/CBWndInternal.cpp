@@ -36,7 +36,7 @@ void CBWndInternal::addString(const wstring& str) {
 }
 
 void CBWndInternal::selString(const wstring& str) {
-	ComboBox_SetCurSel(*this, findString(str));
+	setCurSelNum(findString(str));
 }
 
 int CBWndInternal::getCurSelNum() const {
@@ -73,18 +73,27 @@ int CBWndInternal::getStrSize(int index) const {
 	return ComboBox_GetLBTextLen(*this, index);
 }
 
-void CBWndInternal::openDropDown() const {
-	if(!getDropDownState())
+void CBWndInternal::openDropDown() {
+	if(!getDropDownState()) {
+		// BUGFIX: ComboBoxProc calls SetCapture to capture mouse
+		// window. If the mouse cursor was hidden previously by
+		// SetCursor(0), it will not reappear on mouse move. Thus,
+		// we shall show it ourselves
+		SetCursor(LoadCursor(0, IDC_ARROW));
 		SendMessage(*this, CB_SHOWDROPDOWN, 1, 0);
+	}
 }
 
-void CBWndInternal::closeDropDown() const {
+void CBWndInternal::closeDropDown() {
 	if(getDropDownState())
 		SendMessage(*this, CB_SHOWDROPDOWN, 0, 0);
+}
+
+void CBWndInternal::setCurSelNum(int index) {
+	ComboBox_SetCurSel(*this, index);
 }
 
 /* namespace ComboBoxInternal */
 
 }
-
 

@@ -58,6 +58,8 @@ wstring LabelWnd::GetThemeApplicableClassList() {
 
 void LabelWnd::WMSize() {
 	CalcTxtRect();
+	if(txtRect.bottom != getHeight() || txtRect.right != getWidth())
+		setSize(txtRect.right, txtRect.bottom);
 }
 
 void LabelWnd::CalcTxtRect() {

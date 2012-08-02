@@ -45,6 +45,7 @@ protected:
 	bool WMKillFocus();
 	void WMChar(wchar_t ch);
 	void WMSize();
+	void WMMove();
 private:
 	bool etMode_, charPlus_, parentBack_;
 	std::wstring eText_;

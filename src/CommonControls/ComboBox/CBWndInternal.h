@@ -24,14 +24,15 @@ public:
 
 	std::wstring getCurSel() const;
 	int getCurSelNum() const;
+	void setCurSelNum(int index);
 	std::wstring getItem(int i) const;
 
 	int findString(const std::wstring& str, int startPos = -1) const;
 
 	void selString(const std::wstring& str);
 
-	void openDropDown() const;
-	void closeDropDown() const;
+	void openDropDown();
+	void closeDropDown();
 	bool getDropDownState() const;
 
 private:

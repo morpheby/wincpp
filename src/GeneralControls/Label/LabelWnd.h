@@ -23,10 +23,6 @@ public:
 		forcedWidth_ = forcedWidth;
 	}
 
-	int getHeight() {
-		return txtRect.bottom - txtRect.top;
-	}
-
 protected:
 	bool isForcedWidth() const {
 		return forcedWidth_;

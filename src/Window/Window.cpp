@@ -161,9 +161,12 @@ LRESULT Window::WndProc(UINT msg, WPARAM wParam, LPARAM lParam) {
 		break;
 	case WM_MOVE:
 		ReloadPos();
+		ReloadSize(); // If movement occured together with sizing,
+					  // than our size data may become outdated
 		WMMove();
 		break;
 	case WM_SIZE:
+		ReloadPos();
 		ReloadSize();
 		update_ = true;
 		WMSize();
@@ -471,7 +474,7 @@ BOOL Window::setSize(int width, int height) {
 	return MoveWindow();
 }
 
-BOOL Window::SetPosition(int x, int y) {
+BOOL Window::setPosition(int x, int y) {
 	this->x_ = x;
 	this->y_ = y;
 	return MoveWindow();

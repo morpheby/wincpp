@@ -1,0 +1,45 @@
+To build the library run './configure && make'
+All binaries will get placed into bin/ directory. For general
+information about build process see 'INSTALL'.
+However it is recommended to do a VPATH build - create directory
+'build/' in source tree, then do 'cd build && ../configure && make'.
+If 'configure' or 'make' fails, try running './reconf' script and
+then retry building.
+
+It is recommended to run after build 'make check' and ensure
+everything works fine.
+
+To use library, link to '-lwincpp' (bin/libwincpp.a) and provide
+'wincpp.dll' with your application.
+
+Library is designed for use with MinGW, so if ensure MinGW shared
+libraries are in your distribution.
+
+You may also install the library with 'make install' - afterwards
+you will be able to link to it without adding anything to your
+LIBPATH and headers may be accessed as #include <WinCPP/SomeHeader.h>
+without changing your include path.
+
+Generally, when building your app it is best to insert manifest
+like one generated after build ('$(builddir)/src/app.manifest')
+in your app (either as a resource, or by copying it to the dir
+with your executable and renaming it like 
+'$(your_exe_file_name).manifest'. Ensure wincpp.dll is in the
+same directory, otherwise WinSxS will fail parsing the manifest.
+If this is not an option, you may exclude 'wincpp.dll' from
+dependency list and add CommonControls (see MSDN: Enabling Visual
+Styles).
+
+Also, you may create MSI install script which will place wincpp.dll
+to the Public assemblies directory - this will eliminate the
+need for placing it in the same directory as your executable.
+
+When using the library, consider making all sizes to be DPI-scaled
+either with _scaled literal (if they are static and C++11 is
+enabled) or using the DPIScaler class.
+It is therefore advised not to remove DPI-awareness from the
+application manifest.
+
+For usage examples see testcases.
+
+If you need further instructions, contact Morpheby <morpheby@gmail.com>

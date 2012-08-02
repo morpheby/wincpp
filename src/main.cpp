@@ -14,9 +14,7 @@
 #	include <config.h>
 #endif
 
-#if HAVE_WINDOWS_H
-#	include <windows.h>
-#endif
+#include <windows.h>
 
 #include <CommonControlsInit.h>
 

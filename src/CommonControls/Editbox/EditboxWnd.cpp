@@ -40,10 +40,10 @@ EditboxWnd::EditboxWnd(HWND convertFrom) :
 		eb(convertFrom) {
 	InitEBInternal();
 	// Inject itself in-between actual edit and it's parent
-	SetPosition(eb.getX(), eb.getY());
+	setPosition(eb.getX(), eb.getY());
 	setSize(eb.getWidth(), eb.getHeight());
 	eb.setParent(*this);
-	eb.SetPosition(0, 0);
+	eb.setPosition(0, 0);
 }
 
 EditboxWnd::~EditboxWnd() {
@@ -63,6 +63,15 @@ LRESULT EditboxWnd::WndProc(UINT msg, WPARAM wParam, LPARAM lParam) {
 	if(msg == WM_COMMAND)
 		switch(HIWORD(wParam)) {
 		case EN_CHANGE:
+			// BUGFIX ComboBox behavior: passing this message to Window::WndProc makes
+			// it to return zero, which leads to passing that to CB as previous
+			// owner and disabling autocomplete behavior
+			retval = 1;
+			break;
+		// EN_UPDATE is sent before window is redrawed, thus
+		// changing text selection, or i.e. invoking autocomplete
+		// is a bit smoother than with EN_CHANGE.
+		case EN_UPDATE:
 			if(eb.resetCharPlusFlag()) {
 				wstring newTextVal = eb.getText();
 				if(text_ == newTextVal)

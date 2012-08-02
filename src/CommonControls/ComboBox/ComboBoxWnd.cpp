@@ -44,11 +44,11 @@ LRESULT ComboBoxWnd::WndProc(UINT msg, WPARAM wParam, LPARAM lParam) {
 	return Window::WndProc(msg, wParam, lParam);
 }
 
-void ComboBoxWnd::openDropDown() const {
+void ComboBoxWnd::openDropDown() {
 	cb.openDropDown();
 }
 
-void ComboBoxWnd::closeDropDown() const {
+void ComboBoxWnd::closeDropDown() {
 	cb.closeDropDown();
 }
 
@@ -98,6 +98,14 @@ void ComboBoxWnd::WMSize() {
 	cb.setSize(getWidth(), getHeight());
 }
 
+int ComboBoxWnd::getCurSelNum() const {
+	return cb.getCurSelNum();
+}
 
+void ComboBoxWnd::setCurSelNum(int index) {
+	cb.setCurSelNum(index);
+}
 
-
+bool ComboBoxWnd::isDropDownOpened() const {
+	return cb.getDropDownState();
+}

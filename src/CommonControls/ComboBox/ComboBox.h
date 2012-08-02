@@ -14,15 +14,13 @@
 #include <unordered_map>
 #include <set>
 #include <vector>
+#include <algorithm>
 
 namespace ComboBox {
 
 template <class T>
 struct _ConstNamer {
-	std::wstring name_;
-	_ConstNamer(const std::wstring& name) : name_(name) {};
-
-	std::wstring operator() (const T& notused) const { return name_; }
+	std::wstring operator() (const T& data) const { return (std::wstring)data; }
 };
 
 
@@ -46,7 +44,12 @@ public:
 		dataContainer.clear();
 		for(auto& i : container)
 			dataContainer.push_back(_Mapper(i));
+		this->setCurSelNum(-1); // Deselect item
 		resetList();
+	}
+
+	void setItems(std::initializer_list<T> list) {
+		setItems<std::initializer_list<T>>(list);
 	}
 
 	void addItem(const T& item) {
@@ -55,8 +58,12 @@ public:
 	}
 
 	void resetList() {
+		std::wstring selectionUpdated;
+		if(this->getCurSelNum() >= 0)
+			selectionUpdated = (std::wstring) dataContainer[this->getCurSelNum()];
 		sort(dataContainer.begin(), dataContainer.end());
 		this->setStrings(dataContainer);
+		this->setCurSelNum(this->findString(selectionUpdated));
 	}
 
 	void setOnItemChange(WndEventExtBase<T> *onItemChange) {
@@ -87,12 +94,12 @@ public:
 			return data_;
 		}
 
-		wstring getName() const {
+		std::wstring getName() const {
 			return namer_(data_);
 		}
 
 		// To comply with ComboBoxWnd::setStrings
-		explicit operator wstring() const {
+		explicit operator std::wstring() const {
 			return getName();
 		}
 
@@ -108,44 +115,39 @@ protected:
 	}
 
 private:
-	vector<_Mapper> dataContainer;
+	std::vector<_Mapper> dataContainer;
 	WndEventExtCaller<T> onItemChange_;
 };
-template <class _ComboBoxT, typename T,
-	class _Cmp = std::less<T>, class _Eq = std::equal_to<T>>
-class Selector<_ComboBoxT, T, _ConstNamer<T>, _Cmp, _Eq>  : public _ComboBoxT {
+
+template <class _ComboBoxT, typename T>
+class NamedSelector : public _ComboBoxT {
 public:
-	Selector(int x, int y, int width, int height, Window& parent) :
+	NamedSelector(int x, int y, int width, int height, Window& parent) :
 		_ComboBoxT(x, y, width, height, parent) {
 	}
-	~Selector() {}
+	~NamedSelector() {}
 
-	void addItems(initializer_list<pair<_Namer, T>> l) {
+	void setItems() {
+		selector_.clear();
+		this->setStrings(selector_);
+	}
+
+	void setItems(std::initializer_list<
+			std::pair<std::wstring, T>> l) {
+		selector_.clear();
 		for(auto& i : l)
-			dataContainer.insert(i);
-		this->setStrings(dataContainer);
+			selector_.insert(i);
+		this->setStrings(selector_);
 	}
 
-	void setItems(initializer_list<pair<wstring, T>> l) {
-		dataContainer.clear();
-		for(auto& i : container)
-			dataContainer.push_back(_Mapper(namer, i));
-		resetList();
+	void addItem(const std::wstring& name, const T& item) {
+		selector_.insert(_Mapper(name, item));
+		this->setStrings(selector_);
 	}
 
-	void addItem(const wstring& name, const shared_ptr<T>& item) {
-		dataContainer.push_back(_Mapper(_ConstNamer<T>(name), item));
-		this->setStrings(dataContainer);
-	}
-
-	void removeItem(const wstring& name) {
-		dataContainer.remove(_Mapper(name, T()));
-		this->setStrings(dataContainer);
-	}
-
-	void resetList() {
-		set<_Mapper> t(dataContainer.begin(), dataContainer.end());
-		this->setStrings(t);
+	void removeItem(const std::wstring& name) {
+		selector_.remove(_Mapper(name, T()));
+		this->setStrings(selector_);
 	}
 
 	void setOnItemChange(WndEventExtBase<T> *onItemChange) {
@@ -153,73 +155,67 @@ public:
 	}
 
 	class _Mapper {
-		_Namer namer_;
-		_Cmp cmp;
-		_Eq eq;
+		std::wstring name_;
 		T data_;
 	public:
+		_Mapper(const std::wstring& name, const T& data) :
+			name_(name), data_(data) {
+		}
 
 		_Mapper(_Mapper&& m) :
-			namer_(m.namer_), data_(m.data_) {
-			m.namer_ = 0;
+			name_(m.name_), data_(m.data_) {
+			m.data_ = T();
 		}
 
-		_Mapper(const pair<_Namer, T>& c) :
-			namer_(c.first), data_(c.second){
+		_Mapper(const std::pair<std::wstring, T>& c) :
+			name_(c.first), data_(c.second){
 		}
 
-		_Mapper(const _Namer& name) : namer_(name) {
-		}
-
-		template<class _Namer>
-		_Mapper(_Namer namer, const T& data) : namer_(namer),
-			data_(data) {
-		}
-
-		~_Mapper() {
-			delete namer_;
+		_Mapper(const std::wstring& name) : name_(name) {
 		}
 
 		bool operator<(const _Mapper& m) const {
-			return cmp(data_, m.data_);
+			return getName() < m.getName();
 		}
 
 		bool operator==(const _Mapper& m) const {
-			return  eq(data_, m.data_);
+			return getName() == m.getName();
 		}
 
 		T getData() const {
 			return data_;
 		}
 
-		wstring getName() const {
-			return namer_(data_);
+		std::wstring getName() const {
+			return name_;
+		}
+
+		void setName(const std::wstring& name) {
+			name_ = name;
 		}
 
 		// To comply with ComboBoxWnd::setStrings
-		explicit operator wstring() const {
+		explicit operator std::wstring() const {
 			return getName();
 		}
 
 	};
 
 protected:
-	int onSelChange(const wstring& name) {
-		if(name.empty())
-			onItemChange_(*this, 0);
+	int onSelChange(int index) {
+		if(index == -1)
+			onItemChange_(*this, T());
 		else {
-			auto i = dataMap.find(name);
-			if(i == dataMap.end())
-				RebuildMap();
-			onItemChange_(*this, dataMap[name]);
+			auto i = selector_.begin();
+			for(int k = 0; k < index; ++k, ++i);
+			onItemChange_(*this, i->getData());
 		}
-		return _ComboBoxT::onSelChange(name);
+		return _ComboBoxT::onSelChange(index);
 	}
 
 private:
-	set<_Mapper> dataContainer;
+	std::set<_Mapper> selector_;
 	WndEventExtCaller<T> onItemChange_;
-
 };
 
 }

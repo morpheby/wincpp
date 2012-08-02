@@ -13,66 +13,90 @@ INCLUDES 					= $(default_includes)
 EXTRA_DIST 					= 
 
 
-BUILT_LIBS					= 								\
+BUILT_IMP_LIBS				= 								\
 						-Wl,WCppUtils/libwcpputils.a		\
 						-Wl,EventSystem/libwcppevents.a		\
 						-Wl,Window/libwcppwindow.a			\
 						-Wl,CommonControls/libwcppcommctl.a	\
 						-Wl,GeneralControls/libwcppgenctl.a
 
+BUILT_LIBS					= WCppUtils/libwcpputils.a			\
+							  EventSystem/libwcppevents.a		\
+							  Window/libwcppwindow.a			\
+							  CommonControls/libwcppcommctl.a	\
+							  GeneralControls/libwcppgenctl.a
+
 # Override EXEEXT to build dll
 EXEEXT						=
 
-### wincpp.dll ###
-bin_PROGRAMS                = wincpp.dll
+bins						= $(top_builddir)/bin
 
-wincpp_dll_SOURCES			= 								\
+### wincpp.dll ###
+bin_PROGRAMS                = $(bins)/wincpp.dll
+
+__bins__wincpp_dll_SOURCES	= 								\
 							  resources/wincpp.rc			\
 							  resources/Resource.h			\
 							  resources/main.premf			\
 							  main.cpp
 
-wincpp_dll_LDFLAGS			= -shared -Wl,--out-implib=libwincpp.a -Wl,--export-all-symbols -Wl,--compat-implib \
-							  -Wl,--whole-archive $(BUILT_LIBS) -Wl,--no-whole-archive
-wincpp_dll_LDADD			= -luxtheme -lgdi32 -lole32
+__bins__wincpp_dll_LDFLAGS	= -shared -Wl,--out-implib=$(bins)/libwincpp.a -Wl,--export-all-symbols \
+							  -Wl,--compat-implib \
+							  -Wl,--whole-archive $(BUILT_IMP_LIBS) -Wl,--no-whole-archive
+__bins__wincpp_dll_LDADD	= -luxtheme -lgdi32 -lole32
+__bins__wincpp_dll_DEPENDENCIES = $(BUILT_LIBS)
+							  
 
 EXTRA_DIST				   += app.premf
 BUILT_SOURCES 				= resources/main.manifest app.manifest
 CLEANFILES					= resources/main.manifest app.manifest
 
 # Wincpp.dll generates an implib, which shall be installed to the libdir
-lib_LIBRARIES				= libwincpp.a
-libwincpp_a_SOURCES			=
+lib_LIBRARIES				= $(bins)/libwincpp.a
+__bins__libwincpp_a_SOURCES	=
 
-check_PROGRAMS				= eventtest.exe windowtest.exe editboxtest.exe \
-							  labeltest.exe
+check_PROGRAMS				= $(bins)/eventtest.exe		\
+							  $(bins)/windowtest.exe	\
+							  $(bins)/editboxtest.exe 	\
+							  $(bins)/labeltest.exe		\
+							  $(bins)/cbtest.exe
+
 TESTS						= $(check_PROGRAMS)
 
-eventtest_exe_SOURCES		= test/eventtest.cpp
-eventtest_exe_LDADD			= -lwincpp -L.
 
-windowtest_exe_SOURCES		= test/windowtest.cpp test/windowtest.h
-windowtest_exe_LDADD		= -lwincpp -L.
-windowtest_exe_LDFLAGS		= -municode -mwindows
-CLEANFILES				   += windowtest.exe.manifest
-windowtest.$(OBJEXT): windowtest.exe.manifest
-windowtest.exe.manifest: app.manifest
+__bins__eventtest_exe_SOURCES	= test/eventtest.cpp
+__bins__eventtest_exe_LDADD		= -lwincpp -L$(bins)
+
+__bins__windowtest_exe_SOURCES	= test/windowtest.cpp test/windowtest.h
+__bins__windowtest_exe_LDADD	= -lwincpp -L$(bins)
+__bins__windowtest_exe_LDFLAGS	= -municode -mwindows
+CLEANFILES					   += $(bins)/windowtest.exe.manifest
+windowtest.$(OBJEXT): $(bins)/windowtest.exe.manifest
+$(bins)/windowtest.exe.manifest: app.manifest
 	$(LN_S) $< $@
 
-editboxtest_exe_SOURCES		= test/editboxtest.cpp test/editboxtest.h
-editboxtest_exe_LDADD		= -lwincpp -L.
-editboxtest_exe_LDFLAGS		= -municode -mwindows
-CLEANFILES				   += editboxtest.exe.manifest
-editboxtest.$(OBJEXT): editboxtest.exe.manifest
-editboxtest.exe.manifest: app.manifest
+__bins__editboxtest_exe_SOURCES	= test/editboxtest.cpp test/editboxtest.h
+__bins__editboxtest_exe_LDADD	= -lwincpp -L$(bins)
+__bins__editboxtest_exe_LDFLAGS	= -municode -mwindows
+CLEANFILES					   += $(bins)/editboxtest.exe.manifest
+editboxtest.$(OBJEXT): $(bins)/editboxtest.exe.manifest
+$(bins)/editboxtest.exe.manifest: app.manifest
 	$(LN_S) $< $@
 
-labeltest_exe_SOURCES		= test/labeltest.cpp test/labeltest.h
-labeltest_exe_LDADD			= -lwincpp -L.
-labeltest_exe_LDFLAGS		= -municode -mwindows
-CLEANFILES				   += labeltest.exe.manifest
-labeltest.$(OBJEXT): labeltest.exe.manifest
-labeltest.exe.manifest: app.manifest
+__bins__labeltest_exe_SOURCES	= test/labeltest.cpp test/labeltest.h
+__bins__labeltest_exe_LDADD		= -lwincpp -L$(bins)
+__bins__labeltest_exe_LDFLAGS	= -municode -mwindows
+CLEANFILES					   += $(bins)/labeltest.exe.manifest
+labeltest.$(OBJEXT): $(bins)/labeltest.exe.manifest
+$(bins)/labeltest.exe.manifest: app.manifest
+	$(LN_S) $< $@
+
+__bins__cbtest_exe_SOURCES		= test/cbtest.cpp test/cbtest.h
+__bins__cbtest_exe_LDADD		= -lwincpp -L$(bins)
+__bins__cbtest_exe_LDFLAGS		= -municode -mwindows
+CLEANFILES					   += cbtest.exe.manifest
+cbtest.$(OBJEXT): $(bins)/cbtest.exe.manifest
+$(bins)/cbtest.exe.manifest: app.manifest
 	$(LN_S) $< $@
 
 # dependencies for resource file

@@ -112,3 +112,10 @@ void EditboxWndInternal::WMSize() {
 int EditboxWndInternal::getTextLength() const {
 	return Edit_GetTextLength(getWindowHandle());
 }
+
+void EditboxInternal::EditboxWndInternal::WMMove() {
+	// Check if something moved us
+	if(getX() != 0 || getY() != 0)
+		// The position is locked to (0;0)
+		setPosition(0, 0);
+}

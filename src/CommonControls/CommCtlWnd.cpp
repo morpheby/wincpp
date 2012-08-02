@@ -45,6 +45,8 @@ CommCtlWnd::CommCtlWnd(HWND convertFrom) : Window(true),
 }
 
 LRESULT CommCtlWnd::WndProc(UINT msg, WPARAM wParam, LPARAM lParam) {
+	if(inhibitedMsg.count(msg))
+		return 0;
 	return Window::WndProc(msg, wParam, lParam);
 }
 
@@ -106,5 +108,10 @@ void CommCtlWnd::setDefFont() {
 	setFont(GetThemeFont(TEXT_BODYTEXT, 0));
 }
 
+void CommCtlWnd::InhibitMessage(UINT msg) {
+	inhibitedMsg.insert(msg);
+}
 
-
+void CommCtlWnd::RestoreMessage(UINT msg) {
+	inhibitedMsg.erase(msg);
+}

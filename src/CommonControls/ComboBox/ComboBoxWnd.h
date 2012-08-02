@@ -34,15 +34,18 @@ protected:
 	int findString(const std::wstring& str, int startPos = -1) const;
 	std::wstring getItem(int i) const;
 
-	void openDropDown() const;
-	void closeDropDown() const;
+	void openDropDown();
+	void closeDropDown();
+	bool isDropDownOpened() const;
 	HWND getEditboxHandle() const;
 
 	template<class Container>
 	void setStrings(const Container& strings);
 
 	std::wstring getCurSel() const;
+	int getCurSelNum() const;
 
+	void setCurSelNum(int index);
 
 	bool Autocomplete(EditboxWnd& eb, const std::wstring& inputText);
 

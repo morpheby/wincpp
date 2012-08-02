@@ -1,0 +1,19 @@
+0.0.1.1:
+	Added testcase for ComboBox.
+	Implemented ComboBox::NamedSelector
+	Corrected ComboBox::Selector to support initializer_list
+	Corrected some problems with interaction of ComboBox with its EditBox
+	Corrected drop-down combobox behavior
+		BUGFIX - mouse pointer dissapears on autocmplete
+		BUGFIX - opening drop-down selects first item matching the input string
+	Tuned autocomplete to correctly select items
+	Added message inhibition functionality to CommCtlWnd
+	Editbox processes EN_UPDATE instead of EN_CHANGE
+	Corrected LabelWnd to better handle word-wrapping
+	Moved all built binaries to $(top_builddir)/bin
+	Changed name of Window::SetPosition to Window::setPosition
+	Added getBottom(), getRight(), setX, setY, setWidth and setHeight to Window
+	
+	
+0.0.1.0:
+	Initial release of project as a seperate library

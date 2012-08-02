@@ -18,7 +18,7 @@ namespace ComboBox {
 
 SimpleCB::SimpleCB(int x, int y, int width, int height, Window& parent) :
 		ComboBoxWnd(CBS_SIMPLE, x, y, width, height, parent), eb(getEditboxHandle()) {
-	eb.setEmptyText(L"Поиск...");
+	eb.setEmptyText(L"Search...");
 	eb.setOnTextInput(NewEventExt(*this, &SimpleCB::EditboxAutocomplete));
 }
 

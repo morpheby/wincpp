@@ -34,7 +34,13 @@ void DropDownCB::closeDropDownList() {
 }
 
 int DropDownCB::EditboxAutocomplete(Window& editbox, const wstring& text) {
-	openDropDown();
+	if(!isDropDownOpened()) {
+		// BUGFIX: ComboBoxProc invokes its own autocomplete
+		// on opening DropDown. Ask inhibition of WM_GETTEXT message
+		eb.getEBInternal().InhibitMessage(WM_GETTEXT);
+		openDropDown();
+		eb.getEBInternal().RestoreMessage(WM_GETTEXT);
+	}
 	return Autocomplete(eb, text);
 }
 

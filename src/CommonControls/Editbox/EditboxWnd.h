@@ -36,6 +36,10 @@ public:
 
 	void setReadonly(bool ro);
 
+	EditboxInternal::EditboxWndInternal& getEBInternal() {
+		return eb;
+	}
+
 protected:
 	EditboxWnd(int style, const std::wstring& initialText, int x, int y,
 				int width, int height, HWND parent);

@@ -37,9 +37,11 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(top_srcdir)/src/lib-build.mk $(top_srcdir)/src/rc-build.mk
-bin_PROGRAMS = wincpp.dll$(EXEEXT)
-check_PROGRAMS = eventtest.exe$(EXEEXT) windowtest.exe$(EXEEXT) \
-	editboxtest.exe$(EXEEXT) labeltest.exe$(EXEEXT)
+bin_PROGRAMS = $(bins)/wincpp.dll$(EXEEXT)
+check_PROGRAMS = $(bins)/eventtest.exe$(EXEEXT) \
+	$(bins)/windowtest.exe$(EXEEXT) \
+	$(bins)/editboxtest.exe$(EXEEXT) \
+	$(bins)/labeltest.exe$(EXEEXT) $(bins)/cbtest.exe$(EXEEXT)
 subdir = src
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_cxx_compile_stdcxx_11.m4 \
@@ -75,35 +77,41 @@ am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(bindir)"
 LIBRARIES = $(lib_LIBRARIES)
 AR = ar
 ARFLAGS = cru
-libwincpp_a_AR = $(AR) $(ARFLAGS)
-libwincpp_a_LIBADD =
-am_libwincpp_a_OBJECTS =
-libwincpp_a_OBJECTS = $(am_libwincpp_a_OBJECTS)
-PROGRAMS = $(bin_PROGRAMS)
-am_editboxtest_exe_OBJECTS = editboxtest.$(OBJEXT)
-editboxtest_exe_OBJECTS = $(am_editboxtest_exe_OBJECTS)
-editboxtest_exe_DEPENDENCIES =
-editboxtest_exe_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
-	$(editboxtest_exe_LDFLAGS) $(LDFLAGS) -o $@
-am_eventtest_exe_OBJECTS = eventtest.$(OBJEXT)
-eventtest_exe_OBJECTS = $(am_eventtest_exe_OBJECTS)
-eventtest_exe_DEPENDENCIES =
-am_labeltest_exe_OBJECTS = labeltest.$(OBJEXT)
-labeltest_exe_OBJECTS = $(am_labeltest_exe_OBJECTS)
-labeltest_exe_DEPENDENCIES =
-labeltest_exe_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
-	$(labeltest_exe_LDFLAGS) $(LDFLAGS) -o $@
+__bins__libwincpp_a_AR = $(AR) $(ARFLAGS)
+__bins__libwincpp_a_LIBADD =
+am___bins__libwincpp_a_OBJECTS =
+__bins__libwincpp_a_OBJECTS = $(am___bins__libwincpp_a_OBJECTS)
 am__dirstamp = $(am__leading_dot)dirstamp
-am_wincpp_dll_OBJECTS = resources/wincpp.$(OBJEXT) main.$(OBJEXT)
-wincpp_dll_OBJECTS = $(am_wincpp_dll_OBJECTS)
-wincpp_dll_DEPENDENCIES =
-wincpp_dll_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
-	$(wincpp_dll_LDFLAGS) $(LDFLAGS) -o $@
-am_windowtest_exe_OBJECTS = windowtest.$(OBJEXT)
-windowtest_exe_OBJECTS = $(am_windowtest_exe_OBJECTS)
-windowtest_exe_DEPENDENCIES =
-windowtest_exe_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
-	$(windowtest_exe_LDFLAGS) $(LDFLAGS) -o $@
+PROGRAMS = $(bin_PROGRAMS)
+am___bins__cbtest_exe_OBJECTS = cbtest.$(OBJEXT)
+__bins__cbtest_exe_OBJECTS = $(am___bins__cbtest_exe_OBJECTS)
+__bins__cbtest_exe_DEPENDENCIES =
+__bins__cbtest_exe_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
+	$(__bins__cbtest_exe_LDFLAGS) $(LDFLAGS) -o $@
+am___bins__editboxtest_exe_OBJECTS = editboxtest.$(OBJEXT)
+__bins__editboxtest_exe_OBJECTS =  \
+	$(am___bins__editboxtest_exe_OBJECTS)
+__bins__editboxtest_exe_DEPENDENCIES =
+__bins__editboxtest_exe_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
+	$(__bins__editboxtest_exe_LDFLAGS) $(LDFLAGS) -o $@
+am___bins__eventtest_exe_OBJECTS = eventtest.$(OBJEXT)
+__bins__eventtest_exe_OBJECTS = $(am___bins__eventtest_exe_OBJECTS)
+__bins__eventtest_exe_DEPENDENCIES =
+am___bins__labeltest_exe_OBJECTS = labeltest.$(OBJEXT)
+__bins__labeltest_exe_OBJECTS = $(am___bins__labeltest_exe_OBJECTS)
+__bins__labeltest_exe_DEPENDENCIES =
+__bins__labeltest_exe_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
+	$(__bins__labeltest_exe_LDFLAGS) $(LDFLAGS) -o $@
+am___bins__wincpp_dll_OBJECTS = resources/wincpp.$(OBJEXT) \
+	main.$(OBJEXT)
+__bins__wincpp_dll_OBJECTS = $(am___bins__wincpp_dll_OBJECTS)
+__bins__wincpp_dll_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
+	$(__bins__wincpp_dll_LDFLAGS) $(LDFLAGS) -o $@
+am___bins__windowtest_exe_OBJECTS = windowtest.$(OBJEXT)
+__bins__windowtest_exe_OBJECTS = $(am___bins__windowtest_exe_OBJECTS)
+__bins__windowtest_exe_DEPENDENCIES =
+__bins__windowtest_exe_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
+	$(__bins__windowtest_exe_LDFLAGS) $(LDFLAGS) -o $@
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -117,12 +125,17 @@ COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(libwincpp_a_SOURCES) $(editboxtest_exe_SOURCES) \
-	$(eventtest_exe_SOURCES) $(labeltest_exe_SOURCES) \
-	$(wincpp_dll_SOURCES) $(windowtest_exe_SOURCES)
-DIST_SOURCES = $(libwincpp_a_SOURCES) $(editboxtest_exe_SOURCES) \
-	$(eventtest_exe_SOURCES) $(labeltest_exe_SOURCES) \
-	$(wincpp_dll_SOURCES) $(windowtest_exe_SOURCES)
+SOURCES = $(__bins__libwincpp_a_SOURCES) $(__bins__cbtest_exe_SOURCES) \
+	$(__bins__editboxtest_exe_SOURCES) \
+	$(__bins__eventtest_exe_SOURCES) \
+	$(__bins__labeltest_exe_SOURCES) $(__bins__wincpp_dll_SOURCES) \
+	$(__bins__windowtest_exe_SOURCES)
+DIST_SOURCES = $(__bins__libwincpp_a_SOURCES) \
+	$(__bins__cbtest_exe_SOURCES) \
+	$(__bins__editboxtest_exe_SOURCES) \
+	$(__bins__eventtest_exe_SOURCES) \
+	$(__bins__labeltest_exe_SOURCES) $(__bins__wincpp_dll_SOURCES) \
+	$(__bins__windowtest_exe_SOURCES)
 RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
 	html-recursive info-recursive install-data-recursive \
 	install-dvi-recursive install-exec-recursive \
@@ -275,43 +288,56 @@ SUBDIRS = \
 
 INCLUDES = $(default_includes)
 EXTRA_DIST = app.premf
-BUILT_LIBS = \
+BUILT_IMP_LIBS = \
 						-Wl,WCppUtils/libwcpputils.a		\
 						-Wl,EventSystem/libwcppevents.a		\
 						-Wl,Window/libwcppwindow.a			\
 						-Wl,CommonControls/libwcppcommctl.a	\
 						-Wl,GeneralControls/libwcppgenctl.a
 
-wincpp_dll_SOURCES = \
+BUILT_LIBS = WCppUtils/libwcpputils.a			\
+							  EventSystem/libwcppevents.a		\
+							  Window/libwcppwindow.a			\
+							  CommonControls/libwcppcommctl.a	\
+							  GeneralControls/libwcppgenctl.a
+
+bins = $(top_builddir)/bin
+__bins__wincpp_dll_SOURCES = \
 							  resources/wincpp.rc			\
 							  resources/Resource.h			\
 							  resources/main.premf			\
 							  main.cpp
 
-wincpp_dll_LDFLAGS = -shared -Wl,--out-implib=libwincpp.a -Wl,--export-all-symbols -Wl,--compat-implib \
-							  -Wl,--whole-archive $(BUILT_LIBS) -Wl,--no-whole-archive
+__bins__wincpp_dll_LDFLAGS = -shared -Wl,--out-implib=$(bins)/libwincpp.a -Wl,--export-all-symbols \
+							  -Wl,--compat-implib \
+							  -Wl,--whole-archive $(BUILT_IMP_LIBS) -Wl,--no-whole-archive
 
-wincpp_dll_LDADD = -luxtheme -lgdi32 -lole32
+__bins__wincpp_dll_LDADD = -luxtheme -lgdi32 -lole32
+__bins__wincpp_dll_DEPENDENCIES = $(BUILT_LIBS)
 BUILT_SOURCES = resources/main.manifest app.manifest
 CLEANFILES = resources/main.manifest app.manifest \
-	windowtest.exe.manifest editboxtest.exe.manifest \
-	labeltest.exe.manifest
+	$(bins)/windowtest.exe.manifest \
+	$(bins)/editboxtest.exe.manifest \
+	$(bins)/labeltest.exe.manifest cbtest.exe.manifest
 
 # Wincpp.dll generates an implib, which shall be installed to the libdir
-lib_LIBRARIES = libwincpp.a
-libwincpp_a_SOURCES = 
+lib_LIBRARIES = $(bins)/libwincpp.a
+__bins__libwincpp_a_SOURCES = 
 TESTS = $(check_PROGRAMS)
-eventtest_exe_SOURCES = test/eventtest.cpp
-eventtest_exe_LDADD = -lwincpp -L.
-windowtest_exe_SOURCES = test/windowtest.cpp test/windowtest.h
-windowtest_exe_LDADD = -lwincpp -L.
-windowtest_exe_LDFLAGS = -municode -mwindows
-editboxtest_exe_SOURCES = test/editboxtest.cpp test/editboxtest.h
-editboxtest_exe_LDADD = -lwincpp -L.
-editboxtest_exe_LDFLAGS = -municode -mwindows
-labeltest_exe_SOURCES = test/labeltest.cpp test/labeltest.h
-labeltest_exe_LDADD = -lwincpp -L.
-labeltest_exe_LDFLAGS = -municode -mwindows
+__bins__eventtest_exe_SOURCES = test/eventtest.cpp
+__bins__eventtest_exe_LDADD = -lwincpp -L$(bins)
+__bins__windowtest_exe_SOURCES = test/windowtest.cpp test/windowtest.h
+__bins__windowtest_exe_LDADD = -lwincpp -L$(bins)
+__bins__windowtest_exe_LDFLAGS = -municode -mwindows
+__bins__editboxtest_exe_SOURCES = test/editboxtest.cpp test/editboxtest.h
+__bins__editboxtest_exe_LDADD = -lwincpp -L$(bins)
+__bins__editboxtest_exe_LDFLAGS = -municode -mwindows
+__bins__labeltest_exe_SOURCES = test/labeltest.cpp test/labeltest.h
+__bins__labeltest_exe_LDADD = -lwincpp -L$(bins)
+__bins__labeltest_exe_LDFLAGS = -municode -mwindows
+__bins__cbtest_exe_SOURCES = test/cbtest.cpp test/cbtest.h
+__bins__cbtest_exe_LDADD = -lwincpp -L$(bins)
+__bins__cbtest_exe_LDFLAGS = -municode -mwindows
 all: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 
@@ -379,10 +405,13 @@ uninstall-libLIBRARIES:
 
 clean-libLIBRARIES:
 	-test -z "$(lib_LIBRARIES)" || rm -f $(lib_LIBRARIES)
-libwincpp.a: $(libwincpp_a_OBJECTS) $(libwincpp_a_DEPENDENCIES) 
-	-rm -f libwincpp.a
-	$(libwincpp_a_AR) libwincpp.a $(libwincpp_a_OBJECTS) $(libwincpp_a_LIBADD)
-	$(RANLIB) libwincpp.a
+$(bins)/$(am__dirstamp):
+	@$(MKDIR_P) $(bins)
+	@: > $(bins)/$(am__dirstamp)
+$(bins)/libwincpp.a: $(__bins__libwincpp_a_OBJECTS) $(__bins__libwincpp_a_DEPENDENCIES) $(bins)/$(am__dirstamp)
+	-rm -f $(bins)/libwincpp.a
+	$(__bins__libwincpp_a_AR) $(bins)/libwincpp.a $(__bins__libwincpp_a_OBJECTS) $(__bins__libwincpp_a_LIBADD)
+	$(RANLIB) $(bins)/libwincpp.a
 install-binPROGRAMS: $(bin_PROGRAMS)
 	@$(NORMAL_INSTALL)
 	test -z "$(bindir)" || $(MKDIR_P) "$(DESTDIR)$(bindir)"
@@ -423,15 +452,18 @@ clean-binPROGRAMS:
 
 clean-checkPROGRAMS:
 	-test -z "$(check_PROGRAMS)" || rm -f $(check_PROGRAMS)
-editboxtest.exe$(EXEEXT): $(editboxtest_exe_OBJECTS) $(editboxtest_exe_DEPENDENCIES) 
-	@rm -f editboxtest.exe$(EXEEXT)
-	$(editboxtest_exe_LINK) $(editboxtest_exe_OBJECTS) $(editboxtest_exe_LDADD) $(LIBS)
-eventtest.exe$(EXEEXT): $(eventtest_exe_OBJECTS) $(eventtest_exe_DEPENDENCIES) 
-	@rm -f eventtest.exe$(EXEEXT)
-	$(CXXLINK) $(eventtest_exe_OBJECTS) $(eventtest_exe_LDADD) $(LIBS)
-labeltest.exe$(EXEEXT): $(labeltest_exe_OBJECTS) $(labeltest_exe_DEPENDENCIES) 
-	@rm -f labeltest.exe$(EXEEXT)
-	$(labeltest_exe_LINK) $(labeltest_exe_OBJECTS) $(labeltest_exe_LDADD) $(LIBS)
+$(bins)/cbtest.exe$(EXEEXT): $(__bins__cbtest_exe_OBJECTS) $(__bins__cbtest_exe_DEPENDENCIES) $(bins)/$(am__dirstamp)
+	@rm -f $(bins)/cbtest.exe$(EXEEXT)
+	$(__bins__cbtest_exe_LINK) $(__bins__cbtest_exe_OBJECTS) $(__bins__cbtest_exe_LDADD) $(LIBS)
+$(bins)/editboxtest.exe$(EXEEXT): $(__bins__editboxtest_exe_OBJECTS) $(__bins__editboxtest_exe_DEPENDENCIES) $(bins)/$(am__dirstamp)
+	@rm -f $(bins)/editboxtest.exe$(EXEEXT)
+	$(__bins__editboxtest_exe_LINK) $(__bins__editboxtest_exe_OBJECTS) $(__bins__editboxtest_exe_LDADD) $(LIBS)
+$(bins)/eventtest.exe$(EXEEXT): $(__bins__eventtest_exe_OBJECTS) $(__bins__eventtest_exe_DEPENDENCIES) $(bins)/$(am__dirstamp)
+	@rm -f $(bins)/eventtest.exe$(EXEEXT)
+	$(CXXLINK) $(__bins__eventtest_exe_OBJECTS) $(__bins__eventtest_exe_LDADD) $(LIBS)
+$(bins)/labeltest.exe$(EXEEXT): $(__bins__labeltest_exe_OBJECTS) $(__bins__labeltest_exe_DEPENDENCIES) $(bins)/$(am__dirstamp)
+	@rm -f $(bins)/labeltest.exe$(EXEEXT)
+	$(__bins__labeltest_exe_LINK) $(__bins__labeltest_exe_OBJECTS) $(__bins__labeltest_exe_LDADD) $(LIBS)
 resources/$(am__dirstamp):
 	@$(MKDIR_P) resources
 	@: > resources/$(am__dirstamp)
@@ -440,12 +472,12 @@ resources/$(DEPDIR)/$(am__dirstamp):
 	@: > resources/$(DEPDIR)/$(am__dirstamp)
 resources/wincpp.$(OBJEXT): resources/$(am__dirstamp) \
 	resources/$(DEPDIR)/$(am__dirstamp)
-wincpp.dll$(EXEEXT): $(wincpp_dll_OBJECTS) $(wincpp_dll_DEPENDENCIES) 
-	@rm -f wincpp.dll$(EXEEXT)
-	$(wincpp_dll_LINK) $(wincpp_dll_OBJECTS) $(wincpp_dll_LDADD) $(LIBS)
-windowtest.exe$(EXEEXT): $(windowtest_exe_OBJECTS) $(windowtest_exe_DEPENDENCIES) 
-	@rm -f windowtest.exe$(EXEEXT)
-	$(windowtest_exe_LINK) $(windowtest_exe_OBJECTS) $(windowtest_exe_LDADD) $(LIBS)
+$(bins)/wincpp.dll$(EXEEXT): $(__bins__wincpp_dll_OBJECTS) $(__bins__wincpp_dll_DEPENDENCIES) $(bins)/$(am__dirstamp)
+	@rm -f $(bins)/wincpp.dll$(EXEEXT)
+	$(__bins__wincpp_dll_LINK) $(__bins__wincpp_dll_OBJECTS) $(__bins__wincpp_dll_LDADD) $(LIBS)
+$(bins)/windowtest.exe$(EXEEXT): $(__bins__windowtest_exe_OBJECTS) $(__bins__windowtest_exe_DEPENDENCIES) $(bins)/$(am__dirstamp)
+	@rm -f $(bins)/windowtest.exe$(EXEEXT)
+	$(__bins__windowtest_exe_LINK) $(__bins__windowtest_exe_OBJECTS) $(__bins__windowtest_exe_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -454,6 +486,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cbtest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/editboxtest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eventtest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/labeltest.Po@am__quote@
@@ -473,6 +506,20 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
+
+cbtest.o: test/cbtest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT cbtest.o -MD -MP -MF $(DEPDIR)/cbtest.Tpo -c -o cbtest.o `test -f 'test/cbtest.cpp' || echo '$(srcdir)/'`test/cbtest.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/cbtest.Tpo $(DEPDIR)/cbtest.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='test/cbtest.cpp' object='cbtest.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o cbtest.o `test -f 'test/cbtest.cpp' || echo '$(srcdir)/'`test/cbtest.cpp
+
+cbtest.obj: test/cbtest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT cbtest.obj -MD -MP -MF $(DEPDIR)/cbtest.Tpo -c -o cbtest.obj `if test -f 'test/cbtest.cpp'; then $(CYGPATH_W) 'test/cbtest.cpp'; else $(CYGPATH_W) '$(srcdir)/test/cbtest.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/cbtest.Tpo $(DEPDIR)/cbtest.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='test/cbtest.cpp' object='cbtest.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o cbtest.obj `if test -f 'test/cbtest.cpp'; then $(CYGPATH_W) 'test/cbtest.cpp'; else $(CYGPATH_W) '$(srcdir)/test/cbtest.cpp'; fi`
 
 editboxtest.o: test/editboxtest.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT editboxtest.o -MD -MP -MF $(DEPDIR)/editboxtest.Tpo -c -o editboxtest.o `test -f 'test/editboxtest.cpp' || echo '$(srcdir)/'`test/editboxtest.cpp
@@ -851,6 +898,7 @@ distclean-generic:
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
 	-rm -f resources/$(DEPDIR)/$(am__dirstamp)
 	-rm -f resources/$(am__dirstamp)
+	-test -z "$(bins)/$(am__dirstamp)" || rm -f $(bins)/$(am__dirstamp)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
@@ -952,14 +1000,17 @@ uninstall-am: uninstall-binPROGRAMS uninstall-libLIBRARIES
 
 .premf.manifest:
 	$(SED) 's/_VERSION_/$(VERSION_4D)/g' $< > $@
-windowtest.$(OBJEXT): windowtest.exe.manifest
-windowtest.exe.manifest: app.manifest
+windowtest.$(OBJEXT): $(bins)/windowtest.exe.manifest
+$(bins)/windowtest.exe.manifest: app.manifest
 	$(LN_S) $< $@
-editboxtest.$(OBJEXT): editboxtest.exe.manifest
-editboxtest.exe.manifest: app.manifest
+editboxtest.$(OBJEXT): $(bins)/editboxtest.exe.manifest
+$(bins)/editboxtest.exe.manifest: app.manifest
 	$(LN_S) $< $@
-labeltest.$(OBJEXT): labeltest.exe.manifest
-labeltest.exe.manifest: app.manifest
+labeltest.$(OBJEXT): $(bins)/labeltest.exe.manifest
+$(bins)/labeltest.exe.manifest: app.manifest
+	$(LN_S) $< $@
+cbtest.$(OBJEXT): $(bins)/cbtest.exe.manifest
+$(bins)/cbtest.exe.manifest: app.manifest
 	$(LN_S) $< $@
 
 # dependencies for resource file

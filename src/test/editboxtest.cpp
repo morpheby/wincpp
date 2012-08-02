@@ -65,10 +65,10 @@ void MainWnd::WMSize() {
 }
 
 void MainWnd::Sizer() {
-	input.SetPosition(10_scaled, 10_scaled);
+	input.setPosition(10_scaled, 10_scaled);
 	input.setSize(getWidth() - 15_scaled, 25_scaled);
 
-	output.SetPosition(10_scaled, input.getY()+input.getHeight()+5_scaled);
+	output.setPosition(10_scaled, input.getY()+input.getHeight()+5_scaled);
 	output.setSize(getWidth() - 15_scaled, 25_scaled);
 }
 

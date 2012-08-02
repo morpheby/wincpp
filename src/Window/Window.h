@@ -81,24 +81,19 @@ public:
 	std::wstring getName() const;
 
 	BOOL setSize(int width, int height);
+	inline void setWidth(int width) {setSize(width, getHeight());}
+	inline void setHeight(int height) {setSize(getWidth(), height);}
+	inline int getWidth() const {return width_;}
+	inline int getHeight() const {return height_;}
 
-	inline int getWidth() const {
-		return width_;
-	}
+	BOOL setPosition(int x, int y);
+	inline void setX(int x) {setPosition(x, getY());}
+	inline void setY(int y) {setPosition(getX(), y);}
+	inline int getX() const {return x_;}
+	inline int getY() const {return y_;}
 
-	inline int getHeight() const {
-		return height_;
-	}
-
-	BOOL SetPosition(int x, int y);
-
-	inline int getX() const {
-		return x_;
-	}
-
-	inline int getY() const {
-		return y_;
-	}
+	inline int getRight() const {return getX()+getWidth();}
+	inline int getBottom() const {return getY()+getHeight();}
 
 	inline HTHEME getTheme() const {
 		return hTheme;

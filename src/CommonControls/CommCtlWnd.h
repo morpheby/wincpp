@@ -3,6 +3,7 @@
 
 #include <Window.h>
 #include <errorParse.h>
+#include <set>
 
 
 class CommCtlWnd: public Window {
@@ -12,6 +13,9 @@ public:
 			int width, int height, std::wstring commCtlClass);
 	CommCtlWnd(HWND convertFrom);
 	~CommCtlWnd(void);
+
+	void InhibitMessage(UINT msg);
+	void RestoreMessage(UINT msg);
 
 protected:
 	std::wstring GetThemeApplicableClassList();
@@ -24,6 +28,7 @@ private:
 	WNDPROC commCtlProc;
 	std::wstring commCtlClass;
 	HWND converted;
+	std::set<UINT> inhibitedMsg;
 	void setDefFont();
 };
 
