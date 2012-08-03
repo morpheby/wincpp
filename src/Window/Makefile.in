@@ -53,8 +53,9 @@ AR = ar
 ARFLAGS = cru
 libwcppwindow_a_AR = $(AR) $(ARFLAGS)
 libwcppwindow_a_LIBADD =
-am_libwcppwindow_a_OBJECTS = Window.$(OBJEXT) DPIScaler.$(OBJEXT) \
-	Bitmap.$(OBJEXT) CommonControlsInit.$(OBJEXT)
+am_libwcppwindow_a_OBJECTS = Window.$(OBJEXT) Cursors.$(OBJEXT) \
+	DPIScaler.$(OBJEXT) Bitmap.$(OBJEXT) \
+	CommonControlsInit.$(OBJEXT)
 libwcppwindow_a_OBJECTS = $(am_libwcppwindow_a_OBJECTS)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -200,11 +201,19 @@ EXTRA_DIST = Headers
 noinst_LIBRARIES = libwcppwindow.a
 libwcppwindow_a_SOURCES = \
 				 				  Window.cpp			\
+				 				  Cursors.cpp			\
 	 							  DPIScaler.cpp			\
 	 							  Bitmap.cpp			\
 	 							  CommonControlsInit.c
 
-pkginclude_HEADERS = Window.h DPIScaler.h Bitmap.h vsstyle.h vssym32.h CommonControlsInit.h
+pkginclude_HEADERS = Window.h		\
+								  Cursors.cpp	\
+								  DPIScaler.h	\
+								  Bitmap.h		\
+								  vsstyle.h		\
+								  vssym32.h		\
+								  CommonControlsInit.h
+
 all: all-am
 
 .SUFFIXES:
@@ -255,6 +264,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Bitmap.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CommonControlsInit.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Cursors.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DPIScaler.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Window.Po@am__quote@
 

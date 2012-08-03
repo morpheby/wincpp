@@ -19,6 +19,7 @@ NotifyWnd::NotifyWnd(const wstring &text, int x, int y, HWND parentWnd) :
 
 void NotifyWnd::setText(const wstring &text) {
 	txt = text;
+	txtRect = {0, 0, 0, 0};
 	HDC dc = GetDC(getWindowHandle());
 	DrawTText(dc, TTP_BALLOON, TTBS_NORMAL, txt, DT_CALCRECT, txtRect);
 	ReleaseDC(getWindowHandle(), dc);

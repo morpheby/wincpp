@@ -34,7 +34,7 @@ void LabelWnd::setText(const wstring& text) {
 	::UpdateWindow(getParent());
 }
 
-wstring LabelWnd::getText() const {
+const wstring& LabelWnd::getText() const {
 	return txt;
 }
 

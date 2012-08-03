@@ -9,8 +9,15 @@ noinst_LIBRARIES				= libwcppwindow.a
 
 libwcppwindow_a_SOURCES			=						\
 				 				  Window.cpp			\
+				 				  Cursors.cpp			\
 	 							  DPIScaler.cpp			\
 	 							  Bitmap.cpp			\
 	 							  CommonControlsInit.c
 
-pkginclude_HEADERS				= Window.h DPIScaler.h Bitmap.h vsstyle.h vssym32.h CommonControlsInit.h
+pkginclude_HEADERS				= Window.h		\
+								  Cursors.cpp	\
+								  DPIScaler.h	\
+								  Bitmap.h		\
+								  vsstyle.h		\
+								  vssym32.h		\
+								  CommonControlsInit.h

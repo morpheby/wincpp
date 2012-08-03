@@ -17,7 +17,7 @@ public:
 	~LabelWnd();
 	void setText(const std::wstring &text);
 
-	std::wstring getText() const;
+	const std::wstring& getText() const;
 
 	void setForcedWidth(bool forcedWidth) {
 		forcedWidth_ = forcedWidth;
