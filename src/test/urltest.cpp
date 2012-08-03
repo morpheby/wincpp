@@ -36,7 +36,10 @@ int __stdcall wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 MainWnd::MainWnd(void) :
 		Window(L"Test", WS_OVERLAPPEDWINDOW, 50_scaled, 50_scaled,
 				700_scaled, 500_scaled, 0, 0, 0),
-		label(L"", 0, 0, *this) {
+		label(L"", 0, 0, *this),
+		urlWeb(L"http://www.google.com", 2_scaled, 0, *this),
+		urlNamedWeb(L"http://www.microsoft.com", L"Microsoft", 2_scaled, 0, *this),
+		urlApp(L"notepad.exe", L"Open Notepad", 2_scaled, 0, *this) {
 
 	label.setForcedWidth(true);
 
@@ -44,9 +47,12 @@ MainWnd::MainWnd(void) :
 			"line in case it doesn't fill the size of the window.\n"
 			"2. Try resizing window -- word-wrapping shall occur right while you "
 			"are changing size\n"
-			"3. There are two links: first points to web site, second points to "
-			"the same web site, but displays a name\n"
-			"3. If everything happens right as described -- close the window and confirm test");
+			"3. There are three links: the first points to web site, the second points to "
+			"the same web site, but displays a name and the third opens notepad and "
+			"is named \'Open Notepad\'\n"
+			"4. Hovering the mouse over a link shows tooltip with full URL\n"
+			"5. Pressing the link once darkens its colour\n"
+			"6. If everything happens right as described -- close the window and confirm test");
 
 	Sizer();
 }
@@ -66,6 +72,10 @@ void MainWnd::WMSize() {
 void MainWnd::Sizer() {
 	label.setWidth(getWidth());
 	label.ImmediatelyUpdateWindow();
+
+	urlWeb.setY(label.getBottom());
+	urlNamedWeb.setY(urlWeb.getBottom());
+	urlApp.setY(urlNamedWeb.getBottom());
 }
 
 

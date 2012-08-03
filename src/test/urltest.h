@@ -20,6 +20,7 @@
 #include <sstream>
 
 #include <LabelWnd.h>
+#include <UrlWnd.h>
 
 using namespace std;
 
