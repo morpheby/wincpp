@@ -207,7 +207,7 @@ libwcppwindow_a_SOURCES = \
 	 							  CommonControlsInit.c
 
 pkginclude_HEADERS = Window.h		\
-								  Cursors.cpp	\
+								  Cursors.h	\
 								  DPIScaler.h	\
 								  Bitmap.h		\
 								  vsstyle.h		\
