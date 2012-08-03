@@ -27,9 +27,9 @@ protected:
 	void PaintWindow(HDC hdc);
 	LRESULT WndProc(UINT msg, WPARAM wParam, LPARAM lParam);
 private:
-	bool visited;
-	std::wstring url;
-	NotifyWnd urlFull;
+	bool visited_;
+	std::wstring url_;
+	NotifyWnd urlFull_;
 
 	void TrackMouseEvent(DWORD event);
 };
