@@ -59,6 +59,8 @@ check_PROGRAMS				= $(bins)/eventtest.exe		\
 							  $(bins)/windowtest.exe	\
 							  $(bins)/editboxtest.exe 	\
 							  $(bins)/labeltest.exe		\
+							  $(bins)/btntest.exe		\
+							  $(bins)/urltest.exe		\
 							  $(bins)/cbtest.exe
 
 TESTS						= $(check_PROGRAMS)
@@ -91,12 +93,28 @@ labeltest.$(OBJEXT): $(bins)/labeltest.exe.manifest
 $(bins)/labeltest.exe.manifest: app.manifest
 	$(LN_S) $< $@
 
+__bins__btntest_exe_SOURCES		= test/btntest.cpp test/btntest.h
+__bins__btntest_exe_LDADD		= -lwincpp -L$(bins)
+__bins__btntest_exe_LDFLAGS		= -municode -mwindows
+CLEANFILES					   += $(bins)/btntest.exe.manifest
+btntest.$(OBJEXT): $(bins)/btntest.exe.manifest
+$(bins)/btntest.exe.manifest: app.manifest
+	$(LN_S) $< $@
+
 __bins__cbtest_exe_SOURCES		= test/cbtest.cpp test/cbtest.h
 __bins__cbtest_exe_LDADD		= -lwincpp -L$(bins)
 __bins__cbtest_exe_LDFLAGS		= -municode -mwindows
 CLEANFILES					   += $(bins)/cbtest.exe.manifest
 cbtest.$(OBJEXT): $(bins)/cbtest.exe.manifest
 $(bins)/cbtest.exe.manifest: app.manifest
+	$(LN_S) $< $@
+
+__bins__urltest_exe_SOURCES		= test/urltest.cpp test/urltest.h
+__bins__urltest_exe_LDADD		= -lwincpp -L$(bins)
+__bins__urltest_exe_LDFLAGS		= -municode -mwindows
+CLEANFILES					   += $(bins)/urltest.exe.manifest
+urltest.$(OBJEXT): $(bins)/urltest.exe.manifest
+$(bins)/urltest.exe.manifest: app.manifest
 	$(LN_S) $< $@
 
 # dependencies for resource file

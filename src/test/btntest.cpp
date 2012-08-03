@@ -1,5 +1,5 @@
 
-#include "labeltest.h"
+#include "btntest.h"
 
 
 int __stdcall wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
@@ -25,10 +25,6 @@ int __stdcall wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		DispatchMessage(&msg);
 	}
 
-	if(MessageBoxW(GetActiveWindow(), L"Was everything according to the instructions?",
-			L"Test", MB_YESNO) == IDNO)
-		return 1;
-
 	return (int) msg.wParam;
 }
 
@@ -36,7 +32,12 @@ int __stdcall wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 MainWnd::MainWnd(void) :
 		Window(L"Test", WS_OVERLAPPEDWINDOW, 50_scaled, 50_scaled,
 				700_scaled, 500_scaled, 0, 0, 0),
-		label(L"", 0, 0, *this) {
+		label(L"", 0, 0, *this),
+		btnOK(ButtonWnd::DefPushButton, L"OK",
+				5_scaled, 0, 60_scaled, 25_scaled, *this),
+		btnCancel(ButtonWnd::PushButton, L"Cancel",
+				btnOK.getRight()+5_scaled, 0, 60_scaled, 25_scaled, *this)
+		{
 
 	label.setForcedWidth(true);
 
@@ -44,8 +45,14 @@ MainWnd::MainWnd(void) :
 			"line in case it doesn't fill the size of the window.\n"
 			"2. Try resizing window -- word-wrapping shall occur right while you "
 			"are changing size\n"
-			"3. If everything happens right as described -- close the window and confirm test");
+			"3. There two adjacent buttons - \'OK\' and \'Cancel\'\n"
+			"4. As this label resizes, they move accordingly, thus never "
+			"overlapping each other\n"
+			"5. If everything happens right as described -- press OK button, "
+			"else press \'Cancel\' button or close the window");
 
+	btnOK.setOnClick(NewEvent(*this, &MainWnd::onOKClick));
+	btnCancel.setOnClick(NewEvent(*this, &MainWnd::onCancelClick));
 	Sizer();
 }
 
@@ -53,7 +60,7 @@ MainWnd::~MainWnd(void) {
 }
 
 bool MainWnd::WMClose() {
-	PostQuitMessage(0);
+	PostQuitMessage(1); // This is the wrong way to close that window
 	return true;
 }
 
@@ -64,16 +71,17 @@ void MainWnd::WMSize() {
 void MainWnd::Sizer() {
 	label.setWidth(getWidth());
 	label.ImmediatelyUpdateWindow();
+
+	btnOK.setY(label.getBottom()+5_scaled);
+	btnCancel.setY(label.getBottom()+5_scaled);
 }
 
+int MainWnd::onOKClick(Window& sender) {
+	PostQuitMessage(0);
+	return 0;
+}
 
-
-
-
-
-
-
-
-
-
-
+int MainWnd::onCancelClick(Window& sender) {
+	PostQuitMessage(1);
+	return 0;
+}

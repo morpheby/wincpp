@@ -41,7 +41,8 @@ bin_PROGRAMS = $(bins)/wincpp.dll$(EXEEXT)
 check_PROGRAMS = $(bins)/eventtest.exe$(EXEEXT) \
 	$(bins)/windowtest.exe$(EXEEXT) \
 	$(bins)/editboxtest.exe$(EXEEXT) \
-	$(bins)/labeltest.exe$(EXEEXT) $(bins)/cbtest.exe$(EXEEXT)
+	$(bins)/labeltest.exe$(EXEEXT) $(bins)/btntest.exe$(EXEEXT) \
+	$(bins)/urltest.exe$(EXEEXT) $(bins)/cbtest.exe$(EXEEXT)
 subdir = src
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_cxx_compile_stdcxx_11.m4 \
@@ -83,6 +84,11 @@ am___bins__libwincpp_a_OBJECTS =
 __bins__libwincpp_a_OBJECTS = $(am___bins__libwincpp_a_OBJECTS)
 am__dirstamp = $(am__leading_dot)dirstamp
 PROGRAMS = $(bin_PROGRAMS)
+am___bins__btntest_exe_OBJECTS = btntest.$(OBJEXT)
+__bins__btntest_exe_OBJECTS = $(am___bins__btntest_exe_OBJECTS)
+__bins__btntest_exe_DEPENDENCIES =
+__bins__btntest_exe_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
+	$(__bins__btntest_exe_LDFLAGS) $(LDFLAGS) -o $@
 am___bins__cbtest_exe_OBJECTS = cbtest.$(OBJEXT)
 __bins__cbtest_exe_OBJECTS = $(am___bins__cbtest_exe_OBJECTS)
 __bins__cbtest_exe_DEPENDENCIES =
@@ -102,6 +108,11 @@ __bins__labeltest_exe_OBJECTS = $(am___bins__labeltest_exe_OBJECTS)
 __bins__labeltest_exe_DEPENDENCIES =
 __bins__labeltest_exe_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
 	$(__bins__labeltest_exe_LDFLAGS) $(LDFLAGS) -o $@
+am___bins__urltest_exe_OBJECTS = urltest.$(OBJEXT)
+__bins__urltest_exe_OBJECTS = $(am___bins__urltest_exe_OBJECTS)
+__bins__urltest_exe_DEPENDENCIES =
+__bins__urltest_exe_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
+	$(__bins__urltest_exe_LDFLAGS) $(LDFLAGS) -o $@
 am___bins__wincpp_dll_OBJECTS = resources/wincpp.$(OBJEXT) \
 	main.$(OBJEXT)
 __bins__wincpp_dll_OBJECTS = $(am___bins__wincpp_dll_OBJECTS)
@@ -125,16 +136,19 @@ COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(__bins__libwincpp_a_SOURCES) $(__bins__cbtest_exe_SOURCES) \
+SOURCES = $(__bins__libwincpp_a_SOURCES) \
+	$(__bins__btntest_exe_SOURCES) $(__bins__cbtest_exe_SOURCES) \
 	$(__bins__editboxtest_exe_SOURCES) \
 	$(__bins__eventtest_exe_SOURCES) \
-	$(__bins__labeltest_exe_SOURCES) $(__bins__wincpp_dll_SOURCES) \
+	$(__bins__labeltest_exe_SOURCES) \
+	$(__bins__urltest_exe_SOURCES) $(__bins__wincpp_dll_SOURCES) \
 	$(__bins__windowtest_exe_SOURCES)
 DIST_SOURCES = $(__bins__libwincpp_a_SOURCES) \
-	$(__bins__cbtest_exe_SOURCES) \
+	$(__bins__btntest_exe_SOURCES) $(__bins__cbtest_exe_SOURCES) \
 	$(__bins__editboxtest_exe_SOURCES) \
 	$(__bins__eventtest_exe_SOURCES) \
-	$(__bins__labeltest_exe_SOURCES) $(__bins__wincpp_dll_SOURCES) \
+	$(__bins__labeltest_exe_SOURCES) \
+	$(__bins__urltest_exe_SOURCES) $(__bins__wincpp_dll_SOURCES) \
 	$(__bins__windowtest_exe_SOURCES)
 RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
 	html-recursive info-recursive install-data-recursive \
@@ -318,7 +332,8 @@ BUILT_SOURCES = app.manifest
 CLEANFILES = resources/main.manifest app.manifest \
 	$(bins)/windowtest.exe.manifest \
 	$(bins)/editboxtest.exe.manifest \
-	$(bins)/labeltest.exe.manifest $(bins)/cbtest.exe.manifest
+	$(bins)/labeltest.exe.manifest $(bins)/btntest.exe.manifest \
+	$(bins)/cbtest.exe.manifest $(bins)/urltest.exe.manifest
 
 # Wincpp.dll generates an implib, which shall be installed to the libdir
 lib_LIBRARIES = $(bins)/libwincpp.a
@@ -335,9 +350,15 @@ __bins__editboxtest_exe_LDFLAGS = -municode -mwindows
 __bins__labeltest_exe_SOURCES = test/labeltest.cpp test/labeltest.h
 __bins__labeltest_exe_LDADD = -lwincpp -L$(bins)
 __bins__labeltest_exe_LDFLAGS = -municode -mwindows
+__bins__btntest_exe_SOURCES = test/btntest.cpp test/btntest.h
+__bins__btntest_exe_LDADD = -lwincpp -L$(bins)
+__bins__btntest_exe_LDFLAGS = -municode -mwindows
 __bins__cbtest_exe_SOURCES = test/cbtest.cpp test/cbtest.h
 __bins__cbtest_exe_LDADD = -lwincpp -L$(bins)
 __bins__cbtest_exe_LDFLAGS = -municode -mwindows
+__bins__urltest_exe_SOURCES = test/urltest.cpp test/urltest.h
+__bins__urltest_exe_LDADD = -lwincpp -L$(bins)
+__bins__urltest_exe_LDFLAGS = -municode -mwindows
 all: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 
@@ -452,6 +473,9 @@ clean-binPROGRAMS:
 
 clean-checkPROGRAMS:
 	-test -z "$(check_PROGRAMS)" || rm -f $(check_PROGRAMS)
+$(bins)/btntest.exe$(EXEEXT): $(__bins__btntest_exe_OBJECTS) $(__bins__btntest_exe_DEPENDENCIES) $(bins)/$(am__dirstamp)
+	@rm -f $(bins)/btntest.exe$(EXEEXT)
+	$(__bins__btntest_exe_LINK) $(__bins__btntest_exe_OBJECTS) $(__bins__btntest_exe_LDADD) $(LIBS)
 $(bins)/cbtest.exe$(EXEEXT): $(__bins__cbtest_exe_OBJECTS) $(__bins__cbtest_exe_DEPENDENCIES) $(bins)/$(am__dirstamp)
 	@rm -f $(bins)/cbtest.exe$(EXEEXT)
 	$(__bins__cbtest_exe_LINK) $(__bins__cbtest_exe_OBJECTS) $(__bins__cbtest_exe_LDADD) $(LIBS)
@@ -464,6 +488,9 @@ $(bins)/eventtest.exe$(EXEEXT): $(__bins__eventtest_exe_OBJECTS) $(__bins__event
 $(bins)/labeltest.exe$(EXEEXT): $(__bins__labeltest_exe_OBJECTS) $(__bins__labeltest_exe_DEPENDENCIES) $(bins)/$(am__dirstamp)
 	@rm -f $(bins)/labeltest.exe$(EXEEXT)
 	$(__bins__labeltest_exe_LINK) $(__bins__labeltest_exe_OBJECTS) $(__bins__labeltest_exe_LDADD) $(LIBS)
+$(bins)/urltest.exe$(EXEEXT): $(__bins__urltest_exe_OBJECTS) $(__bins__urltest_exe_DEPENDENCIES) $(bins)/$(am__dirstamp)
+	@rm -f $(bins)/urltest.exe$(EXEEXT)
+	$(__bins__urltest_exe_LINK) $(__bins__urltest_exe_OBJECTS) $(__bins__urltest_exe_LDADD) $(LIBS)
 resources/$(am__dirstamp):
 	@$(MKDIR_P) resources
 	@: > resources/$(am__dirstamp)
@@ -486,11 +513,13 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/btntest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cbtest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/editboxtest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eventtest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/labeltest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/urltest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/windowtest.Po@am__quote@
 
 .cpp.o:
@@ -506,6 +535,20 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
+
+btntest.o: test/btntest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT btntest.o -MD -MP -MF $(DEPDIR)/btntest.Tpo -c -o btntest.o `test -f 'test/btntest.cpp' || echo '$(srcdir)/'`test/btntest.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/btntest.Tpo $(DEPDIR)/btntest.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='test/btntest.cpp' object='btntest.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o btntest.o `test -f 'test/btntest.cpp' || echo '$(srcdir)/'`test/btntest.cpp
+
+btntest.obj: test/btntest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT btntest.obj -MD -MP -MF $(DEPDIR)/btntest.Tpo -c -o btntest.obj `if test -f 'test/btntest.cpp'; then $(CYGPATH_W) 'test/btntest.cpp'; else $(CYGPATH_W) '$(srcdir)/test/btntest.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/btntest.Tpo $(DEPDIR)/btntest.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='test/btntest.cpp' object='btntest.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o btntest.obj `if test -f 'test/btntest.cpp'; then $(CYGPATH_W) 'test/btntest.cpp'; else $(CYGPATH_W) '$(srcdir)/test/btntest.cpp'; fi`
 
 cbtest.o: test/cbtest.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT cbtest.o -MD -MP -MF $(DEPDIR)/cbtest.Tpo -c -o cbtest.o `test -f 'test/cbtest.cpp' || echo '$(srcdir)/'`test/cbtest.cpp
@@ -562,6 +605,20 @@ labeltest.obj: test/labeltest.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='test/labeltest.cpp' object='labeltest.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o labeltest.obj `if test -f 'test/labeltest.cpp'; then $(CYGPATH_W) 'test/labeltest.cpp'; else $(CYGPATH_W) '$(srcdir)/test/labeltest.cpp'; fi`
+
+urltest.o: test/urltest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT urltest.o -MD -MP -MF $(DEPDIR)/urltest.Tpo -c -o urltest.o `test -f 'test/urltest.cpp' || echo '$(srcdir)/'`test/urltest.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/urltest.Tpo $(DEPDIR)/urltest.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='test/urltest.cpp' object='urltest.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o urltest.o `test -f 'test/urltest.cpp' || echo '$(srcdir)/'`test/urltest.cpp
+
+urltest.obj: test/urltest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT urltest.obj -MD -MP -MF $(DEPDIR)/urltest.Tpo -c -o urltest.obj `if test -f 'test/urltest.cpp'; then $(CYGPATH_W) 'test/urltest.cpp'; else $(CYGPATH_W) '$(srcdir)/test/urltest.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/urltest.Tpo $(DEPDIR)/urltest.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='test/urltest.cpp' object='urltest.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o urltest.obj `if test -f 'test/urltest.cpp'; then $(CYGPATH_W) 'test/urltest.cpp'; else $(CYGPATH_W) '$(srcdir)/test/urltest.cpp'; fi`
 
 windowtest.o: test/windowtest.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT windowtest.o -MD -MP -MF $(DEPDIR)/windowtest.Tpo -c -o windowtest.o `test -f 'test/windowtest.cpp' || echo '$(srcdir)/'`test/windowtest.cpp
@@ -1009,8 +1066,14 @@ $(bins)/editboxtest.exe.manifest: app.manifest
 labeltest.$(OBJEXT): $(bins)/labeltest.exe.manifest
 $(bins)/labeltest.exe.manifest: app.manifest
 	$(LN_S) $< $@
+btntest.$(OBJEXT): $(bins)/btntest.exe.manifest
+$(bins)/btntest.exe.manifest: app.manifest
+	$(LN_S) $< $@
 cbtest.$(OBJEXT): $(bins)/cbtest.exe.manifest
 $(bins)/cbtest.exe.manifest: app.manifest
+	$(LN_S) $< $@
+urltest.$(OBJEXT): $(bins)/urltest.exe.manifest
+$(bins)/urltest.exe.manifest: app.manifest
 	$(LN_S) $< $@
 
 # dependencies for resource file

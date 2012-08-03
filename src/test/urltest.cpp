@@ -1,5 +1,5 @@
 
-#include "labeltest.h"
+#include "urltest.h"
 
 
 int __stdcall wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
@@ -44,6 +44,8 @@ MainWnd::MainWnd(void) :
 			"line in case it doesn't fill the size of the window.\n"
 			"2. Try resizing window -- word-wrapping shall occur right while you "
 			"are changing size\n"
+			"3. There are two links: first points to web site, second points to "
+			"the same web site, but displays a name\n"
 			"3. If everything happens right as described -- close the window and confirm test");
 
 	Sizer();
