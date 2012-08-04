@@ -1,3 +1,15 @@
+0.0.1.2:
+	Added button test
+	Added URL test
+	Fixed text in label test
+	Added ability for URLWnd to display a name instead of URL
+	URLWnd remastered - now it may have name, sets as visited, shows tooltip with 
+		full link on mouse hover and has 'Hand' cursor
+	Implemented basic Cursor class and CursorFactory
+	LabelWnd::getText now returns const reference
+	BUGFIX NotifyWnd updated to comply with new DrawTText implementation
+	
+	
 0.0.1.1:
 	Added testcase for ComboBox.
 	Implemented ComboBox::NamedSelector
