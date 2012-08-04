@@ -5,6 +5,10 @@
  *      Author: Morphe
  */
 
+#if HAVE_CONFIG_H
+#	include <config.h>
+#endif
+
 #include "Cursors.h"
 
 Cursor::Cursor(HCURSOR cur) :
