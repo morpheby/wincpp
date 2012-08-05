@@ -7,13 +7,15 @@
 
 #include "DCFactory.h"
 
+#include "Window.h"
+
 namespace DC {
 
-DeviceContextBase DCFactory::GetDC(Window& wnd) {
-	return {::GetDC(wnd), wnd};
+DeviceContextBase GetDC(Window& wnd) {
+	return _DC_t{::GetDC(wnd), wnd};
 }
 
-DeviceContextBase DCFactory::CreateCompatibleDC(const DeviceContextBase& dc) {
+DeviceContextBase CreateCompatibleDC(const DeviceContextBase& dc) {
 	return ::CreateCompatibleDC(dc);
 }
 

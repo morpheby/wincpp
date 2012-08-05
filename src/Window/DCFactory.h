@@ -10,13 +10,12 @@
 
 #include "DeviceContextBase.h"
 
+class Window;
+
 namespace DC {
 
-class DCFactory {
-public:
-	static DeviceContextBase GetDC(Window &wnd);
-	static DeviceContextBase CreateCompatibleDC(const DeviceContextBase &dc);
-};
+DeviceContextBase GetDC(Window &wnd);
+DeviceContextBase CreateCompatibleDC(const DeviceContextBase &dc);
 
 }
 

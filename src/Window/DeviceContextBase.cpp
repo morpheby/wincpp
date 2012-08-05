@@ -18,9 +18,9 @@ namespace DC {
 struct _dc_deleter {
 	void operator() (_DC_t *pdc) {
 		if(pdc->owner)
-			ReleaseDC(pdc->owner, pdc->dc);
+			::ReleaseDC(pdc->owner, pdc->dc);
 		else
-			DeleteDC(pdc->dc);
+			::DeleteDC(pdc->dc);
 		delete pdc;
 	}
 };
@@ -42,11 +42,11 @@ DeviceContextBase::DeviceContextBase(DeviceContextBase&& dc) :
 }
 
 DeviceContextBase::DeviceContextBase(const _DC_t &dc) :
-	pdc_{new _DC_t{dc}} {
+	pdc_{new _DC_t(dc)} {
 }
 
 DeviceContextBase::DeviceContextBase(_DC_t&& dc) :
-	pdc_{new _DC_t{dc}, _dc_deleter()} {
+	pdc_{new _DC_t(dc), _dc_deleter()} {
 }
 
 DeviceContextBase::~DeviceContextBase() {

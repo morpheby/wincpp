@@ -5,10 +5,10 @@
  *      Author: Morphe
  */
 
-#ifndef DEVICECONTEXT_H_
-#define DEVICECONTEXT_H_
+#ifndef DEVICECONTEXTBASE_H_
+#define DEVICECONTEXTBASE_H_
 
-#include <Window.h>
+#include <windows.h>
 #include <memory>
 #include <sharedPtr.h>
 
@@ -37,4 +37,4 @@ private:
 
 }
 
-#endif /* DEVICECONTEXT_H_ */
+#endif /* DEVICECONTEXTBASE_H_ */
