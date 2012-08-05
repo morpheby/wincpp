@@ -11,6 +11,8 @@
 
 #include "DeviceContext.h"
 
+namespace DC {
+
 DeviceContext::DeviceContext(const DeviceContextBase& dc) :
 	DeviceContextBase(dc) {
 }
@@ -43,4 +45,10 @@ HRESULT DeviceContext::FillRect(const RECT& rect, HBRUSH brush) {
 HRESULT DeviceContext::DrawBackground(int iPartId, int iStateId,
 		const RECT& rect) {
 	return DrawBackground(iPartId, iStateId, rect, 0);
+}
+
+HFONT DeviceContext::getFont(int iPartId, int iStateId) {
+	return (HFONT) GetStockObject(DEFAULT_GUI_FONT);
+}
+
 }

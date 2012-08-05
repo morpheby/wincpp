@@ -13,6 +13,8 @@
 
 using std::shared_ptr;
 
+namespace DC {
+
 struct _dc_deleter {
 	void operator() (_DC_t *pdc) {
 		if(pdc->owner)
@@ -52,4 +54,6 @@ DeviceContextBase::~DeviceContextBase() {
 
 DeviceContextBase::operator HDC() const {
 	return pdc_->dc;
+}
+
 }

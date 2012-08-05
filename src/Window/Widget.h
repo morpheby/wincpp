@@ -68,14 +68,14 @@ protected:
 
 private:
 	std::set<Widget&> attachedWidgets_;
-	Window window_;
+	Window *window_; // to allow Window reload
 	std::wstring windowName_;
 	DWORD style_;
 	HTHEME hTheme;
 	int x_, y_, width_, height_;
-	Bitmap* cachedBmp;
-	bool defMsgProc, cacheOn_;
 
+	void LoadSize();
+	void LoadPosition();
 };
 
 #endif /* WIDGET_H_ */

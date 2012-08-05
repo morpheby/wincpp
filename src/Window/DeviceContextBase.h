@@ -12,6 +12,8 @@
 #include <memory>
 #include <sharedPtr.h>
 
+namespace DC {
+
 struct _DC_t {
 	HDC dc;
 	HWND owner;
@@ -32,5 +34,7 @@ public:
 private:
 	std::shared_ptr<_DC_t> pdc_;
 };
+
+}
 
 #endif /* DEVICECONTEXT_H_ */

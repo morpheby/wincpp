@@ -10,6 +10,8 @@
 
 #include "DeviceContextBase.h"
 
+namespace DC {
+
 /// Helper class for DC
 class DeviceContext: public DeviceContextBase {
 public:
@@ -26,6 +28,10 @@ public:
 	HRESULT DrawBackground(int iPartId, int iStateId, const RECT& rect);
 	virtual HRESULT FillRect(const RECT &rect, HBRUSH brush);
 
+	virtual HFONT getFont(int iPartId, int iStateId);
 };
+
+
+}
 
 #endif /* DEVICECONTEXT_H_ */
