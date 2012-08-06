@@ -17,7 +17,7 @@ string utf8Str(const wstring& str) {
 	if(wcstombs(utf8str, str.c_str(), sz) == sz)
 		utf8str[sz-1] = 0;
 	string retStr(utf8str);
-	delete utf8str;
+	delete[] utf8str;
 
 	return retStr;
 }
@@ -28,7 +28,7 @@ wstring wideStr(const string& str) {
 	sz = mbstowcs (buf, str.c_str(), sz);
 
 	wstring retStr(buf);
-	delete buf;
+	delete[] buf;
 
 	return retStr;
 }

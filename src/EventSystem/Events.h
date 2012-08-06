@@ -7,6 +7,7 @@
 
 #ifndef EVENTS_H_
 #define EVENTS_H_
+#include <memory>
 
 class EventGenBase {
 public:
@@ -33,7 +34,7 @@ public:
 
 class EventCallerBase {
 protected:
-	EventGenBase *event_;
+	std::shared_ptr<EventGenBase> event_;
 public:
 	EventCallerBase();
 	~EventCallerBase();
@@ -43,7 +44,7 @@ public:
 template<class _SenderT> class EventCaller : protected EventCallerBase {
 public:
 	EventCaller() {
-		 event_ = new EventBase<_SenderT>();
+		 event_ = std::shared_ptr<EventGenBase>(new EventBase<_SenderT>());
 	}
 	int operator() (_SenderT &sentBy) {
 		return (*dynamic_cast<EventBase<_SenderT> *>(event_))(sentBy);
