@@ -10,14 +10,20 @@ noinst_LIBRARIES				= libwcppwindow.a
 libwcppwindow_a_SOURCES			=						\
 				 				  Window.cpp			\
 				 				  Cursors.cpp			\
+				 				  DCFactory.cpp			\
+				 				  DeviceContextBase.cpp	\
+				 				  DeviceContext.cpp		\
 	 							  DPIScaler.cpp			\
 	 							  Bitmap.cpp			\
 	 							  CommonControlsInit.c
 
-pkginclude_HEADERS				= Window.h		\
-								  Cursors.h	\
+pkginclude_HEADERS				= Cursors.h		\
 								  DPIScaler.h	\
 								  Bitmap.h		\
 								  vsstyle.h		\
 								  vssym32.h		\
+								  platform.h	\
+								  DeviceContext.h		\
+								  DeviceContextBase.h	\
+								  DCFactory.h			\
 								  CommonControlsInit.h

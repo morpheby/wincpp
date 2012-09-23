@@ -5536,6 +5536,7 @@ fi
   # Link them
   lf_subdirs="`echo 	src/WCppUtils		\
 					src/EventSystem		\
+					src/Widget			\
 					src/Window			\
 					src/CommonControls	\
 					src/GeneralControls	\
@@ -5599,7 +5600,7 @@ $as_echo "no" >&6; }
 
 
 
-ac_config_files="$ac_config_files Makefile src/Makefile src/WCppUtils/Makefile src/EventSystem/Makefile src/Window/Makefile src/CommonControls/Makefile src/GeneralControls/Makefile"
+ac_config_files="$ac_config_files Makefile src/Makefile src/WCppUtils/Makefile src/EventSystem/Makefile src/Window/Makefile src/Widget/Makefile src/CommonControls/Makefile src/GeneralControls/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -6341,6 +6342,7 @@ do
     "src/WCppUtils/Makefile") CONFIG_FILES="$CONFIG_FILES src/WCppUtils/Makefile" ;;
     "src/EventSystem/Makefile") CONFIG_FILES="$CONFIG_FILES src/EventSystem/Makefile" ;;
     "src/Window/Makefile") CONFIG_FILES="$CONFIG_FILES src/Window/Makefile" ;;
+    "src/Widget/Makefile") CONFIG_FILES="$CONFIG_FILES src/Widget/Makefile" ;;
     "src/CommonControls/Makefile") CONFIG_FILES="$CONFIG_FILES src/CommonControls/Makefile" ;;
     "src/GeneralControls/Makefile") CONFIG_FILES="$CONFIG_FILES src/GeneralControls/Makefile" ;;
 

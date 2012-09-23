@@ -26,17 +26,6 @@ public:
 	DeviceContext(const DeviceContextBase &dc);
 	DeviceContext(DeviceContextBase &&dc);
 
-	// Note that windows.h defines DrawText macro...
-	virtual HRESULT drawText(int iPartId, int iStateId, const std::wstring& text,
-			DWORD dwFlags, RECT& rect);
-	HRESULT drawText(const std::wstring& text, DWORD dwFlags, RECT& rect);
-	virtual HRESULT drawBackground(int iPartId, int iStateId, const RECT& rect,
-			const RECT* clipRect);
-	HRESULT drawBackground(int iPartId, int iStateId, const RECT& rect);
-	virtual HRESULT fillRect(const RECT &rect, HBRUSH brush);
-
-	virtual HFONT getFont(int iPartId, int iStateId);
-
 	HGDIOBJ selectObject(HGDIOBJ obj);
 };
 

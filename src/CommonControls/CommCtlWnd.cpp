@@ -7,7 +7,7 @@
 
 using namespace std;
 
-CommCtlWnd::CommCtlWnd(wstring wndClass) :
+CommCtlWnd::CommCtlWnd(const wstring &wndClass) :
 		Window(true), commCtlClass(wndClass), converted(0) {
 	PostWindowCreate(L"", WS_VISIBLE, 0, 0, 0, 0, 0, 0, 0);
 	setDefMsgProcessing();
@@ -16,8 +16,8 @@ CommCtlWnd::CommCtlWnd(wstring wndClass) :
 	SendMessage(*this, CCM_DPISCALE, 1, 0);
 }
 
-CommCtlWnd::CommCtlWnd(wstring name, UINT style, HWND wndParent, int x, int y,
-		int width, int height, wstring wndClass) :
+CommCtlWnd::CommCtlWnd(const wstring &name, UINT style, HWND wndParent, int x, int y,
+		int width, int height, const wstring &wndClass) :
 		Window(true), commCtlClass(wndClass), converted(0) {
 	PostWindowCreate(name, style | WS_VISIBLE | WS_CHILD, x, y,
 			width, height, wndParent, 0, 0);
@@ -63,15 +63,15 @@ wstring CommCtlWnd::GetThemeApplicableClassList() {
 			Window::GetThemeApplicableClassList();
 }
 
-HWND CommCtlWnd::CreateWnd(const wstring& wndName, UINT style, HWND parentWnd, HMENU menu, HINSTANCE instance,
-		LPVOID lpParam) {
+HWND CommCtlWnd::CreateWnd(const std::wstring& wndName, UINT style,
+		int x, int y, int width, int height, HWND parentWnd, HMENU menu,
+		HINSTANCE instance, LPVOID lpParam) {
 	HWND res = 0;
 	if(converted)
 		res = converted;
 	else
 		res = CreateWindow(commCtlClass.c_str(), wndName.c_str(), style,
-				getX(), getY(), getWidth(), getHeight(), parentWnd,
-				menu, instance, lpParam);
+				x, y, width, height, parentWnd, menu, instance, lpParam);
 	commCtlProc = (WNDPROC)
 			SetWindowLongPtr(res, GWLP_WNDPROC,	(LONG_PTR) IntWndProc);
 	if(commCtlProc == IntWndProc) {

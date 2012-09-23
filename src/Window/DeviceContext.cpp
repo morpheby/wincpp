@@ -49,7 +49,7 @@ HRESULT DeviceContext::drawBackground(int iPartId, int iStateId,
 }
 
 HRESULT DeviceContext::fillRect(const RECT& rect, HBRUSH brush) {
-	::FillRect(*this, &rect, brush);
+	return ::FillRect(*this, &rect, brush);
 }
 
 HRESULT DeviceContext::drawBackground(int iPartId, int iStateId,

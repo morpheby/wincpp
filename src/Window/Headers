@@ -5,3 +5,7 @@ CommonControlsInit.h
 DPIScaler.h
 Cursors.h
 Window.h
+DeviceContext.h
+DeviceContextBase.h
+DCFactory.h
+platform.h

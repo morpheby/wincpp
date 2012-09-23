@@ -84,6 +84,7 @@ AC_CHECK_FUNCS([memset])
 
 LF_LINK_HEADERS([	src/WCppUtils		\
 					src/EventSystem		\
+					src/Widget			\
 					src/Window			\
 					src/CommonControls	\
 					src/GeneralControls	\
@@ -96,6 +97,7 @@ AC_CONFIG_FILES([	Makefile
 					src/WCppUtils/Makefile
 					src/EventSystem/Makefile
 					src/Window/Makefile
+					src/Widget/Makefile
 					src/CommonControls/Makefile
 					src/GeneralControls/Makefile
 				])

@@ -50,7 +50,7 @@ wstring EditboxWndInternal::getText() const {
 	wchar_t *buff = new wchar_t[txtLength];
 	Edit_GetText(getWindowHandle(), buff, txtLength);
 	wstring text(buff);
-	delete buff;
+	delete[] buff;
 	return text;
 }
 
@@ -104,18 +104,41 @@ void EditboxWndInternal::WMChar(wchar_t ch) {
 		charPlus_ = true;
 }
 
-void EditboxWndInternal::WMSize() {
+void EditboxWndInternal::WMSize(POINTS size) {
 	if(parentBack_)
-		SafeWindowFromHandle(getParent())->setSize(getWidth(), getHeight());
+		SafeWindowFromHandle(getParent())->setSize(size.x, size.y);
+}
+
+LRESULT EditboxWndInternal::WndProc(UINT msg, WPARAM wParam, LPARAM lParam) {
+	switch(msg) {
+	case WM_MOVE:
+		WMMove(MAKEPOINTS(lParam));
+		break;
+	case WM_SIZE:
+		WMSize(MAKEPOINTS(lParam));
+		break;
+	case WM_SETFOCUS:
+		WMSetFocus();
+		break;
+	case WM_KILLFOCUS:
+		WMKillFocus();
+		break;
+	case WM_CHAR:
+		WMChar((wchar_t) wParam);
+		break;
+	default:
+		break;
+	}
+	return Window::WndProc(msg, wParam, lParam);
 }
 
 int EditboxWndInternal::getTextLength() const {
 	return Edit_GetTextLength(getWindowHandle());
 }
 
-void EditboxInternal::EditboxWndInternal::WMMove() {
+void EditboxWndInternal::WMMove(POINTS pos) {
 	// Check if something moved us
-	if(getX() != 0 || getY() != 0)
+	if(pos.x != 0 || pos.y != 0)
 		// The position is locked to (0;0)
 		setPosition(0, 0);
 }

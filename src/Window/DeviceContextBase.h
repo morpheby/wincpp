@@ -8,7 +8,7 @@
 #ifndef DEVICECONTEXTBASE_H_
 #define DEVICECONTEXTBASE_H_
 
-#include <windows.h>
+#include <platform.h>
 #include <memory>
 #include <sharedPtr.h>
 

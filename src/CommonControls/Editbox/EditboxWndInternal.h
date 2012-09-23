@@ -40,12 +40,15 @@ public:
 	}
 
 protected:
+	LRESULT WndProc(UINT msg, WPARAM wParam, LPARAM lParam);
 	void PaintWindow(HDC hdc);
+
 	bool WMSetFocus();
 	bool WMKillFocus();
 	void WMChar(wchar_t ch);
-	void WMSize();
-	void WMMove();
+	void WMSize(POINTS size);
+	void WMMove(POINTS position);
+
 private:
 	bool etMode_, charPlus_, parentBack_;
 	std::wstring eText_;
