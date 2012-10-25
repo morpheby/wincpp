@@ -5,6 +5,10 @@
  *      Author: Morphe
  */
 
+#if HAVE_CONFIG_H
+#	include <config.h>
+#endif
+
 #include "ThemedDrawer.h"
 #include "Window.h"
 
@@ -29,6 +33,10 @@ void ThemedDrawer::setFontThemed(int partId, int stateId) {
 }
 
 HFONT ThemedDrawer::getThemeFont(int partId, int stateId) {
+	return getThemeFont(theme_, partId, stateId);
+}
+
+HFONT ThemedDrawer::getThemeFont(HTHEME theme, int partId, int stateId) {
 	LOGFONT font;
 
 	if(::GetThemeFont(theme_, 0, partId, stateId, TMT_FONT, &font))

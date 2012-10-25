@@ -6,6 +6,7 @@
  */
 
 #include "Drawer.h"
+#include <string>
 #include "platform.h"
 
 namespace Drawing {
@@ -51,11 +52,11 @@ void Drawer::setFont(HFONT &&font) {
 	DeleteObject(dc_.selectObject(font));
 }
 
-static HFONT Drawer::getDefFont() {
+HFONT Drawer::getDefFont() {
 	return (HFONT) ::GetStockObject(DEFAULT_GUI_FONT);
 }
 
-static HBRUSH Drawer::getDefBackgroundBrush() {
+HBRUSH Drawer::getDefBackgroundBrush() {
 	return (HBRUSH) ::GetStockObject(WHITE_BRUSH);
 }
 

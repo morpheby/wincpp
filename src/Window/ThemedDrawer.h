@@ -11,6 +11,13 @@
 #include "Drawer.h"
 
 class Window;
+#ifndef HANDLE
+typedef void *HANDLE;
+#endif
+
+#ifndef HTHEME
+typedef HANDLE HTHEME;
+#endif
 
 namespace Drawing {
 
@@ -22,7 +29,8 @@ public:
 	void setBackgroundThemed(int partId, int stateId); // see MSDN for "Parts and States"
 	void setFontThemed(int partId, int stateId);
 
-	static HFONT getThemeFont(int partId, int stateId);
+	HFONT getThemeFont(int partId, int stateId);
+	static HFONT getThemeFont(HTHEME theme, int partId, int stateId);
 protected:
 	int drawBackgroundInt(const RECT &rect, const RECT *clipRect);
 private:
