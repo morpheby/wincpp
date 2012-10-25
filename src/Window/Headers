@@ -9,3 +9,5 @@ DeviceContext.h
 DeviceContextBase.h
 DCFactory.h
 platform.h
+Drawer.h
+ThemedDrawer.h

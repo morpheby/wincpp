@@ -15,6 +15,8 @@ libwcppwindow_a_SOURCES			=						\
 				 				  DeviceContext.cpp		\
 	 							  DPIScaler.cpp			\
 	 							  Bitmap.cpp			\
+	 							  Drawer.cpp			\
+	 							  ThemedDrawer.cpp		\
 	 							  CommonControlsInit.c
 
 pkginclude_HEADERS				= Cursors.h		\
@@ -26,4 +28,6 @@ pkginclude_HEADERS				= Cursors.h		\
 								  DeviceContext.h		\
 								  DeviceContextBase.h	\
 								  DCFactory.h			\
+								  Drawer.h				\
+								  ThemedDrawer.h		\
 								  CommonControlsInit.h

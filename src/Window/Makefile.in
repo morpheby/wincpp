@@ -56,6 +56,7 @@ libwcppwindow_a_LIBADD =
 am_libwcppwindow_a_OBJECTS = Window.$(OBJEXT) Cursors.$(OBJEXT) \
 	DCFactory.$(OBJEXT) DeviceContextBase.$(OBJEXT) \
 	DeviceContext.$(OBJEXT) DPIScaler.$(OBJEXT) Bitmap.$(OBJEXT) \
+	Drawer.$(OBJEXT) ThemedDrawer.$(OBJEXT) \
 	CommonControlsInit.$(OBJEXT)
 libwcppwindow_a_OBJECTS = $(am_libwcppwindow_a_OBJECTS)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
@@ -208,6 +209,8 @@ libwcppwindow_a_SOURCES = \
 				 				  DeviceContext.cpp		\
 	 							  DPIScaler.cpp			\
 	 							  Bitmap.cpp			\
+	 							  Drawer.cpp			\
+	 							  ThemedDrawer.cpp		\
 	 							  CommonControlsInit.c
 
 pkginclude_HEADERS = Cursors.h		\
@@ -219,6 +222,8 @@ pkginclude_HEADERS = Cursors.h		\
 								  DeviceContext.h		\
 								  DeviceContextBase.h	\
 								  DCFactory.h			\
+								  Drawer.h				\
+								  ThemedDrawer.h		\
 								  CommonControlsInit.h
 
 all: all-am
@@ -276,6 +281,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DPIScaler.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DeviceContext.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DeviceContextBase.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Drawer.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ThemedDrawer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Window.Po@am__quote@
 
 .c.o:
