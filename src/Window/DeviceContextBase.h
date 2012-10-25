@@ -31,6 +31,7 @@ public:
 	virtual ~DeviceContextBase();
 
 	operator HDC() const;
+	HWND getOwner() const;
 private:
 	std::shared_ptr<_DC_t> pdc_;
 };

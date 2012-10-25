@@ -318,18 +318,6 @@ bool Window::WMEraseBackground(DC::DeviceContext dc) {
 	dc.fillRect(rc, (HBRUSH) COLOR_WINDOW);
 	return false;
 }
-//
-//long int Window::GetThemeFontInt(int iPartId, int iStateId, LOGFONT& logFont) {
-//	OpenTheme();
-//	return ::GetThemeFont(getTheme(), 0, iPartId, iStateId, TMT_FONT, &logFont);
-//}
-//
-//HFONT Window::GetThemeFont(int iPartId, int iStateId) {
-//	LOGFONT logFont;
-//	if(GetThemeFontInt(iPartId, iStateId, logFont))
-//		return (HFONT) GetStockObject(DEFAULT_GUI_FONT);
-//	return CreateFontIndirect(&logFont);
-//}
 
 void Window::setFont(HFONT font) {
 	::SendMessage(*this, WM_SETFONT, (WPARAM) font, 1);

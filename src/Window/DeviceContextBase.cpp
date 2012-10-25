@@ -18,35 +18,36 @@ namespace DC {
 struct _dc_deleter {
 	void operator() (_DC_t *pdc) {
 		if(pdc->owner)
-			::ReleaseDC(pdc->owner, pdc->dc);
+			ReleaseDC(pdc->owner, pdc->dc);
 		else
-			::DeleteDC(pdc->dc);
+			DeleteDC(pdc->dc);
+
 		delete pdc;
-	}
+        }
 };
 
-DeviceContextBase::DeviceContextBase(const HDC &dc) :
-	pdc_{new _DC_t{dc, 0}} {
+DeviceContextBase::DeviceContextBase(const HDC & dc)
+		: pdc_{new _DC_t{dc, 0}} {
 }
 
-DeviceContextBase::DeviceContextBase(HDC&& dc) :
-	pdc_{new _DC_t{dc, 0}, _dc_deleter()} {
+DeviceContextBase::DeviceContextBase(HDC && dc)
+		: pdc_{new _DC_t{dc, 0}, _dc_deleter()} {
 }
 
-DeviceContextBase::DeviceContextBase(const DeviceContextBase& dc) :
-	pdc_{dc.pdc_} {
+DeviceContextBase::DeviceContextBase(const DeviceContextBase & dc)
+		: pdc_{dc.pdc_} {
 }
 
-DeviceContextBase::DeviceContextBase(DeviceContextBase&& dc) :
-	pdc_{dc.pdc_} {
+DeviceContextBase::DeviceContextBase(DeviceContextBase && dc)
+		: pdc_{dc.pdc_} {
 }
 
-DeviceContextBase::DeviceContextBase(const _DC_t &dc) :
-	pdc_{new _DC_t(dc)} {
+DeviceContextBase::DeviceContextBase(const _DC_t & dc)
+		:pdc_{new _DC_t(dc)} {
 }
 
-DeviceContextBase::DeviceContextBase(_DC_t&& dc) :
-	pdc_{new _DC_t(dc), _dc_deleter()} {
+DeviceContextBase::DeviceContextBase(_DC_t && dc)
+		:pdc_{new _DC_t(dc), _dc_deleter()} {
 }
 
 DeviceContextBase::~DeviceContextBase() {
@@ -54,6 +55,10 @@ DeviceContextBase::~DeviceContextBase() {
 
 DeviceContextBase::operator HDC() const {
 	return pdc_->dc;
+}
+
+HWND DeviceContextBase::getOwner() const {
+	return pdc_->owner;
 }
 
 }
