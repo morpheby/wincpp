@@ -40,6 +40,7 @@ DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 bin_PROGRAMS = $(bins)/wincpp.dll$(EXEEXT)
 check_PROGRAMS = $(bins)/eventtest.exe$(EXEEXT) \
 	$(bins)/windowtest.exe$(EXEEXT) \
+	$(bins)/widgettest.exe$(EXEEXT) \
 	$(bins)/editboxtest.exe$(EXEEXT) \
 	$(bins)/labeltest.exe$(EXEEXT) $(bins)/btntest.exe$(EXEEXT) \
 	$(bins)/urltest.exe$(EXEEXT) $(bins)/cbtest.exe$(EXEEXT)
@@ -113,6 +114,11 @@ __bins__urltest_exe_OBJECTS = $(am___bins__urltest_exe_OBJECTS)
 __bins__urltest_exe_DEPENDENCIES =
 __bins__urltest_exe_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
 	$(__bins__urltest_exe_LDFLAGS) $(LDFLAGS) -o $@
+am___bins__widgettest_exe_OBJECTS = widgettest.$(OBJEXT)
+__bins__widgettest_exe_OBJECTS = $(am___bins__widgettest_exe_OBJECTS)
+__bins__widgettest_exe_DEPENDENCIES =
+__bins__widgettest_exe_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
+	$(__bins__widgettest_exe_LDFLAGS) $(LDFLAGS) -o $@
 am___bins__wincpp_dll_OBJECTS = resources/wincpp.$(OBJEXT) \
 	main.$(OBJEXT)
 __bins__wincpp_dll_OBJECTS = $(am___bins__wincpp_dll_OBJECTS)
@@ -141,14 +147,18 @@ SOURCES = $(__bins__libwincpp_a_SOURCES) \
 	$(__bins__editboxtest_exe_SOURCES) \
 	$(__bins__eventtest_exe_SOURCES) \
 	$(__bins__labeltest_exe_SOURCES) \
-	$(__bins__urltest_exe_SOURCES) $(__bins__wincpp_dll_SOURCES) \
+	$(__bins__urltest_exe_SOURCES) \
+	$(__bins__widgettest_exe_SOURCES) \
+	$(__bins__wincpp_dll_SOURCES) \
 	$(__bins__windowtest_exe_SOURCES)
 DIST_SOURCES = $(__bins__libwincpp_a_SOURCES) \
 	$(__bins__btntest_exe_SOURCES) $(__bins__cbtest_exe_SOURCES) \
 	$(__bins__editboxtest_exe_SOURCES) \
 	$(__bins__eventtest_exe_SOURCES) \
 	$(__bins__labeltest_exe_SOURCES) \
-	$(__bins__urltest_exe_SOURCES) $(__bins__wincpp_dll_SOURCES) \
+	$(__bins__urltest_exe_SOURCES) \
+	$(__bins__widgettest_exe_SOURCES) \
+	$(__bins__wincpp_dll_SOURCES) \
 	$(__bins__windowtest_exe_SOURCES)
 RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
 	html-recursive info-recursive install-data-recursive \
@@ -334,6 +344,7 @@ __bins__wincpp_dll_DEPENDENCIES = $(BUILT_LIBS)
 BUILT_SOURCES = app.manifest
 CLEANFILES = resources/main.manifest app.manifest \
 	$(bins)/windowtest.exe.manifest \
+	$(bins)/widgettest.exe.manifest \
 	$(bins)/editboxtest.exe.manifest \
 	$(bins)/labeltest.exe.manifest $(bins)/btntest.exe.manifest \
 	$(bins)/cbtest.exe.manifest $(bins)/urltest.exe.manifest
@@ -347,6 +358,9 @@ __bins__eventtest_exe_LDADD = -lwincpp -L$(bins)
 __bins__windowtest_exe_SOURCES = test/windowtest.cpp test/windowtest.h
 __bins__windowtest_exe_LDADD = -lwincpp -L$(bins)
 __bins__windowtest_exe_LDFLAGS = -municode -mwindows
+__bins__widgettest_exe_SOURCES = test/widgettest.cpp test/widgettest.h
+__bins__widgettest_exe_LDADD = -lwincpp -L$(bins)
+__bins__widgettest_exe_LDFLAGS = -municode -mwindows
 __bins__editboxtest_exe_SOURCES = test/editboxtest.cpp test/editboxtest.h
 __bins__editboxtest_exe_LDADD = -lwincpp -L$(bins)
 __bins__editboxtest_exe_LDFLAGS = -municode -mwindows
@@ -494,6 +508,9 @@ $(bins)/labeltest.exe$(EXEEXT): $(__bins__labeltest_exe_OBJECTS) $(__bins__label
 $(bins)/urltest.exe$(EXEEXT): $(__bins__urltest_exe_OBJECTS) $(__bins__urltest_exe_DEPENDENCIES) $(bins)/$(am__dirstamp)
 	@rm -f $(bins)/urltest.exe$(EXEEXT)
 	$(__bins__urltest_exe_LINK) $(__bins__urltest_exe_OBJECTS) $(__bins__urltest_exe_LDADD) $(LIBS)
+$(bins)/widgettest.exe$(EXEEXT): $(__bins__widgettest_exe_OBJECTS) $(__bins__widgettest_exe_DEPENDENCIES) $(bins)/$(am__dirstamp)
+	@rm -f $(bins)/widgettest.exe$(EXEEXT)
+	$(__bins__widgettest_exe_LINK) $(__bins__widgettest_exe_OBJECTS) $(__bins__widgettest_exe_LDADD) $(LIBS)
 resources/$(am__dirstamp):
 	@$(MKDIR_P) resources
 	@: > resources/$(am__dirstamp)
@@ -523,6 +540,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/labeltest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/urltest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/widgettest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/windowtest.Po@am__quote@
 
 .cpp.o:
@@ -622,6 +640,20 @@ urltest.obj: test/urltest.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='test/urltest.cpp' object='urltest.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o urltest.obj `if test -f 'test/urltest.cpp'; then $(CYGPATH_W) 'test/urltest.cpp'; else $(CYGPATH_W) '$(srcdir)/test/urltest.cpp'; fi`
+
+widgettest.o: test/widgettest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT widgettest.o -MD -MP -MF $(DEPDIR)/widgettest.Tpo -c -o widgettest.o `test -f 'test/widgettest.cpp' || echo '$(srcdir)/'`test/widgettest.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/widgettest.Tpo $(DEPDIR)/widgettest.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='test/widgettest.cpp' object='widgettest.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o widgettest.o `test -f 'test/widgettest.cpp' || echo '$(srcdir)/'`test/widgettest.cpp
+
+widgettest.obj: test/widgettest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT widgettest.obj -MD -MP -MF $(DEPDIR)/widgettest.Tpo -c -o widgettest.obj `if test -f 'test/widgettest.cpp'; then $(CYGPATH_W) 'test/widgettest.cpp'; else $(CYGPATH_W) '$(srcdir)/test/widgettest.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/widgettest.Tpo $(DEPDIR)/widgettest.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='test/widgettest.cpp' object='widgettest.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o widgettest.obj `if test -f 'test/widgettest.cpp'; then $(CYGPATH_W) 'test/widgettest.cpp'; else $(CYGPATH_W) '$(srcdir)/test/widgettest.cpp'; fi`
 
 windowtest.o: test/windowtest.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT windowtest.o -MD -MP -MF $(DEPDIR)/windowtest.Tpo -c -o windowtest.o `test -f 'test/windowtest.cpp' || echo '$(srcdir)/'`test/windowtest.cpp
@@ -1062,6 +1094,9 @@ uninstall-am: uninstall-binPROGRAMS uninstall-libLIBRARIES
 	$(SED) 's/_VERSION_/$(VERSION_4D)/g' $< > $@
 windowtest.$(OBJEXT): $(bins)/windowtest.exe.manifest
 $(bins)/windowtest.exe.manifest: app.manifest
+	$(LN_S) $< $@
+widgettest.$(OBJEXT): $(bins)/widgettest.exe.manifest
+$(bins)/widgettest.exe.manifest: app.manifest
 	$(LN_S) $< $@
 editboxtest.$(OBJEXT): $(bins)/editboxtest.exe.manifest
 $(bins)/editboxtest.exe.manifest: app.manifest

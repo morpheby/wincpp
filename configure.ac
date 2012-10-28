@@ -26,6 +26,8 @@ AC_DEFINE([ISOLATION_AWARE_ENABLED], [0], [Necessary for isolating module depend
 AC_DEFINE([WINVER], [0x0501], [Define to the target windows version])
 AC_DEFINE([WIN32_IE], [0x600], [Define to the target windows IE version])
 
+AC_DEFINE([DBG_OUT(str)], [OutputDebugStringW(str)], [Outputs debugging data])
+
 AC_CONFIG_SRCDIR([src/main.cpp])
 AC_CONFIG_MACRO_DIR([m4])
 AM_CONFIG_HEADER([config.h])

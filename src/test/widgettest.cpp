@@ -10,8 +10,6 @@
 #include <Widget.h>
 #include <DeviceContext.h>
 
-using DC::DeviceContext;
-
 class MainWidget : public Widget {
 public:
 	MainWidget() :
@@ -19,9 +17,24 @@ public:
 
 	}
 protected:
-	void DrawWindow(DC::DeviceContext dc) {
-		dc.fillRect(RECT{0, 0, 100, 100}, (HBRUSH) GRAY_BRUSH);
+	void DrawWindow(Drawing::Drawer &drawer) {
+		drawer.fillRect(RECT{0, 0, 100, 100}, (HBRUSH) GRAY_BRUSH);
 	}
+};
+
+class Main {
+public:
+	Main() {
+		widget1 = SharePtr(new Widget(L"Test", getWindowDefaultStyle()));
+		widget1->Show();
+
+		widget2 = SharePtr(new MainWidget());
+		widget2->Show();
+	}
+
+private:
+	std::shared_ptr<Widget> widget1, widget2;
+	int OnWidget1Close(Widget &sender);
 };
 
 int __stdcall wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
@@ -29,21 +42,16 @@ int __stdcall wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(lpCmdLine);
 
-	std::shared_ptr<Widget> widget ( new Widget(L"Test",
-			getWindowDefaultStyle()) );
-	widget->Show();
-
-	std::shared_ptr<MainWidget> widget2 ( new MainWidget() );
-	widget2->Show();
+	std::shared_ptr<Main> mainClass (new Main());
 
 	if(MessageBoxW(GetActiveWindow(), L"Are visual styles OK?",
 			L"Test", MB_YESNO) == IDNO ||
-		MessageBoxW(GetActiveWindow(), L"Do you see a window under message box?",
-			L"Test", MB_YESNO) == IDNO)
+			MessageBoxW(GetActiveWindow(), L"Do you see a window under message box?",
+					L"Test", MB_YESNO) == IDNO)
 		return 1;
 	else
 		MessageBoxW(GetActiveWindow(), L"Close that window",
-					L"Test", MB_OK);
+				L"Test", MB_OK);
 
 	MSG msg;
 	while (GetMessage(&msg, NULL, 0, 0)) {

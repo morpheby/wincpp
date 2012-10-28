@@ -2441,6 +2441,10 @@ $as_echo "#define WIN32_IE 0x600" >>confdefs.h
 
 
 
+$as_echo "#define DBG_OUT(str) OutputDebugStringW(str)" >>confdefs.h
+
+
+
 
 ac_config_headers="$ac_config_headers config.h"
 

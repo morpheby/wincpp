@@ -14,6 +14,7 @@
 #include <Drawer.h>
 
 class Window;
+typedef struct _tagWINMESSAGE WinMessage_t;
 
 // XXX separate platform-dependent declarations
 enum class WidgetStyle : DWORD {
@@ -62,7 +63,7 @@ constexpr WidgetStyle getWindowDefaultStyle() {
  * 		 syntax:
  * 		 	weak_ptr<Widget> child = (new Widget(*mainWidget))->getShared();
  * 		 		OR
- * 		 	shahred_ptr<Widget> child = (new Widget(*mainWidget))->getShared();
+ * 		 	shahred_ptr<Widget> child (new Widget(*mainWidget));
  */
 class Widget : public std::enable_shared_from_this<Widget> {
 public:
@@ -157,7 +158,7 @@ private:
 
 	int recycleEvent(WidgetEventType msg); // Passes all registered events
 
-	int wndMessage(Window &wnd, struct WinMessage_t &msg); // Pass all registered events
+	int wndMessage(Window &wnd, WinMessage_t &msg); // Pass all registered events
 };
 
 template<class _ChildTp>

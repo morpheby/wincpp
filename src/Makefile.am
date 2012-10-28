@@ -60,6 +60,7 @@ __bins__libwincpp_a_SOURCES	=
 
 check_PROGRAMS				= $(bins)/eventtest.exe		\
 							  $(bins)/windowtest.exe	\
+							  $(bins)/widgettest.exe	\
 							  $(bins)/editboxtest.exe 	\
 							  $(bins)/labeltest.exe		\
 							  $(bins)/btntest.exe		\
@@ -78,6 +79,14 @@ __bins__windowtest_exe_LDFLAGS	= -municode -mwindows
 CLEANFILES					   += $(bins)/windowtest.exe.manifest
 windowtest.$(OBJEXT): $(bins)/windowtest.exe.manifest
 $(bins)/windowtest.exe.manifest: app.manifest
+	$(LN_S) $< $@
+
+__bins__widgettest_exe_SOURCES	= test/widgettest.cpp test/widgettest.h
+__bins__widgettest_exe_LDADD	= -lwincpp -L$(bins)
+__bins__widgettest_exe_LDFLAGS	= -municode -mwindows
+CLEANFILES					   += $(bins)/widgettest.exe.manifest
+widgettest.$(OBJEXT): $(bins)/widgettest.exe.manifest
+$(bins)/widgettest.exe.manifest: app.manifest
 	$(LN_S) $< $@
 
 __bins__editboxtest_exe_SOURCES	= test/editboxtest.cpp test/editboxtest.h

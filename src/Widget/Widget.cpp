@@ -67,7 +67,6 @@ Widget::Widget(const std::wstring& name, int x, int y, int width, int height,
 	windowName_{name}, style_{style},
 	showState_{false},
 	x_{x}, y_{y}, width_{width}, height_{height} {
-	LoadWindow();
 }
 
 Widget::Widget(const std::wstring& name, int x, int y, int width, int height,
@@ -137,8 +136,6 @@ void Widget::KillWindow() {
 }
 
 bool Widget::LoadWindow() {
-	if(window_)
-		KillWindow();
 	window_ = std::unique_ptr<Window> (
 			new Window(windowName_, (DWORD) style_, x_, y_, width_, height_,
 			( !parent_.expired() ? parent_.lock()->getWindow().getWindowHandle() : 0), 0, 0)
@@ -239,7 +236,7 @@ void Widget::Show() {
 	getWindow().Show();
 }
 
-int Widget::wndMessage(Window& wnd, struct WinMessage_t& msg) {
+int Widget::wndMessage(Window& wnd, WinMessage_t& msg) {
 	msg.retVal = recycleEvent((WidgetEventType) msg.msg);
 	switch ((WidgetEventType) msg.msg) {
 		case WidgetEventType::destroy:
