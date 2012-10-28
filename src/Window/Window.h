@@ -157,8 +157,6 @@ protected:
 
 	virtual LRESULT WndProc(UINT msg, WPARAM wParam, LPARAM lParam);
 
-	virtual void WMSize();
-
 	virtual void PaintWindow(Drawing::Drawer &drawer) {
 	}
 
