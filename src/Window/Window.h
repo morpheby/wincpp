@@ -71,12 +71,12 @@ WndEventExtBase<_ParamT> * NewEventExt
 	return new WndEventExt<_ParentT, _ParamT> (parent, f);
 }
 
-struct WinMessage_t {
+typedef struct _tagWINMESSAGE{
 	UINT msg;
 	WPARAM wParam;
 	LPARAM lParam;
 	LRESULT retVal;
-};
+} WinMessage_t;
 
 class Window {
 public:

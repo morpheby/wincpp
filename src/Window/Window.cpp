@@ -103,6 +103,7 @@ LRESULT Window::WndProc(UINT msg, WPARAM wParam, LPARAM lParam) {
 	int processed = false;
 	LRESULT retVal = 0;
 	HRGN updRgn = 0;
+	bool wndDestroy = false;
 
 	if(defMsgProc && (msg == WM_PAINT || msg == WM_ERASEBKGND)) {
 		if(msg == WM_PAINT) {
@@ -112,10 +113,6 @@ LRESULT Window::WndProc(UINT msg, WPARAM wParam, LPARAM lParam) {
 		}
 		retVal = DefWndProc(msg, wParam, lParam);
 	}
-
-	WinMessage_t winMsg = {msg, wParam, lParam, 0};
-	processed = CallMsgProc(winMsg);
-	retVal = winMsg.retVal;
 
 	switch (msg) {
 	case WM_COMMAND:
@@ -161,6 +158,7 @@ LRESULT Window::WndProc(UINT msg, WPARAM wParam, LPARAM lParam) {
 		break;
 	case WM_DESTROY:
 		hWnd = 0;
+		wndDestroy = true; // mark as possibly no more existent
 		// pass it to defproc
 		break;
 	case WM_THEMECHANGED:
@@ -171,9 +169,14 @@ LRESULT Window::WndProc(UINT msg, WPARAM wParam, LPARAM lParam) {
 		break;
 	}
 
-	if(hWnd == 0)
+	WinMessage_t winMsg = {msg, wParam, lParam, 0};
+	processed = CallMsgProc(winMsg);
+	retVal = winMsg.retVal;
+
+	if(wndDestroy)
+		return 0;
 		// We may be no longer able to use virtual functions
-		return DefWindowProc(getWindowHandle(), msg, wParam, lParam);
+//		return DefWindowProc(getWindowHandle(), msg, wParam, lParam);
 
 	return defMsgProc && (msg == WM_PAINT || msg == WM_ERASEBKGND) ? retVal :
 			processed ? retVal : DefWndProc(msg, wParam, lParam);
@@ -388,18 +391,17 @@ LRESULT __stdcall Window::IntWndProc(HWND wnd, UINT msg, WPARAM wParam,
 	Window *pwnd = static_cast<Window*>((void*) ::GetWindowLongPtr(wnd,
 			GWLP_USERDATA));
 	try {
-		if ((!pwnd || wnd != pwnd->getWindowHandle()) && !wndCreating)
-			::DestroyWindow(wnd); //the window has a wrong pointer. KILL IT! ;)
+		if (pwnd && wnd == pwnd->getWindowHandle() && !wndCreating)
+			return pwnd->WndProc(msg, wParam, lParam);
 	} catch (...) {
-		if (wndCreating)
-			return ::DefWindowProc(wnd, msg, wParam, lParam); //OK
-		// Seems we've got something wrong... force
-		// the window destruction
-		::DestroyWindow(wnd);
+		// Possible bug: if we got there, than it is possible that
+		// window is invalid. However it is quite normal in process
+		// of window destruction - so we shall just fall back to
+		// the default API. Destroying that window in any way may
+		// result in deep recursion and/or segfaults
+		return ::DefWindowProc(wnd, msg, wParam, lParam);
 	}
-	if (wndCreating)
-		return ::DefWindowProc(wnd, msg, wParam, lParam); //OK
-	return pwnd->WndProc(msg, wParam, lParam);
+	return ::DefWindowProc(wnd, msg, wParam, lParam);
 }
 
 BOOL Window::Show() {
