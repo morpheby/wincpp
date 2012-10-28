@@ -205,6 +205,14 @@ std::shared_ptr<Drawing::Drawer> Window::getDrawer() {
 		return SharePtr(new Drawing::Drawer(getDC()));
 }
 
+BOOL Window::setSize(SIZE sz) {
+	return setSize(sz.cx, sz.cy);
+}
+
+BOOL Window::setPosition(POINT pos) {
+	return setPosition(pos.x, pos.y);
+}
+
 void Window::IntCachedPaint(DC::DeviceContext dc, RECT updateRect) {
 	if (NeedsUpdate()) {
 		DC::DeviceContext cacheDC = DC::CreateCompatibleDC(dc);

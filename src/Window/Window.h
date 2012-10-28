@@ -100,7 +100,9 @@ public:
 	std::wstring getName() const;
 
 	BOOL setSize(int width, int height);
+	BOOL setSize(SIZE sz);
 	BOOL setPosition(int x, int y);
+	BOOL setPosition(POINT pos);
 	SIZE getSize() const;
 	POINT getPosition() const;
 	RECT getWindowRect() const;
