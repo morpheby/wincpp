@@ -27,7 +27,12 @@ void ThemedDrawer::setFontThemed(int partId, int stateId) {
 }
 
 HFONT ThemedDrawer::getThemeFont(int partId, int stateId) {
-	return getThemeFont(theme_, partId, stateId);
+	LOGFONT font;
+
+	if(getThemeLogFont(partId, stateId, font))
+		return getDefaultGuiFont();
+	else
+		return ::CreateFontIndirect(&font);
 }
 
 void ThemedDrawer::setBackgroundThemed(int partId, int stateId) {
@@ -36,17 +41,12 @@ void ThemedDrawer::setBackgroundThemed(int partId, int stateId) {
 
 }
 
-HFONT ThemedDrawer::getDefFont_int() {
-	return getThemeFont(TEXT_BODYTEXT, 0);
+BOOL ThemedDrawer::getThemeLogFont(int partId, int stateId, LOGFONT& logFont) {
+	::GetThemeFont(theme_, 0, partId, stateId, TMT_FONT, &logFont);
 }
 
-HFONT ThemedDrawer::getThemeFont(HTHEME theme, int partId, int stateId) {
-	LOGFONT font;
-
-	if(::GetThemeFont(theme, 0, partId, stateId, TMT_FONT, &font))
-		return getDefaultGuiFont();
-	else
-		return ::CreateFontIndirect(&font);
+HFONT ThemedDrawer::getDefFont_int() {
+	return getThemeFont(TEXT_BODYTEXT, 0);
 }
 
 int ThemedDrawer::drawBackground_int(const RECT& rect,

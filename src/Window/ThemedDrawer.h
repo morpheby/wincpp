@@ -30,11 +30,11 @@ public:
 	void setFontThemed(int partId, int stateId);
 
 	HFONT getThemeFont(int partId, int stateId);
+	BOOL getThemeLogFont(int partId, int stateId, LOGFONT &logFont);
 protected:
 	int drawBackground_int(const RECT &rect, const RECT *clipRect);
 	HFONT getDefFont_int();
 
-	static HFONT getThemeFont(HTHEME theme, int partId, int stateId);
 private:
 	HTHEME theme_;
 	bool bkgThemed_;
