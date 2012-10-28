@@ -177,7 +177,7 @@ void Widget::setInternalMessages() {
 void Widget::setExternalMessages() {
 }
 
-void Widget::DrawWindow(DC::DeviceContext dc) {
+void Widget::DrawWindow(Drawing::Drawer &drawer) {
 }
 
 Window& Widget::getWindow() {
@@ -209,8 +209,8 @@ void Widget::detachChild(Widget &child) {
 	attachedWidgets_.erase(child.getShared());
 }
 
-int Widget::wndDrawWindow(Window& sender, DC::DeviceContext dc) {
-	DrawWindow(dc);
+int Widget::wndDrawWindow(Window& sender, Drawing::Drawer &drawer) {
+	DrawWindow(drawer);
 	return 1;
 }
 

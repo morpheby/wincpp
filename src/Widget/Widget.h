@@ -9,9 +9,9 @@
 #define WIDGET_H_
 
 #include <platform.h>
-#include <DeviceContext.h>
 #include <set>
 #include <string>
+#include <Drawer.h>
 
 class Window;
 
@@ -119,7 +119,7 @@ protected:
 	void KillWindow();
 	bool LoadWindow(); // return true on success
 
-	virtual void DrawWindow(DC::DeviceContext dc);
+	virtual void DrawWindow(Drawing::Drawer &drawer);
 
 	Window & getWindow();
 private:
@@ -150,7 +150,7 @@ private:
 
 
 	/* Internal events */
-	int wndDrawWindow(Window &sender, DC::DeviceContext dc); // Call DrawWindow
+	int wndDrawWindow(Window &sender, Drawing::Drawer &drawer); // Call DrawWindow
 
 	int wndDestroy(); // If we are not destroying the window, recreate it
 	int wndGeomChange(); // Updates position and size
