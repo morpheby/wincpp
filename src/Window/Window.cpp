@@ -185,7 +185,7 @@ bool Window::CheckScreenResolution(int width, int height) {
 		return true;
 }
 
-void Window::setPainter(WndEventExtBase<DC::DeviceContext>* painter) {
+void Window::setPainter(WndEventExtBase<Drawing::Drawer&>* painter) {
 	painter_ = painter;
 }
 
@@ -211,8 +211,16 @@ void Window::IntCachedPaint(DC::DeviceContext dc, RECT updateRect) {
 		HBITMAP bmp = CreateCompatibleBitmap(dc, getSize().cx, getSize().cy);
 		bmp = (HBITMAP) cacheDC.selectObject(bmp);
 		WMEraseBackground(cacheDC);
-		PaintWindow(cacheDC); // First perform internal painting,
-		painter_(*this, cacheDC); // then external
+		// First perform internal painting, then external
+		if(hTheme_) {
+			Drawing::ThemedDrawer drawer (cacheDC, hTheme_);
+			PaintWindow(drawer);
+			painter_(*this, drawer);
+		} else {
+			Drawing::Drawer drawer (cacheDC);
+			PaintWindow(drawer);
+			painter_(*this, drawer);
+		}
 		delete cachedBmp;
 		cachedBmp = new Bitmap(cacheDC,
 				bmp = (HBITMAP) cacheDC.selectObject(bmp));
@@ -236,8 +244,16 @@ void Window::IntPaintWindow() {
 		if(cacheOn_)
 			IntCachedPaint(dc, updateRect);
 		else {
-			PaintWindow(dc); // First perform internal painting,
-			painter_(*this, dc); // then external
+			// First perform internal painting, then external
+			if(hTheme_) {
+				Drawing::ThemedDrawer drawer (dc, hTheme_);
+				PaintWindow(drawer);
+				painter_(*this, drawer);
+			} else {
+				Drawing::Drawer drawer (dc);
+				PaintWindow(drawer);
+				painter_(*this, drawer);
+			}
 		}
 
 		EndPaint(getWindowHandle(), &ps);

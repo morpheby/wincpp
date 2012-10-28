@@ -138,7 +138,7 @@ public:
 
 	std::shared_ptr<Drawing::Drawer> getDrawer();
 
-	void setPainter(WndEventExtBase<DC::DeviceContext> *painter);
+	void setPainter(WndEventExtBase<Drawing::Drawer&> *painter);
 	void setProcessMessage(UINT msg, WndEventExtBase<WinMessage_t&> *msgProc);
 
 	enum _WMDlgKeys {
@@ -157,7 +157,7 @@ protected:
 
 	virtual LRESULT WndProc(UINT msg, WPARAM wParam, LPARAM lParam);
 
-	virtual void PaintWindow(DC::DeviceContext dc) {
+	virtual void PaintWindow(Drawing::Drawer &drawer) {
 	}
 
 	virtual void PrePaintWindow(LPRECT updateRect) {
@@ -198,7 +198,7 @@ private:
 	void IntCachedPaint(DC::DeviceContext dc, RECT updateRect);
 
 	std::map<DWORD, WndEventExtCaller<WinMessage_t&>> msgMap_;
-	WndEventExtCaller<DC::DeviceContext> painter_;
+	WndEventExtCaller<Drawing::Drawer&> painter_;
 
 };
 
