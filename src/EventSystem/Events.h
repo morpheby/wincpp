@@ -47,7 +47,7 @@ public:
 		 event_ = std::shared_ptr<EventGenBase>(new EventBase<_SenderT>());
 	}
 	int operator() (_SenderT &sentBy) {
-		return (*dynamic_cast<EventBase<_SenderT> *>(event_))(sentBy);
+		return (*std::dynamic_pointer_cast<EventBase<_SenderT>>(event_))(sentBy);
 	}
 	using EventCallerBase::operator=;
 };
