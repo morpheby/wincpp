@@ -56,6 +56,10 @@ HFONT Drawer::getDefaultGuiFont() {
 	return (HFONT) ::GetStockObject(DEFAULT_GUI_FONT);
 }
 
+COLORREF Drawer::setTextColor(COLORREF color) {
+	return SetTextColor(dc_, color);
+}
+
 HBRUSH Drawer::getDefWhiteBackgroundBrush() {
 	return (HBRUSH) ::GetStockObject(WHITE_BRUSH);
 }
