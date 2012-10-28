@@ -12,7 +12,7 @@
 namespace Drawing {
 
 Drawer::Drawer(const DC::DeviceContext& dc) :
-	dc_{dc}, bkgnd_{getDefBackgroundBrush()} {
+	dc_{dc}, bkgnd_{getDefaultBkgndBrush()} {
 }
 
 Drawer::~Drawer() {
@@ -20,15 +20,15 @@ Drawer::~Drawer() {
 
 int Drawer::drawText(const std::wstring& text, DWORD dwFlags,
 		RECT& rect) {
-	return drawTextInt(text, dwFlags, rect);
+	return drawText_int(text, dwFlags, rect);
 }
 
 int Drawer::drawBackground(const RECT &rect) {
-	return drawBackgroundInt(rect, 0);
+	return drawBackground_int(rect, 0);
 }
 
 int Drawer::drawBackground(const RECT &rect, const RECT &clipRect) {
-	return drawBackgroundInt(rect, &clipRect);
+	return drawBackground_int(rect, &clipRect);
 }
 
 int Drawer::fillRect(const RECT& rect, HBRUSH brush) {
@@ -36,7 +36,7 @@ int Drawer::fillRect(const RECT& rect, HBRUSH brush) {
 }
 
 void Drawer::setBackgroundDefault() {
-	setBackroundSolid(getDefBackgroundBrush());
+	setBackroundSolid(getDefaultBkgndBrush());
 }
 
 void Drawer::setBackroundSolid(HBRUSH brush) {
@@ -45,29 +45,46 @@ void Drawer::setBackroundSolid(HBRUSH brush) {
 }
 
 void Drawer::setFontDefault() {
-	setFont(getDefFont());
+	setFont(getDefaultFont());
 }
 
 void Drawer::setFont(HFONT &&font) {
 	DeleteObject(dc_.selectObject(font));
 }
 
-HFONT Drawer::getDefFont() {
+HFONT Drawer::getDefaultGuiFont() {
 	return (HFONT) ::GetStockObject(DEFAULT_GUI_FONT);
 }
 
-HBRUSH Drawer::getDefBackgroundBrush() {
+HBRUSH Drawer::getDefWhiteBackgroundBrush() {
 	return (HBRUSH) ::GetStockObject(WHITE_BRUSH);
 }
 
 
-int Drawer::drawBackgroundInt(const RECT& rect, const RECT* clipRect) {
+int Drawer::drawBackground_int(const RECT& rect, const RECT* clipRect) {
 	return fillRect(rect, bkgnd_);
 }
 
-int Drawer::drawTextInt(const std::wstring& text, DWORD dwFlags,
+HFONT Drawer::getDefaultFont() {
+	return getDefFont_int();
+}
+
+HBRUSH Drawer::getDefaultBkgndBrush() {
+	return getDefBkgndBrush_int();
+}
+
+int Drawer::drawText_int(const std::wstring& text, DWORD dwFlags,
 		RECT& rect) {
 	return ::DrawTextW(dc_, text.c_str(), -1, &rect, dwFlags);
 }
+
+HFONT Drawer::getDefFont_int() {
+	return getDefaultGuiFont();
+}
+
+HBRUSH Drawer::getDefBkgndBrush_int() {
+	return getDefWhiteBackgroundBrush();
+}
+
 
 }

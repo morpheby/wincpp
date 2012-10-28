@@ -29,11 +29,16 @@ public:
 		return dc_;
 	}
 
-	static HFONT getDefFont();
-	static HBRUSH getDefBackgroundBrush();
+	HFONT getDefaultFont();
+	HBRUSH getDefaultBkgndBrush();
 protected:
-	virtual int drawBackgroundInt(const RECT &rect, const RECT *clipRect);
-	virtual int drawTextInt(const  std::wstring &text, DWORD dwFlags, RECT &rect);
+	virtual int drawBackground_int(const RECT &rect, const RECT *clipRect);
+	virtual int drawText_int(const  std::wstring &text, DWORD dwFlags, RECT &rect);
+	virtual HFONT getDefFont_int();
+	virtual HBRUSH getDefBkgndBrush_int();
+
+	static HFONT getDefaultGuiFont();
+	static HBRUSH getDefWhiteBackgroundBrush();
 private:
 	DC::DeviceContext dc_;
 	HBRUSH bkgnd_;

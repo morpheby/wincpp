@@ -22,12 +22,6 @@ ThemedDrawer::ThemedDrawer(const DC::DeviceContext dc, HTHEME theme) :
 ThemedDrawer::~ThemedDrawer() {
 }
 
-void ThemedDrawer::setBackgroundThemed(int partId, int stateId) {
-	bkgPartId_ = partId;
-	bkgStateId_ = stateId;
-
-}
-
 void ThemedDrawer::setFontThemed(int partId, int stateId) {
 	setFont(getThemeFont(partId, stateId));
 }
@@ -36,19 +30,29 @@ HFONT ThemedDrawer::getThemeFont(int partId, int stateId) {
 	return getThemeFont(theme_, partId, stateId);
 }
 
+void ThemedDrawer::setBackgroundThemed(int partId, int stateId) {
+	bkgPartId_ = partId;
+	bkgStateId_ = stateId;
+
+}
+
+HFONT ThemedDrawer::getDefFont_int() {
+	return getThemeFont(TEXT_BODYTEXT, 0);
+}
+
 HFONT ThemedDrawer::getThemeFont(HTHEME theme, int partId, int stateId) {
 	LOGFONT font;
 
-	if(::GetThemeFont(theme_, 0, partId, stateId, TMT_FONT, &font))
-		return getDefFont();
+	if(::GetThemeFont(theme, 0, partId, stateId, TMT_FONT, &font))
+		return getDefaultGuiFont();
 	else
 		return ::CreateFontIndirect(&font);
 }
 
-int ThemedDrawer::drawBackgroundInt(const RECT& rect,
+int ThemedDrawer::drawBackground_int(const RECT& rect,
 		const RECT* clipRect) {
 	if(!theme_)
-		return Drawer::drawBackgroundInt(rect, clipRect);
+		return Drawer::drawBackground_int(rect, clipRect);
 
 	if (getDC().getOwner() && IsThemeBackgroundPartiallyTransparent(theme_, bkgPartId_, bkgStateId_))
 		DrawThemeParentBackground(getDC().getOwner(), getDC(), 0);
