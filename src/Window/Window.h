@@ -27,6 +27,7 @@
 #include "Bitmap.h"
 #include "DPIScaler.h"
 #include "DeviceContext.h"
+#include "Drawer.h"
 
 class Window;
 
@@ -134,6 +135,8 @@ public:
 	void setPaintCachingMode(bool cacheOn);
 
 	DC::DeviceContext getDC();
+
+	std::shared_ptr<Drawing::Drawer> getDrawer();
 
 	void setPainter(WndEventExtBase<DC::DeviceContext> *painter);
 	void setProcessMessage(UINT msg, WndEventExtBase<WinMessage_t&> *msgProc);

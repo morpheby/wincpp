@@ -5,6 +5,7 @@
 
 #include "Window.h"
 #include "DCFactory.h"
+#include "ThemedDrawer.h"
 
 using namespace std;
 
@@ -194,11 +195,14 @@ void Window::setProcessMessage(UINT msg,
 }
 
 DC::DeviceContext Window::getDC() {
-	DC::DeviceContext dc(DC::GetDC(*this));
+	return DC::GetDC(*this);
+}
+
+std::shared_ptr<Drawing::Drawer> Window::getDrawer() {
 	if(hTheme_)
-		return 0; // XXX
+		return SharePtr(new Drawing::ThemedDrawer(getDC(), hTheme_));
 	else
-		return dc;
+		return SharePtr(new Drawing::Drawer(getDC()));
 }
 
 void Window::IntCachedPaint(DC::DeviceContext dc, RECT updateRect) {
@@ -315,7 +319,7 @@ Window* Window::SafeWindowFromHandle(const HWND wnd) {
 
 bool Window::WMEraseBackground(DC::DeviceContext dc) {
 	RECT rc = getClientRect();
-	dc.fillRect(rc, (HBRUSH) COLOR_WINDOW);
+	Drawing::Drawer(dc).fillRect(rc, (HBRUSH) COLOR_WINDOW);
 	return false;
 }
 
