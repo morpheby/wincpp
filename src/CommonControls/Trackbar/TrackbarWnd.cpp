@@ -43,15 +43,20 @@ Window* TrackbarWnd::setUpBuddy(Window* newBuddy) {
 }
 
 LRESULT TrackbarWnd::WndProc(UINT msg, WPARAM wParam, LPARAM lParam) {
-	if(msg == WM_HSCROLL || msg == WM_VSCROLL) {
+	switch (msg) {
+	case WM_HSCROLL:
+	case WM_VSCROLL:
 		onPosChange(*this, tb.getTrackbarPos());
 		return 0;
+	case WM_SIZE:
+		WMSize(MAKEPOINTS(lParam));
+		break;
 	}
 	return Window::WndProc(msg, wParam, lParam);
 }
 
-void TrackbarWnd::WMSize() {
-	tb.setSize(getWidth(), getHeight());
+void TrackbarWnd::WMSize(POINTS size) {
+	tb.setSize(size.x, size.y);
 }
 
 void TrackbarWnd::setRange(int low, int high) {

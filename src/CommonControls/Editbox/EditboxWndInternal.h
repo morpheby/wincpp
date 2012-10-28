@@ -41,18 +41,19 @@ public:
 
 protected:
 	LRESULT WndProc(UINT msg, WPARAM wParam, LPARAM lParam);
-	void PaintWindow(HDC hdc);
+	void PaintWindow(Drawing::Drawer &drawer) override;
 
-	bool WMSetFocus();
-	bool WMKillFocus();
-	void WMChar(wchar_t ch);
-	void WMSize(POINTS size);
-	void WMMove(POINTS position);
 
 private:
 	bool etMode_, charPlus_, parentBack_;
 	std::wstring eText_;
 	int getTextLength() const;
+
+	bool WMSetFocus();
+	bool WMKillFocus();
+	void WMChar(wchar_t ch);
+	void WMMove(POINTS position);
+	void WMSize(POINTS size);
 };
 
 }

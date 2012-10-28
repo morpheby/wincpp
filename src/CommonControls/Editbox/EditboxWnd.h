@@ -45,7 +45,6 @@ protected:
 				int width, int height, HWND parent);
 
 	LRESULT WndProc(UINT msg, WPARAM wParam, LPARAM lParam);
-	void WMSize();
 
 	bool WMSetFocus() {
 		SetFocus(eb);
@@ -61,9 +60,11 @@ private:
 	WndEventExtCaller<const std::wstring&> onTextChange_;
 	WndEventExtCaller<const std::wstring&> onTextInput_;
 	EditboxInternal::EditboxWndInternal eb;
-	int OnSetFocusInternal(Window& sender);
-	int OnKillFocusInternal(Window& sender);
+	int OnSetFocusInternal(Window& sender, WinMessage_t& msg);
+	int OnKillFocusInternal(Window& sender, WinMessage_t& msg);
 	void InitEBInternal();
+
+	void WMSize();
 };
 
 #endif /* EDITBOXWND_H_ */

@@ -40,11 +40,12 @@ public:
 	void setTick(int pos);
 protected:
 	LRESULT WndProc(UINT msg, WPARAM wParam, LPARAM lParam);
-	void WMSize();
 private:
 	Window * setBuddy(Window *newBuddy, bool left);
 	WndEventExtCaller<int> onPosChange;
 	TrackbarInternal::TrackBarWndInternal tb;
+
+	void WMSize(POINTS size);
 };
 
 #endif /* TRACKBARWND_H_ */

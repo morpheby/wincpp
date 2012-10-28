@@ -73,24 +73,17 @@ bool EditboxWndInternal::WMKillFocus() {
 	return false;
 }
 
-void EditboxWndInternal::PaintWindow(HDC hdc) {
+void EditboxWndInternal::PaintWindow(Drawing::Drawer &drawer) {
 	if(getEmptyTextMode() && getTextLength() == 0) {
 		RECT rect;
 		Edit_GetRect(*this, &rect);
 		LOGFONT font;
 		HFONT prevFont;
-		SetBkMode(hdc, TRANSPARENT);
-		COLORREF prevColor = SetTextColor(hdc, GetSysColor(COLOR_GRAYTEXT));
-		if(GetThemeFontInt(TEXT_BODYTEXT, 0, font))
-			// GetThemeFont failed. Use fall-back font
-			prevFont = (HFONT) SelectObject(hdc, GetStockObject(DEFAULT_GUI_FONT));
-		else {
-			font.lfItalic = true;
-			prevFont = (HFONT) SelectObject(hdc, CreateFontIndirect(&font));
-		}
-		DrawTextW(hdc, eText_.c_str(), -1, &rect, DT_EDITCONTROL | DT_SINGLELINE);
-		DeleteObject(SelectObject(hdc, prevFont));
-		SetTextColor(hdc, prevColor);
+		SetBkMode(drawer.getDC(), TRANSPARENT);
+		COLORREF prevColor = drawer.setTextColor(GetSysColor(COLOR_GRAYTEXT));
+		drawer.setFontDefault();
+		drawer.drawText(eText_, DT_EDITCONTROL | DT_SINGLELINE, rect);
+		drawer.setTextColor(prevColor);
 	}
 }
 
