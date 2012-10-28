@@ -165,6 +165,8 @@ protected:
 	virtual void PrePaintWindow(LPRECT updateRect) {
 	}
 
+	int CallMsgProc(WinMessage_t &msg);
+
 	virtual bool WMEraseBackground(DC::DeviceContext dc);
 
 	static LRESULT __stdcall IntWndProc(HWND wnd, UINT msg, WPARAM wParam, LPARAM lParam);

@@ -114,7 +114,7 @@ LRESULT Window::WndProc(UINT msg, WPARAM wParam, LPARAM lParam) {
 	}
 
 	WinMessage_t winMsg = {msg, wParam, lParam, 0};
-	processed = msgMap_[msg] (*this, winMsg);
+	processed = CallMsgProc(winMsg);
 	retVal = winMsg.retVal;
 
 	switch (msg) {
@@ -211,6 +211,10 @@ BOOL Window::setSize(SIZE sz) {
 
 BOOL Window::setPosition(POINT pos) {
 	return setPosition(pos.x, pos.y);
+}
+
+int Window::CallMsgProc(WinMessage_t& msg) {
+	return msgMap_[msg.msg] (*this, msg);
 }
 
 void Window::IntCachedPaint(DC::DeviceContext dc, RECT updateRect) {
