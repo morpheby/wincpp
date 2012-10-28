@@ -11,6 +11,7 @@
 
 #include "URLWnd.h"
 #include <Cursors.h>
+#include <ThemedDrawer.h>
 
 using namespace std;
 
@@ -49,23 +50,22 @@ bool URLWnd::isVisited() const {
 	return visited_;
 }
 
-void URLWnd::PaintWindow(HDC hdc) {
-	LOGFONT font;
-	HFONT prevFont;
+void URLWnd::PaintWindow(Drawing::Drawer &drawer) {
 	COLORREF prevColor = visited_ ?
-			SetTextColor(hdc, RGB(0x58, 0x1C, 0x90)) :
-			SetTextColor(hdc, RGB(0, 0, 0xFF));
-	if(GetThemeFontInt(TEXT_HYPERLINKTEXT, TS_HYPERLINK_NORMAL, font))
-		// GetThemeFont failed. Use fall-back font
-		prevFont = (HFONT) SelectObject(hdc, GetStockObject(DEFAULT_GUI_FONT));
-	else {
+			drawer.setTextColor(RGB(0x58, 0x1C, 0x90)) :
+			drawer.setTextColor(RGB(0, 0, 0xFF));
+
+	if(Drawing::ThemedDrawer *tDrawer = dynamic_cast<Drawing::ThemedDrawer*>(&drawer)) {
+		LOGFONT font;
+		tDrawer->getThemeLogFont(TEXT_HYPERLINKTEXT, TS_HYPERLINK_NORMAL, font);
 		font.lfUnderline = true;
-		prevFont = (HFONT) SelectObject(hdc, CreateFontIndirect(&font));
+		tDrawer->setFont(CreateFontIndirect(&font));
 	}
-	SetBkMode(hdc, TRANSPARENT);
-	DrawTextW(hdc, txt.c_str(), -1, &txtRect, 0);
-	DeleteObject(SelectObject(hdc, prevFont));
-	SetTextColor(hdc, prevColor);
+
+	SetBkMode(drawer.getDC(), TRANSPARENT);
+	drawer.drawText(txt, 0, txtRect);
+	drawer.setFontDefault();
+	drawer.setTextColor(prevColor);
 }
 
 LRESULT URLWnd::WndProc(UINT msg, WPARAM wParam, LPARAM lParam) {

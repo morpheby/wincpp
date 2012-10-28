@@ -12,7 +12,7 @@
 #include <EditboxWnd.h>
 #include <ButtonWnd.h>
 
-class RenameWnd: public Window {
+class RenameWnd: public Widget {
 public:
 	RenameWnd(const std::wstring& str, int x, int y, int width, int height, Window& parent);
 	~RenameWnd();
@@ -25,6 +25,7 @@ private:
 	std::wstring str_;
 	EditboxWnd edit;
 	ButtonWnd okBtn;
+	LRESULT WndProc (UINT msg, WPARAM wParam, LPARAM lParam) override;
 	bool WMClose();
 	void WMDestroy();
 	int OkClicked(Window& wnd);

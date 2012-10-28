@@ -17,8 +17,8 @@ RenameWnd::RenameWnd(const wstring& str, int x, int y, int width, int height,
 		Window& parent) :
 		Window(L"Rename", WS_VISIBLE | WS_SYSMENU | WS_CAPTION | WS_DLGFRAME, x, y, width, 80_scaled, parent, 0, 0),
 		str_(str),
-		edit(L"New name...", 0, 0, getWidth(), getHeight() - 25_scaled, *this),
-		okBtn(ButtonWnd::DefPushButton, L"OK", 0, edit.getHeight(), getWidth(), 25_scaled, *this) {
+		edit(L"New name...", 0, 0, getSize().cx, getSize().cy - 25_scaled, *this),
+		okBtn(ButtonWnd::DefPushButton, L"OK", 0, edit.getSize().cy, getSize().cx, 25_scaled, *this) {
 	edit.setText(str);
 	edit.Show();
 	okBtn.setOnClick(NewEvent(*this, &RenameWnd::OkClicked));
@@ -36,6 +36,7 @@ bool RenameWnd::WMClose() {
 void RenameWnd::WMDestroy() {
 	delete this;
 }
+
 
 int RenameWnd::OkClicked(Window& wnd) {
 	str_ = edit.getText();

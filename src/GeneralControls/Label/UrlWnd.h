@@ -24,7 +24,7 @@ public:
 	bool isVisited() const;
 
 protected:
-	void PaintWindow(HDC hdc);
+	void PaintWindow(Drawing::Drawer &drawer) override;
 	LRESULT WndProc(UINT msg, WPARAM wParam, LPARAM lParam);
 private:
 	bool visited_;
