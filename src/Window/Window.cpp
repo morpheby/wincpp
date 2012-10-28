@@ -151,6 +151,7 @@ LRESULT Window::WndProc(UINT msg, WPARAM wParam, LPARAM lParam) {
 		break;
 	case WM_SIZE:
 		update_ = true;
+		WMSize();
 		break;
 	case WM_DESTROY:
 		hWnd = 0;
