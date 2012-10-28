@@ -18,14 +18,14 @@ BUILT_IMP_LIBS				= 								\
 						-Wl,WCppUtils/libwcpputils.a		\
 						-Wl,EventSystem/libwcppevents.a		\
 						-Wl,Window/libwcppwindow.a			\
-						-Wl,Window/libwcppwidget.a			\
+						-Wl,Widget/libwcppwidget.a			\
 						-Wl,CommonControls/libwcppcommctl.a	\
 						-Wl,GeneralControls/libwcppgenctl.a
 
 BUILT_LIBS					= WCppUtils/libwcpputils.a			\
 							  EventSystem/libwcppevents.a		\
 							  Window/libwcppwindow.a			\
-							  Window/libwcppwidget.a			\
+							  Widget/libwcppwidget.a			\
 							  CommonControls/libwcppcommctl.a	\
 							  GeneralControls/libwcppgenctl.a
 
