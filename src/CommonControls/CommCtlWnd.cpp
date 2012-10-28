@@ -3,6 +3,7 @@
 #	include <config.h>
 #endif
 
+#include <ThemedDrawer.h>
 #include "CommCtlWnd.h"
 
 using namespace std;
@@ -105,7 +106,7 @@ void CommCtlWnd::WMKeyDown(int vk) {
 }
 
 void CommCtlWnd::setDefFont() {
-	setFont(GetThemeFont(TEXT_BODYTEXT, 0));
+	setFont(getDrawer()->getDefaultFont());
 }
 
 void CommCtlWnd::InhibitMessage(UINT msg) {
