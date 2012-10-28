@@ -145,8 +145,15 @@ LRESULT Window::WndProc(UINT msg, WPARAM wParam, LPARAM lParam) {
 		break;
 	case WM_ERASEBKGND:
 		processed = true;
-		if(!cacheOn_ && !defMsgProc)
-			WMEraseBackground((HDC)wParam);
+		if(!cacheOn_ && !defMsgProc) {
+			if(hTheme_) {
+				Drawing::ThemedDrawer drawer ((HDC)wParam, hTheme_);
+				WMEraseBackground(drawer);
+			} else {
+				Drawing::Drawer drawer ((HDC)wParam);
+				WMEraseBackground(drawer);
+			}
+		}
 		retVal = 1;
 		break;
 	case WM_SIZE:
@@ -222,14 +229,15 @@ void Window::IntCachedPaint(DC::DeviceContext dc, RECT updateRect) {
 		DC::DeviceContext cacheDC = DC::CreateCompatibleDC(dc);
 		HBITMAP bmp = CreateCompatibleBitmap(dc, getSize().cx, getSize().cy);
 		bmp = (HBITMAP) cacheDC.selectObject(bmp);
-		WMEraseBackground(cacheDC);
 		// First perform internal painting, then external
 		if(hTheme_) {
 			Drawing::ThemedDrawer drawer (cacheDC, hTheme_);
+			WMEraseBackground(drawer);
 			PaintWindow(drawer);
 			painter_(*this, drawer);
 		} else {
 			Drawing::Drawer drawer (cacheDC);
+			WMEraseBackground(drawer);
 			PaintWindow(drawer);
 			painter_(*this, drawer);
 		}
@@ -345,9 +353,9 @@ Window* Window::SafeWindowFromHandle(const HWND wnd) {
 	return pwnd;
 }
 
-bool Window::WMEraseBackground(DC::DeviceContext dc) {
+bool Window::WMEraseBackground(Drawing::Drawer &drawer) {
 	RECT rc = getClientRect();
-	Drawing::Drawer(dc).fillRect(rc, (HBRUSH) COLOR_WINDOW);
+	drawer.drawBackground(rc);
 	return false;
 }
 

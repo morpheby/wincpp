@@ -167,7 +167,7 @@ protected:
 
 	int CallMsgProc(WinMessage_t &msg);
 
-	virtual bool WMEraseBackground(DC::DeviceContext dc);
+	virtual bool WMEraseBackground(Drawing::Drawer &drawer);
 
 	static LRESULT __stdcall IntWndProc(HWND wnd, UINT msg, WPARAM wParam, LPARAM lParam);
 	virtual std::wstring GetThemeApplicableClassList();
