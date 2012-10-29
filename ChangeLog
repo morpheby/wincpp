@@ -1,3 +1,15 @@
+0.0.2.0:
+	Shifted to widget model
+	Events now using shared_ptr's 
+	LOTS of modifications and _simplifications_ to Window model
+		- Implemented DC
+		- Implemented Drawer/ThemedDrawer
+		- Got Window/Widget to be _a bit_ better ready for cross-platform implementation
+		- Implemented message maps instead of a bunch of virtual functions
+	Fixed some bugs, arised in developing widget-model
+	Added widget test
+	
+	
 0.0.1.2:
 	Added button test
 	Added URL test
