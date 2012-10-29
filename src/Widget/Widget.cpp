@@ -77,7 +77,7 @@ Widget::Widget(const std::wstring& name, int x, int y, int width, int height,
 	windowName_{name}, style_{style},
 	showState_{false},
 	x_{x}, y_{y}, width_{width}, height_{height},
-	widthOuter_{x}, heightOuter_{y} {
+	widthOuter_{width}, heightOuter_{height} {
 }
 
 Widget::Widget(const std::wstring& name, int x, int y, int width, int height,
@@ -86,7 +86,7 @@ Widget::Widget(const std::wstring& name, int x, int y, int width, int height,
 	windowName_{name}, style_{style},
 	showState_{false},
 	x_{x}, y_{y}, width_{width}, height_{height},
-	widthOuter_{x}, heightOuter_{y},
+	widthOuter_{width}, heightOuter_{height},
 	parent_{parent.getShared()} {
 
 	// Window will be loaded as soon as it is necessary - initially it is not shown
