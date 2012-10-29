@@ -122,6 +122,8 @@ bool Widget::LoadWindow() {
 
 	if(showState_)
 		Show();
+	else
+		Hide();
 
 	return true;
 }
@@ -146,8 +148,7 @@ void Widget::setInternalMessages() {
 	getWindow().setProcessMessage((UINT) WidgetEventType::styleChange, NewEventExt(*this, &Widget::wndStyleChange));
 	getWindow().setProcessMessage((UINT) WidgetEventType::showStateChange, NewEventExt(*this, &Widget::wndShowStateChange));
 	getWindow().setProcessMessage((UINT) WidgetEventType::destroy, NewEventExt(*this, &Widget::wndDestroy));
-	getWindow().setProcessMessage(WM_SIZE, NewEventExt(*this, &Widget::wndGeomChange));
-	getWindow().setProcessMessage(WM_MOVE, NewEventExt(*this, &Widget::wndGeomChange));
+	getWindow().setProcessMessage((UINT) WidgetEventType::geometryChange, NewEventExt(*this, &Widget::wndGeomChange));
 	getWindow().setPainter(NewEventExt(*this, &Widget::wndDrawWindow));
 }
 
@@ -209,6 +210,10 @@ void Widget::Show() {
 	getWindow().Show();
 }
 
+void Widget::Hide() {
+	getWindow().Hide();
+}
+
 void Widget::setEventHandler(WidgetEventType event,
 		WidgetEventExtBase<WidgetEventParams&>* handler) {
 	if(handler) {
@@ -265,7 +270,7 @@ int Widget::wndStyleChange(Window& wnd, WinMessage_t& msg) {
 }
 
 int Widget::wndShowStateChange(Window& wnd, WinMessage_t& msg) {
-	showState_ = msg.wParam ? SW_SHOW : SW_HIDE;
+	showState_ = msg.wParam;//xxx ? SW_SHOW : SW_HIDE;
 	reloadShowState();
 	recycleEvent(WidgetEventType::showStateChange);
 	return 1;

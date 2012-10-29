@@ -37,7 +37,7 @@ enum class WidgetStyle : DWORD {
 
 enum class WidgetEventType : UINT {
 	destroy			= WM_DESTROY,
-	geometryChange  = WM_USER + 1,
+	geometryChange  = WM_WINDOWPOSCHANGED,
 	setFocus		= WM_SETFOCUS,
 	killFocus		= WM_KILLFOCUS,
 	themeChange		= WM_THEMECHANGED,
@@ -164,6 +164,7 @@ public:
 	std::weak_ptr<Widget> setParent(std::weak_ptr<Widget> parent);
 
 	void Show();
+	void Hide();
 
 	void setEventHandler(WidgetEventType event, WidgetEventExtBase<WidgetEventParams&> *handler);
 protected:
