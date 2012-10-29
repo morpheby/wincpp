@@ -77,7 +77,7 @@ Widget::Widget(const std::wstring& name, int x, int y, int width, int height,
 Widget::Widget(const std::wstring& name, int x, int y, int width, int height,
 		WidgetStyle style) :
 	windowName_{name}, style_{style},
-	showState_{false},
+	visible_{false}, showState_{0},
 	x_{x}, y_{y}, width_{width}, height_{height},
 	widthOuter_{width}, heightOuter_{height} {
 }
@@ -86,7 +86,7 @@ Widget::Widget(const std::wstring& name, int x, int y, int width, int height,
 		WidgetStyle style, Widget& parent) :
 	window_{nullptr},
 	windowName_{name}, style_{style},
-	showState_{false},
+	visible_{false}, showState_{0},
 	x_{x}, y_{y}, width_{width}, height_{height},
 	widthOuter_{width}, heightOuter_{height},
 	parent_{parent.getShared()} {
@@ -120,7 +120,7 @@ bool Widget::LoadWindow() {
 	setExternalMessages();
 	InitWindow();
 
-	if(showState_)
+	if(visible_)
 		Show();
 	else
 		Hide();
@@ -129,6 +129,8 @@ bool Widget::LoadWindow() {
 }
 
 void Widget::reloadSize() {
+	if(showState_ != 0)
+		return; // Keep prevoius values
 	width_ = getWindow().getSize().cx;
 	height_ = getWindow().getSize().cy;
 	RECT wndRect = getWindow().getWindowRect();
@@ -137,6 +139,8 @@ void Widget::reloadSize() {
 }
 
 void Widget::reloadPosition() {
+	if(showState_ != 0)
+		return; // Keep prevoius values
 	x_ = getWindow().getPosition().x;
 	y_ = getWindow().getPosition().y;
 }
@@ -207,10 +211,17 @@ void Widget::UpdateChildren() {
 }
 
 void Widget::Show() {
-	getWindow().Show();
+	visible_ = true;
+	if(showState_ == 0)
+		getWindow().Show(SW_SHOWNORMAL);
+	else if(showState_ < 0)
+		getWindow().Show(SW_SHOWMINIMIZED);
+	else
+		getWindow().Show(SW_SHOWMAXIMIZED);
 }
 
 void Widget::Hide() {
+	visible_ = false;
 	getWindow().Hide();
 }
 
@@ -234,12 +245,19 @@ void Widget::reloadStyle() {
 }
 
 void Widget::reloadGeometry() {
+	reloadShowState();
 	reloadPosition();
 	reloadSize();
 }
 
 void Widget::reloadShowState() {
-	// Do nothing - job is done in wndShowStateChange
+//	visible_ = IsWindowVisible(getWindow());
+	if(IsIconic(getWindow()))
+		showState_ = -1;
+	else if(IsZoomed(getWindow()))
+		showState_ = 1;
+	else
+		showState_ = 0;
 }
 
 int Widget::wndDrawWindow(Window& sender, Drawing::Drawer &drawer) {
@@ -258,6 +276,16 @@ int Widget::wndDestroy(Window &wnd, WinMessage_t &msg) {
 }
 
 int Widget::wndGeomChange(Window &wnd, WinMessage_t &msg) {
+	UINT flags = ((WINDOWPOS*)msg.lParam)->flags;
+//	if(flags & SWP_HIDEWINDOW)
+//		visible_ = false;
+//	if(flags & SWP_SHOWWINDOW)
+//		visible_ = true;
+	// NOTE: state of visiblity shall be controlled ONLY with
+	// internal API, since i.e. DestroyWindow first sends
+	// SWP_HIDEWINOW before destruction
+	if((flags & SWP_NOSIZE) && (flags & SWP_NOMOVE))
+		return 0;
 	reloadGeometry();
 	recycleEvent(WidgetEventType::geometryChange);
 	return 1;
@@ -270,7 +298,7 @@ int Widget::wndStyleChange(Window& wnd, WinMessage_t& msg) {
 }
 
 int Widget::wndShowStateChange(Window& wnd, WinMessage_t& msg) {
-	showState_ = msg.wParam;//xxx ? SW_SHOW : SW_HIDE;
+//	visible_ = msg.wParam;
 	reloadShowState();
 	recycleEvent(WidgetEventType::showStateChange);
 	return 1;

@@ -184,7 +184,8 @@ private:
 				std::owner_less<std::shared_ptr<Widget>>> attachedWidgets_;
 	std::wstring windowName_;
 	WidgetStyle style_;
-	bool showState_;
+	bool visible_;
+	int showState_;	// showState_: -1 = Minimizes / 0 = Normal / 1 = Maximized
 	int x_, y_, width_, height_, widthOuter_, heightOuter_;
 	std::weak_ptr<Widget> parent_;
 
@@ -221,6 +222,10 @@ private:
 template<class _ChildTp>
 inline std::shared_ptr<_ChildTp> Widget::getShared() {
 	std::dynamic_pointer_cast<_ChildTp>(getShared());
+}
+
+constexpr bool operator & (const WidgetStyle &__lsv, const WidgetStyle &__rsv) {
+	return ((UINT) __lsv) & ((UINT) __rsv);
 }
 
 #endif /* WIDGET_H_ */
