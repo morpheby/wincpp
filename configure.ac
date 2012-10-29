@@ -2,10 +2,10 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.60])
-AC_INIT([WinCpp], [0.0.1.2], [morpheby@gmail.com])
+AC_INIT([WinCpp], [0.0.2.0], [morpheby@gmail.com])
 
-AC_SUBST([VERSION_4D], ["0.0.1.2"])
-AC_DEFINE([PACKAGE_VERSION_NUM], [0,0,1,2],
+AC_SUBST([VERSION_4D], ["0.0.2.0"])
+AC_DEFINE([PACKAGE_VERSION_NUM], [0,0,2,0],
 	[Define to the version number (acceptable by rc or windres) of this package.])
 AC_DEFINE([VERSION_NUM], PACKAGE_VERSION_NUM,
 	[Version number (acceptable by rc or windres) of this package.])
@@ -17,6 +17,7 @@ AC_DEFINE([PACKAGE_COPYRIGHT], ["Copyright (C) 2012 " PACKAGE_AUTHOR ". Licensed
 
 AC_DEFINE([DEBUG], [], [Use for building library with debug information])
 AC_DEFINE([_DEBUG], [], [Use for building library with debug information])
+AC_DEFINE([DBG_OUT(str)], [OutputDebugStringW(str)], [Outputs debugging data])
 
 AC_DEFINE([UNICODE], [], [Necessary for library to be unicode])
 AC_DEFINE([_UNICODE], [], [Necessary for library to be unicode])
@@ -26,7 +27,6 @@ AC_DEFINE([ISOLATION_AWARE_ENABLED], [0], [Necessary for isolating module depend
 AC_DEFINE([WINVER], [0x0501], [Define to the target windows version])
 AC_DEFINE([WIN32_IE], [0x600], [Define to the target windows IE version])
 
-AC_DEFINE([DBG_OUT(str)], [OutputDebugStringW(str)], [Outputs debugging data])
 
 AC_CONFIG_SRCDIR([src/main.cpp])
 AC_CONFIG_MACRO_DIR([m4])

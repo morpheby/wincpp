@@ -282,7 +282,7 @@ int Widget::wndGeomChange(Window &wnd, WinMessage_t &msg) {
 //	if(flags & SWP_SHOWWINDOW)
 //		visible_ = true;
 	// NOTE: state of visiblity shall be controlled ONLY with
-	// internal API, since i.e. DestroyWindow first sends
+	// internal class API, since i.e. DestroyWindow first sends
 	// SWP_HIDEWINOW before destruction
 	if((flags & SWP_NOSIZE) && (flags & SWP_NOMOVE))
 		return 0;
