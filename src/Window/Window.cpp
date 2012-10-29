@@ -173,7 +173,7 @@ LRESULT Window::WndProc(UINT msg, WPARAM wParam, LPARAM lParam) {
 	processed = CallMsgProc(winMsg);
 	retVal = winMsg.retVal;
 
-	if(wndDestroy)
+	if(wndDestroy || !IsWindow(hWnd))
 		return 0;
 		// We may be no longer able to use virtual functions
 //		return DefWindowProc(getWindowHandle(), msg, wParam, lParam);
