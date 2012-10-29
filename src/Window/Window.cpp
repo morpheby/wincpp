@@ -228,7 +228,7 @@ int Window::CallMsgProc(WinMessage_t& msg) {
 }
 
 void Window::clearMessageMap() {
-	msgMap_.empty();
+	msgMap_.clear();
 }
 
 void Window::IntCachedPaint(DC::DeviceContext dc, RECT updateRect) {
