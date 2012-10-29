@@ -142,6 +142,7 @@ public:
 
 	void setPainter(WndEventExtBase<Drawing::Drawer&> *painter);
 	void setProcessMessage(UINT msg, WndEventExtBase<WinMessage_t&> *msgProc);
+	void clearMessageMap();
 
 	enum _WMDlgKeys {
 		WM_TAB = WM_USER,

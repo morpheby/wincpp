@@ -227,6 +227,10 @@ int Window::CallMsgProc(WinMessage_t& msg) {
 	return msgMap_[msg.msg] (*this, msg);
 }
 
+void Window::clearMessageMap() {
+	msgMap_.empty();
+}
+
 void Window::IntCachedPaint(DC::DeviceContext dc, RECT updateRect) {
 	if (NeedsUpdate()) {
 		DC::DeviceContext cacheDC = DC::CreateCompatibleDC(dc);

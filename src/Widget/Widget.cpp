@@ -39,6 +39,8 @@ const std::set<WidgetEventType> wndInternalMessages = {
 
 Widget::~Widget() {
 	deleting_ = true;
+	if(window_)
+		getWindow().clearMessageMap();
 }
 
 Widget::Widget() :
