@@ -8,33 +8,38 @@
 #include <config.h>
 
 #include <Widget.h>
-#include <DeviceContext.h>
+#include <Window.h>
 
 class MainWidget : public Widget {
 public:
 	MainWidget() :
-		Widget(L"Test", getWindowDefaultStyle()) {
+		Widget(L"Gray square", 100_scaled, 100_scaled, 500_scaled, 500_scaled, getWindowDefaultStyle()) {
 
 	}
 protected:
 	void DrawWindow(Drawing::Drawer &drawer) {
-		drawer.fillRect(RECT{0, 0, 100, 100}, (HBRUSH) GRAY_BRUSH);
+		drawer.fillRect(RECT{0, 0, 100, 100}, (HBRUSH) GetStockObject(GRAY_BRUSH));
 	}
 };
 
 class Main {
 public:
 	Main() {
-		widget1 = SharePtr(new Widget(L"Test", getWindowDefaultStyle()));
+		widget1 = SharePtr(new Widget(L"Blank window", 50_scaled, 50_scaled, 500_scaled, 500_scaled, getWindowDefaultStyle()));
 		widget1->Show();
 
 		widget2 = SharePtr(new MainWidget());
 		widget2->Show();
+		widget1->setEventHandler(WidgetEventType::close, NewEventExt(*this, &Main::OnWidget1Close));
 	}
 
 private:
 	std::shared_ptr<Widget> widget1, widget2;
-	int OnWidget1Close(Widget &sender);
+	int OnWidget1Close(Widget &sender, WidgetEventParams &params) {
+		PostQuitMessage(0);
+		widget1 = nullptr;
+		return 1;
+	}
 };
 
 int __stdcall wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
@@ -44,20 +49,27 @@ int __stdcall wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 	std::shared_ptr<Main> mainClass (new Main());
 
-	if(MessageBoxW(GetActiveWindow(), L"Are visual styles OK?",
-			L"Test", MB_YESNO) == IDNO ||
-			MessageBoxW(GetActiveWindow(), L"Do you see a window under message box?",
-					L"Test", MB_YESNO) == IDNO)
-		return 1;
-	else
-		MessageBoxW(GetActiveWindow(), L"Close that window",
-				L"Test", MB_OK);
+	MessageBoxW(GetActiveWindow(),
+			L"1. There are two windows underneath,\n"
+			 "   one is \'Blank window\' and another is \'Gray square\'\n"
+			 "2. Nothing is displayed in the first window\n"
+			 "3. The second window has small gray square in the upper-left corner\n"
+			 "4. Closing \'Gray square\' window makes it to reload itself\n"
+			 "5. After minimizing, closing (repeatedly), and then restoring \'GS\' window\n"
+			 "   you will get that window at the position before minimizing it\n"
+			 "6. Same with maximizing\n"
+			 "7. Close \'Blank window\' to end test",
+			L"Instructions", MB_OK);
 
 	MSG msg;
 	while (GetMessage(&msg, NULL, 0, 0)) {
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 	}
+
+	if(MessageBoxW(GetActiveWindow(), L"Was everything according to the instructions?",
+			L"Test", MB_YESNO) == IDNO)
+		return 1;
 
 	return (int) msg.wParam;
 }
