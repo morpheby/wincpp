@@ -10,10 +10,16 @@
 
 #include <platform.h>
 #include <set>
+#include <map>
 #include <string>
 #include <Drawer.h>
+#include <Events.h>
+#include <DPIScaler.h>
+
+#include "WidgetEventParams.h"
 
 class Window;
+class Widget;
 typedef struct _tagWINMESSAGE WinMessage_t;
 
 // XXX separate platform-dependent declarations
@@ -31,13 +37,14 @@ enum class WidgetStyle : DWORD {
 
 enum class WidgetEventType : UINT {
 	destroy			= WM_DESTROY,
-	sizeChange		= WM_SIZE,
-	posChange		= WM_MOVE,
+	geometryChange  = WM_USER + 1,
 	setFocus		= WM_SETFOCUS,
 	killFocus		= WM_KILLFOCUS,
 	themeChange		= WM_THEMECHANGED,
 	showStateChange	= WM_SHOWWINDOW,
-	styleChange		= WM_STYLECHANGED
+	styleChange		= WM_STYLECHANGED,
+	close			= WM_CLOSE,
+	drawWidget		= WM_PAINT
 };
 
 template <typename... _styles>
@@ -54,6 +61,47 @@ constexpr WidgetStyle getWindowDefaultStyle() {
 	return wsCombine(WidgetStyle::hasTitle, WidgetStyle::hasMinimizeBox,
 						WidgetStyle::hasMaximizeBox, WidgetStyle::hasSysMenu,
 						WidgetStyle::borderThick);
+}
+
+
+typedef EventBase<Widget> WidgetEventBase;
+typedef EventCaller<Widget> WidgetEventCaller;
+
+template<typename _ParamT>
+class WidgetEventExtBase : public EventGenBase {
+public:
+	WidgetEventExtBase() {}
+	~WidgetEventExtBase() {}
+	virtual int operator()(Widget &sentBy, _ParamT param) {return 0;}
+};
+
+template<class _ParentT, class _ParamT>
+class WidgetEventExt : public WidgetEventExtBase<_ParamT> {
+private:
+	typedef int (_ParentT::*_FuncPtr_t)(Widget &o, _ParamT param);
+	_FuncPtr_t f_;
+	_ParentT &parent;
+public:
+	WidgetEventExt(_ParentT &x, _FuncPtr_t f) : f_(f), parent(x) {}
+	int operator() (Widget &sender, _ParamT param) {
+		return (parent.*f_)(sender, param);
+	}
+};
+
+template<typename _ParamT>
+class WidgetEventExtCaller : protected EventCallerBase {
+public:
+	WidgetEventExtCaller() { event_ = std::shared_ptr<EventGenBase>(new WidgetEventExtBase<_ParamT>()); }
+	int operator() (Widget &sentBy, _ParamT param) {
+		return (*dynamic_cast<WidgetEventExtBase<_ParamT> *>(event_.get()))(sentBy, param);
+	}
+	using EventCallerBase::operator=;
+};
+
+template<class _ParentT, class _ParamT>
+WidgetEventExtBase<_ParamT> * NewEventExt
+	(_ParentT &parent, int(_ParentT::*f)(Widget &w, _ParamT param)) {
+	return new WidgetEventExt<_ParentT, _ParamT> (parent, f);
 }
 
 /*
@@ -116,6 +164,8 @@ public:
 	std::weak_ptr<Widget> setParent(std::weak_ptr<Widget> parent);
 
 	void Show();
+
+	void setEventHandler(WidgetEventType event, WidgetEventExtBase<WidgetEventParams&> *handler);
 protected:
 	void KillWindow();
 	bool LoadWindow(); // return true on success
@@ -126,7 +176,7 @@ protected:
 private:
 	/* Platform-dependent members */
 	std::unique_ptr<Window> window_; // to allow Window reload
-//	std::map<UINT, >
+	std::map<WidgetEventType, WidgetEventExtCaller<WidgetEventParams&> > msgMap_;
 
 	/* Platform-independent members */
 	std::set<std::shared_ptr<Widget>,
@@ -134,13 +184,16 @@ private:
 	std::wstring windowName_;
 	WidgetStyle style_;
 	bool showState_;
-	int x_, y_, width_, height_;
+	int x_, y_, width_, height_, widthOuter_, heightOuter_;
 	std::weak_ptr<Widget> parent_;
 
 	bool deleting_ = false;
 
-	void LoadSize();
-	void LoadPosition();
+	void reloadSize();
+	void reloadPosition();
+	void reloadStyle();
+	void reloadShowState();
+	void reloadGeometry();
 	void setInternalMessages();
 	void setExternalMessages();
 	void InitWindow();
@@ -153,10 +206,13 @@ private:
 	/* Internal events */
 	int wndDrawWindow(Window &sender, Drawing::Drawer &drawer); // Call DrawWindow
 
-	int wndDestroy(); // If we are not destroying the window, recreate it
-	int wndGeomChange(); // Updates position and size
+	int wndDestroy(Window &wnd, WinMessage_t &msg); // If we are not destroying the window, recreate it
+	int wndGeomChange(Window &wnd, WinMessage_t &msg); // Updates position and size
+	int wndStyleChange(Window &wnd, WinMessage_t &msg);
+	int wndShowStateChange(Window &wnd, WinMessage_t &msg);
 
-	int recycleEvent(WidgetEventType msg); // Passes all registered events
+	int recycleEvent(WidgetEventType event);
+	int recycleEvent(WidgetEventType event, WidgetEventParams &params); // Passes all registered events
 
 	int wndMessage(Window &wnd, WinMessage_t &msg); // Pass all registered events
 };

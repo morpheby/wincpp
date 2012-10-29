@@ -14,21 +14,31 @@
 #include <vector>
 #include <utility>
 // XXX include only on Win32
-#include "../Window/Window.h"
+#include <Window.h>
 
-const std::vector<WidgetEventType> wndRegisteredMessages = {
-	WidgetEventType::styleChange,
-	WidgetEventType::sizeChange,
-	WidgetEventType::posChange,
-	WidgetEventType::themeChange,
-	WidgetEventType::setFocus,
-	WidgetEventType::killFocus,
-	(WidgetEventType) WM_ACTIVATE,
-	WidgetEventType::showStateChange,
-	WidgetEventType::destroy
+const std::vector<WidgetEventType> wndRegisteredSimpleMessages = {
+		WidgetEventType::themeChange,
+		WidgetEventType::setFocus,
+		WidgetEventType::killFocus,
+		(WidgetEventType) WM_ACTIVATE,
+		WidgetEventType::close
+};
+
+const std::set<WidgetEventType> wndInternalMessages = {
+		WidgetEventType::destroy,
+		WidgetEventType::geometryChange,
+		WidgetEventType::setFocus,
+		WidgetEventType::killFocus,
+		WidgetEventType::themeChange,
+		WidgetEventType::showStateChange,
+		WidgetEventType::styleChange,
+		WidgetEventType::close,
+		WidgetEventType::drawWidget,
+		(WidgetEventType) WM_ACTIVATE
 };
 
 Widget::~Widget() {
+	deleting_ = true;
 }
 
 Widget::Widget() :
@@ -66,7 +76,8 @@ Widget::Widget(const std::wstring& name, int x, int y, int width, int height,
 		WidgetStyle style) :
 	windowName_{name}, style_{style},
 	showState_{false},
-	x_{x}, y_{y}, width_{width}, height_{height} {
+	x_{x}, y_{y}, width_{width}, height_{height},
+	widthOuter_{x}, heightOuter_{y} {
 }
 
 Widget::Widget(const std::wstring& name, int x, int y, int width, int height,
@@ -75,53 +86,11 @@ Widget::Widget(const std::wstring& name, int x, int y, int width, int height,
 	windowName_{name}, style_{style},
 	showState_{false},
 	x_{x}, y_{y}, width_{width}, height_{height},
+	widthOuter_{x}, heightOuter_{y},
 	parent_{parent.getShared()} {
 
 	// Window will be loaded as soon as it is necessary - initially it is not shown
 }
-
-//
-//LRESULT Widget::WndProc(UINT msg, WPARAM wParam, LPARAM lParam) {
-//	int processed = false;
-//	int retVal = 0;
-//	HRGN updRgn = 0;
-//
-//	switch (msg) {
-//	case WM_ERASEBKGND:
-//		if(cacheOn_) {
-//			processed = true;
-//			retVal = 1;
-//		}
-//		break;
-//	case WM_MOVE:
-//		ReloadPos();
-//		ReloadSize(); // If movement occured together with sizing,
-//					  // than our size data may become outdated
-//		WMMove();
-//		break;
-//	case WM_SIZE:
-//		ReloadPos();
-//		ReloadSize();
-//		update_ = true;
-//		WMSize();
-//		break;
-//	case WM_SHOWWINDOW:
-//		// XXX update state
-//		onShowWindow(*this);
-//		break;
-//	case WM_THEMECHANGED:
-//		CloseThemeData(hTheme);
-//		OpenTheme();
-//		break;
-//	case WM_STYLECHANGED:
-//		// XXX update state
-//		break;
-//	default:
-//		break;
-//	}
-//
-//	return processed ? retVal : DefWndProc(msg, wParam, lParam);
-//}
 
 void Widget::setSize(int width, int height) {
 	getWindow().setSize(width, height);
@@ -137,16 +106,17 @@ void Widget::KillWindow() {
 
 bool Widget::LoadWindow() {
 	window_ = std::unique_ptr<Window> (
-			new Window(windowName_, (DWORD) style_, x_, y_, width_, height_,
+			new Window(windowName_, (DWORD) style_, x_, y_, widthOuter_, heightOuter_,
 			( !parent_.expired() ? parent_.lock()->getWindow().getWindowHandle() : 0), 0, 0)
 	);
 	if(!window_)
 		return false;
 
-	LoadSize();
-	LoadPosition();
+	reloadSize();
+	reloadPosition();
 	setInternalMessages();
 	setExternalMessages();
+	InitWindow();
 
 	if(showState_)
 		Show();
@@ -154,24 +124,36 @@ bool Widget::LoadWindow() {
 	return true;
 }
 
-void Widget::LoadSize() {
+void Widget::reloadSize() {
 	width_ = getWindow().getSize().cx;
 	height_ = getWindow().getSize().cy;
+	RECT wndRect = getWindow().getWindowRect();
+	widthOuter_ = wndRect.right-wndRect.left;
+	heightOuter_ = wndRect.bottom-wndRect.top;
 }
 
-void Widget::LoadPosition() {
+void Widget::reloadPosition() {
 	x_ = getWindow().getPosition().x;
 	y_ = getWindow().getPosition().y;
 }
 
 void Widget::setInternalMessages() {
-	for(auto msg : wndRegisteredMessages) {
+	for(auto msg : wndRegisteredSimpleMessages) {
 		getWindow().setProcessMessage((UINT) msg, NewEventExt(*this, &Widget::wndMessage));
 	}
+	getWindow().setProcessMessage((UINT) WidgetEventType::styleChange, NewEventExt(*this, &Widget::wndStyleChange));
+	getWindow().setProcessMessage((UINT) WidgetEventType::showStateChange, NewEventExt(*this, &Widget::wndShowStateChange));
+	getWindow().setProcessMessage((UINT) WidgetEventType::destroy, NewEventExt(*this, &Widget::wndDestroy));
+	getWindow().setProcessMessage(WM_SIZE, NewEventExt(*this, &Widget::wndGeomChange));
+	getWindow().setProcessMessage(WM_MOVE, NewEventExt(*this, &Widget::wndGeomChange));
 	getWindow().setPainter(NewEventExt(*this, &Widget::wndDrawWindow));
 }
 
 void Widget::setExternalMessages() {
+	for(auto msg : msgMap_) {
+		if(!wndInternalMessages.count(msg.first))
+			getWindow().setProcessMessage((UINT) msg.first, NewEventExt(*this, &Widget::wndMessage));
+	}
 }
 
 void Widget::DrawWindow(Drawing::Drawer &drawer) {
@@ -206,24 +188,13 @@ void Widget::detachChild(Widget &child) {
 	attachedWidgets_.erase(child.getShared());
 }
 
-int Widget::wndDrawWindow(Window& sender, Drawing::Drawer &drawer) {
-	DrawWindow(drawer);
-	return 1;
-}
-
-int Widget::wndDestroy() {
-	if(!deleting_)
-		LoadWindow(); // reload window
+int Widget::recycleEvent(WidgetEventType event, WidgetEventParams &params) {
+	switch(event) {
+	default:
+		msgMap_[event](*this, params);
+		break;
+	}
 	return 0;
-}
-
-int Widget::wndGeomChange() {
-	return 1;
-}
-
-int Widget::recycleEvent(WidgetEventType msg) {
-	// Pass the event to all next registered parties
-	return 0; // XXX
 }
 
 void Widget::UpdateChildren() {
@@ -236,20 +207,74 @@ void Widget::Show() {
 	getWindow().Show();
 }
 
-int Widget::wndMessage(Window& wnd, WinMessage_t& msg) {
-	msg.retVal = recycleEvent((WidgetEventType) msg.msg);
-	switch ((WidgetEventType) msg.msg) {
-		case WidgetEventType::destroy:
-			wndDestroy();
-			break;
-		case WidgetEventType::styleChange:
-			style_ = (WidgetStyle) getWindow().getStyle();
-			break;
-		case WidgetEventType::showStateChange:
-			showState_ = msg.wParam ? SW_SHOW : SW_HIDE;
-			break;
-		default:
-			break;
-	}
+void Widget::setEventHandler(WidgetEventType event,
+		WidgetEventExtBase<WidgetEventParams&>* handler) {
+	if(handler) {
+		msgMap_[event] = handler;
+		if(!wndInternalMessages.count(event))
+			getWindow().setProcessMessage((UINT) event, NewEventExt(*this, &Widget::wndMessage));
+	} else
+		msgMap_.erase(event);
+}
+
+int Widget::recycleEvent(WidgetEventType event) {
+	WidgetEventParams params {event};
+	recycleEvent(event, params);
+}
+
+void Widget::reloadStyle() {
+	style_ = (WidgetStyle) getWindow().getStyle();
+}
+
+void Widget::reloadGeometry() {
+	reloadPosition();
+	reloadSize();
+}
+
+void Widget::reloadShowState() {
+	// Do nothing - job is done in wndShowStateChange
+}
+
+int Widget::wndDrawWindow(Window& sender, Drawing::Drawer &drawer) {
+	DrawWindow(drawer);
+	WidgetDrawEventParams params {WidgetEventType::drawWidget, drawer};
+	recycleEvent(WidgetEventType::drawWidget, params);
 	return 1;
+}
+
+int Widget::wndDestroy(Window &wnd, WinMessage_t &msg) {
+	if(!deleting_) {
+		LoadWindow(); // reload window
+		recycleEvent(WidgetEventType::destroy);
+	}
+	return 0;
+}
+
+int Widget::wndGeomChange(Window &wnd, WinMessage_t &msg) {
+	reloadGeometry();
+	recycleEvent(WidgetEventType::geometryChange);
+	return 1;
+}
+
+int Widget::wndStyleChange(Window& wnd, WinMessage_t& msg) {
+	reloadStyle();
+	recycleEvent(WidgetEventType::styleChange);
+	return 1;
+}
+
+int Widget::wndShowStateChange(Window& wnd, WinMessage_t& msg) {
+	showState_ = msg.wParam ? SW_SHOW : SW_HIDE;
+	reloadShowState();
+	recycleEvent(WidgetEventType::showStateChange);
+	return 1;
+}
+
+int Widget::wndMessage(Window& wnd, WinMessage_t& msg) {
+	switch ((WidgetEventType) msg.msg) {
+	default:
+		break;
+	}
+	WidgetWinMsgParams params {(WidgetEventType) msg.msg, msg};
+	msg.retVal = recycleEvent((WidgetEventType)msg.msg, params);
+	return 0;
 }

@@ -8,7 +8,9 @@ EXTRA_DIST 						= Headers
 noinst_LIBRARIES				= libwcppwidget.a
 
 libwcppwidget_a_SOURCES			=						\
-	 							  Widget.cpp
+	 							  Widget.cpp			\
+	 							  WidgetEventParams.cpp
 
 pkginclude_HEADERS				= 						\
-								  Widget.h
+								  Widget.h				\
+								  WidgetEventParams.h

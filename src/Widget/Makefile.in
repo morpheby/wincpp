@@ -53,7 +53,8 @@ AR = ar
 ARFLAGS = cru
 libwcppwidget_a_AR = $(AR) $(ARFLAGS)
 libwcppwidget_a_LIBADD =
-am_libwcppwidget_a_OBJECTS = Widget.$(OBJEXT)
+am_libwcppwidget_a_OBJECTS = Widget.$(OBJEXT) \
+	WidgetEventParams.$(OBJEXT)
 libwcppwidget_a_OBJECTS = $(am_libwcppwidget_a_OBJECTS)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -194,10 +195,12 @@ INCLUDES = $(default_includes)
 EXTRA_DIST = Headers
 noinst_LIBRARIES = libwcppwidget.a
 libwcppwidget_a_SOURCES = \
-	 							  Widget.cpp
+	 							  Widget.cpp			\
+	 							  WidgetEventParams.cpp
 
 pkginclude_HEADERS = \
-								  Widget.h
+								  Widget.h				\
+								  WidgetEventParams.h
 
 all: all-am
 
@@ -248,6 +251,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Widget.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/WidgetEventParams.Po@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
