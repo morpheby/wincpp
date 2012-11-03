@@ -108,12 +108,12 @@ public:
 	RECT getWindowRect() const;
 	RECT getClientRect() const;
 
-	int getPositionX() { return getPosition().x; }
-	int getPositionY() { return getPosition().y; }
-	int getSizeX() { return getSize().cx; }
-	int getSizeY() { return getSize().cy; }
-	int getCornerX() { return getPositionX() + getSizeX(); }
-	int getCornerY() { return getPositionY() + getSizeY(); }
+	int getPositionX() const { return getPosition().x; }
+	int getPositionY() const { return getPosition().y; }
+	int getSizeX() const { return getSize().cx; }
+	int getSizeY() const { return getSize().cy; }
+	int getCornerX() const { return getPositionX() + getSizeX(); }
+	int getCornerY() const { return getPositionY() + getSizeY(); }
 
 	void setPositionX(int x) { setPosition(x, getPositionY()); }
 	void setPositionY(int y) { setPosition(getPositionX(), y); }

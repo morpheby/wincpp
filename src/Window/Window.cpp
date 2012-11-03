@@ -386,7 +386,7 @@ void Window::RegisterWndClass() {
 	wcex.hInstance = GetModuleHandle(0);
 	wcex.hIcon = NULL;
 	wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
-	wcex.hbrBackground = (HBRUSH) (COLOR_WINDOW);
+	wcex.hbrBackground = (HBRUSH) (COLOR_WINDOW+1);
 	wcex.lpszMenuName = NULL;
 	wcex.lpszClassName = MYWNDCLASS_NAME;
 	wcex.hIconSm = NULL;
@@ -445,11 +445,13 @@ wstring Window::getName() const {
 }
 
 BOOL Window::setPosition(int x, int y) {
-	return SetWindowPos(0, x, y, 0 ,0, SWP_NOACTIVATE | SWP_NOSIZE);
+	if(getPositionX() != x || getPositionY() != y)
+		return SetWindowPos(0, x, y, 0 ,0, SWP_NOACTIVATE | SWP_NOSIZE);
 }
 
 BOOL Window::setSize(int width, int height) {
-	return SetWindowPos(0, 0, 0, width, height, SWP_NOACTIVATE | SWP_NOMOVE);
+	if(getSizeX() != width || getSizeY() != height)
+		return SetWindowPos(0, 0, 0, width, height, SWP_NOACTIVATE | SWP_NOMOVE);
 }
 
 RECT Window::getWindowRect() const {
