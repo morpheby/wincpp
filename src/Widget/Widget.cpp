@@ -119,6 +119,7 @@ bool Widget::LoadWindow() {
 	setInternalMessages();
 	setExternalMessages();
 	InitWindow();
+	widgetReload_(*this);
 
 	if(visible_)
 		Show();
@@ -302,6 +303,10 @@ int Widget::wndShowStateChange(Window& wnd, WinMessage_t& msg) {
 	reloadShowState();
 	recycleEvent(WidgetEventType::showStateChange);
 	return 1;
+}
+
+void Widget::setOnWidgetReload(WidgetEventBase* handler) {
+	widgetReload_ = handler;
 }
 
 int Widget::wndMessage(Window& wnd, WinMessage_t& msg) {

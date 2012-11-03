@@ -167,6 +167,7 @@ public:
 	void Hide();
 
 	void setEventHandler(WidgetEventType event, WidgetEventExtBase<WidgetEventParams&> *handler);
+	void setOnWidgetReload(WidgetEventBase *handler);
 protected:
 	void KillWindow();
 	bool LoadWindow(); // return true on success
@@ -178,6 +179,7 @@ private:
 	/* Platform-dependent members */
 	std::unique_ptr<Window> window_; // to allow Window reload
 	std::map<WidgetEventType, WidgetEventExtCaller<WidgetEventParams&> > msgMap_;
+	WidgetEventCaller widgetReload_;
 
 	/* Platform-independent members */
 	std::set<std::shared_ptr<Widget>,

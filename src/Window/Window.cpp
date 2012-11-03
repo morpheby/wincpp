@@ -74,6 +74,8 @@ void Window::PostWindowCreate(const wstring& wndName, DWORD style, int x, int y,
 	AssignClass();
 
 	--wndCreating;
+
+	OpenTheme();
 	UpdateWindow();
 }
 
@@ -163,8 +165,8 @@ LRESULT Window::WndProc(UINT msg, WPARAM wParam, LPARAM lParam) {
 		// pass it to defproc
 		break;
 	case WM_THEMECHANGED:
-		CloseThemeData(hTheme_);
 		OpenTheme();
+		UpdateWindow();
 		break;
 	default:
 		break;
@@ -344,8 +346,9 @@ wstring Window::GetThemeApplicableClassList() {
 //}
 
 void Window::OpenTheme() {
-	if(!hTheme_)
-		hTheme_ = OpenThemeData(getWindowHandle(), GetThemeApplicableClassList().c_str());
+	if(hTheme_)
+		CloseThemeData(hTheme_);
+	hTheme_ = OpenThemeData(getWindowHandle(), GetThemeApplicableClassList().c_str());
 }
 
 Window* Window::SafeWindowFromHandle(const HWND wnd) {
