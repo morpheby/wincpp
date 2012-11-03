@@ -89,7 +89,7 @@ widgettest.$(OBJEXT): $(bins)/widgettest.exe.manifest
 $(bins)/widgettest.exe.manifest: app.manifest
 	$(LN_S) $< $@
 
-__bins__editboxtest_exe_SOURCES	= test/editboxtest.cpp test/editboxtest.h
+__bins__editboxtest_exe_SOURCES	= test/editboxtest.cpp
 __bins__editboxtest_exe_LDADD	= -lwincpp -L$(bins)
 __bins__editboxtest_exe_LDFLAGS	= -municode -mwindows
 CLEANFILES					   += $(bins)/editboxtest.exe.manifest
