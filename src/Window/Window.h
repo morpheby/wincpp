@@ -108,6 +108,18 @@ public:
 	RECT getWindowRect() const;
 	RECT getClientRect() const;
 
+	int getPositionX() { return getPosition().x; }
+	int getPositionY() { return getPosition().y; }
+	int getSizeX() { return getSize().cx; }
+	int getSizeY() { return getSize().cy; }
+	int getCornerX() { return getPositionX() + getSizeX(); }
+	int getCornerY() { return getPositionY() + getSizeY(); }
+
+	void setPositionX(int x) { setPosition(x, getPositionY()); }
+	void setPoositionY(int y) { setPosition(getPositionY(), y); }
+	void setSizeX(int x) { setSize(x, getSizeY()); }
+	void setSizeY(int y) { setSize(getSizeX(), y); }
+
 	BOOL setMenu(HMENU menu);
 	HMENU getMenu() const;
 
