@@ -76,7 +76,10 @@ void LabelWnd::CalcTxtRect() {
 		GetClientRect(*this, &txtRect);
 	else
 		memset(&txtRect, 0, sizeof(txtRect));
-	PaintWindow(*std::dynamic_pointer_cast<Drawing::ThemedDrawer>(getDrawer()));
+	std::shared_ptr<Drawing::Drawer> drawerPtr = getDrawer();
+	if(shared_ptr<Drawing::ThemedDrawer> tDrawer = std::dynamic_pointer_cast<Drawing::ThemedDrawer>(drawerPtr))
+		tDrawer->setFontThemed(TEXT_LABEL, 0);
+	drawerPtr->drawText(txt, (isForcedWidth() ? DT_WORDBREAK | DT_CALCRECT : 0), txtRect);
 }
 
 

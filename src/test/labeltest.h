@@ -28,6 +28,7 @@ public:
 	MainWnd(void);
 	~MainWnd(void);
 protected:
+	LRESULT WndProc(UINT msg, WPARAM wParam, LPARAM lParam);
 	bool WMClose();
 	void WMSize();
 private:

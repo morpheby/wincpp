@@ -62,11 +62,21 @@ void MainWnd::WMSize() {
 }
 
 void MainWnd::Sizer() {
-	label.setWidth(getWidth());
+	label.setSize(getSize());
 	label.ImmediatelyUpdateWindow();
 }
 
-
+LRESULT MainWnd::WndProc(UINT msg, WPARAM wParam, LPARAM lParam) {
+	switch(msg) {
+	case WM_SIZE:
+		WMSize();
+		break;
+	case WM_CLOSE:
+		WMClose();
+		break;
+	}
+	return Window::WndProc(msg, wParam, lParam);
+}
 
 
 
