@@ -116,7 +116,7 @@ public:
 	int getCornerY() { return getPositionY() + getSizeY(); }
 
 	void setPositionX(int x) { setPosition(x, getPositionY()); }
-	void setPoositionY(int y) { setPosition(getPositionY(), y); }
+	void setPositionY(int y) { setPosition(getPositionY(), y); }
 	void setSizeX(int x) { setSize(x, getSizeY()); }
 	void setSizeY(int y) { setSize(getSizeX(), y); }
 
