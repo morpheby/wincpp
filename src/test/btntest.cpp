@@ -36,13 +36,13 @@ MainWnd::MainWnd(void) :
 		btnOK(ButtonWnd::DefPushButton, L"OK",
 				5_scaled, 0, 60_scaled, 25_scaled, *this),
 		btnCancel(ButtonWnd::PushButton, L"Cancel",
-				btnOK.getRight()+5_scaled, 0, 60_scaled, 25_scaled, *this)
+				btnOK.getCornerX()+5_scaled, 0, 60_scaled, 25_scaled, *this)
 		{
 
 	label.setForcedWidth(true);
 
 	label.setText(L"1. This line shall be automatically word-wrapped to the next "
-			"line in case it doesn't fill the size of the window.\n"
+			"line in case it doesn't fit the size of the window.\n"
 			"2. Try resizing window -- word-wrapping shall occur right while you "
 			"are changing size\n"
 			"3. There two adjacent buttons - \'OK\' and \'Cancel\'\n"
@@ -69,11 +69,11 @@ void MainWnd::WMSize() {
 }
 
 void MainWnd::Sizer() {
-	label.setWidth(getWidth());
+	label.setSizeX(getSizeX());
 	label.ImmediatelyUpdateWindow();
 
-	btnOK.setY(label.getBottom()+5_scaled);
-	btnCancel.setY(label.getBottom()+5_scaled);
+	btnOK.setPositionY(label.getCornerY() + 5_scaled);
+	btnCancel.setPositionY(label.getCornerY() + 5_scaled);
 }
 
 int MainWnd::onOKClick(Window& sender) {
@@ -84,4 +84,16 @@ int MainWnd::onOKClick(Window& sender) {
 int MainWnd::onCancelClick(Window& sender) {
 	PostQuitMessage(1);
 	return 0;
+}
+
+LRESULT MainWnd::WndProc(UINT msg, WPARAM wParam, LPARAM lParam) {
+	switch(msg) {
+	case WM_CLOSE:
+		WMClose();
+		break;
+	case WM_SIZE:
+		WMSize();
+		break;
+	}
+	return Window::WndProc(msg, wParam, lParam);
 }
