@@ -48,6 +48,8 @@ CommCtlWnd::CommCtlWnd(HWND convertFrom) : Window(true),
 LRESULT CommCtlWnd::WndProc(UINT msg, WPARAM wParam, LPARAM lParam) {
 	if(inhibitedMsg.count(msg))
 		return 0;
+	if(msg == WM_KEYDOWN)
+		WMKeyDown(wParam);
 	return Window::WndProc(msg, wParam, lParam);
 }
 
