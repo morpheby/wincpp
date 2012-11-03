@@ -15,7 +15,7 @@
 namespace Drawing {
 
 ThemedDrawer::ThemedDrawer(const DC::DeviceContext dc, HTHEME theme) :
-		Drawer(dc), theme_{theme}, bkgThemed_{false},
+		Drawer(dc), theme_{theme},
 		bkgPartId_{0}, bkgStateId_{0} {
 }
 
@@ -38,7 +38,6 @@ HFONT ThemedDrawer::getThemeFont(int partId, int stateId) {
 void ThemedDrawer::setBackgroundThemed(int partId, int stateId) {
 	bkgPartId_ = partId;
 	bkgStateId_ = stateId;
-
 }
 
 BOOL ThemedDrawer::getThemeLogFont(int partId, int stateId, LOGFONT& logFont) {
@@ -51,7 +50,7 @@ HFONT ThemedDrawer::getDefFont_int() {
 
 int ThemedDrawer::drawBackground_int(const RECT& rect,
 		const RECT* clipRect) {
-	if(!theme_)
+	if(!bkgPartId_ || !theme_) // all Parts have index starting from 1
 		return Drawer::drawBackground_int(rect, clipRect);
 
 	if (getDC().getOwner() && IsThemeBackgroundPartiallyTransparent(theme_, bkgPartId_, bkgStateId_))

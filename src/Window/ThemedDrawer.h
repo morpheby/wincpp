@@ -37,7 +37,6 @@ protected:
 
 private:
 	HTHEME theme_;
-	bool bkgThemed_;
 	int bkgPartId_, bkgStateId_;
 };
 
