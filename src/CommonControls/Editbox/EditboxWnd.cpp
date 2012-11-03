@@ -25,7 +25,6 @@ EditboxWnd::EditboxWnd() :
 EditboxWnd::EditboxWnd(const wstring& initialText, int x, int y, int width, int height,
 		HWND parent) :
 		EditboxWnd(ES_AUTOHSCROLL, initialText, x, y, width, height, parent) {
-	InitEBInternal();
 }
 
 EditboxWnd::EditboxWnd(int style, const wstring& initialText, int x, int y, int width,
@@ -60,7 +59,8 @@ void EditboxWnd::setEmptyText(const wstring& eText) {
 
 LRESULT EditboxWnd::WndProc(UINT msg, WPARAM wParam, LPARAM lParam) {
 	int retval = 0;
-	if(msg == WM_COMMAND)
+	switch(msg) {
+	case  WM_COMMAND:
 		switch(HIWORD(wParam)) {
 		case EN_CHANGE:
 			// BUGFIX ComboBox behavior: passing this message to Window::WndProc makes
@@ -83,16 +83,18 @@ LRESULT EditboxWnd::WndProc(UINT msg, WPARAM wParam, LPARAM lParam) {
 
 			retval |= onTextChange_(*this, text_);
 			break;
-		case WM_SIZE:
-			WMSize();
-			break;
-		case WM_SETFOCUS:
-			WMSetFocus();
-			break;
-		case WM_KILLFOCUS:
-			WMKillFocus();
-			break;
 		}
+		break;
+	case WM_SIZE:
+		WMSize();
+		break;
+	case WM_SETFOCUS:
+		WMSetFocus();
+		break;
+	case WM_KILLFOCUS:
+		WMKillFocus();
+		break;
+	}
 	return retval ? : Window::WndProc(msg, wParam, lParam);
 }
 

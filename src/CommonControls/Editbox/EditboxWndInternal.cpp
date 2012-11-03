@@ -122,7 +122,7 @@ LRESULT EditboxWndInternal::WndProc(UINT msg, WPARAM wParam, LPARAM lParam) {
 	default:
 		break;
 	}
-	return Window::WndProc(msg, wParam, lParam);
+	return CommCtlWnd::WndProc(msg, wParam, lParam);
 }
 
 int EditboxWndInternal::getTextLength() const {
