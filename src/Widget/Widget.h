@@ -44,7 +44,11 @@ enum class WidgetEventType : UINT {
 	showStateChange	= WM_SHOWWINDOW,
 	styleChange		= WM_STYLECHANGED,
 	close			= WM_CLOSE,
-	drawWidget		= WM_PAINT
+	drawWidget		= WM_PAINT,
+	internalEvent	= WM_USER + 1,	// don't allow overlap between window
+	childAttached,					// and widget events
+	childDetached,
+	parentChanged
 };
 
 template <typename... _styles>
@@ -217,6 +221,7 @@ private:
 
 	int recycleEvent(WidgetEventType event);
 	int recycleEvent(WidgetEventType event, WidgetEventParams &params); // Passes all registered events
+	int recycleEvent(WidgetEventType event, WidgetEventParams &&params);
 
 	int wndMessage(Window &wnd, WinMessage_t &msg); // Pass all registered events
 };

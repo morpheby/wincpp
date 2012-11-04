@@ -37,5 +37,14 @@ struct WidgetDrawEventParams : public WidgetEventParams {
 				WidgetEventParams(_event), drawer(_drawer) {}
 };
 
+class Widget;
+// Since it is not clear from the name: this event holds reference
+// to another widget, which is the cause for event
+struct WidgetToWidgetEventParams : public WidgetEventParams {
+	Widget &refWidget;
+	constexpr WidgetToWidgetEventParams(WidgetEventType _event, Widget &_refWidget) :
+			WidgetEventParams(_event), refWidget(_refWidget) {}
+};
+
 
 #endif /* WIDGETEVENTPARAMS_H_ */

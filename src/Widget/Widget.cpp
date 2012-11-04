@@ -90,7 +90,7 @@ Widget::Widget(const std::wstring& name, int x, int y, int width, int height,
 	x_{x}, y_{y}, width_{width}, height_{height},
 	widthOuter_{width}, heightOuter_{height},
 	parent_{parent.getShared()} {
-
+	parent.attachChild(*this);
 	// Window will be loaded as soon as it is necessary - initially it is not shown
 }
 
@@ -190,10 +190,25 @@ std::shared_ptr<Widget> Widget::getShared() {
 
 void Widget::attachChild(Widget &child) {
 	attachedWidgets_.insert(child.getShared());
+	recycleEvent(WidgetEventType::childAttached, WidgetToWidgetEventParams{WidgetEventType::childAttached, child});
 }
 
 void Widget::detachChild(Widget &child) {
 	attachedWidgets_.erase(child.getShared());
+	recycleEvent(WidgetEventType::childDetached, WidgetToWidgetEventParams{WidgetEventType::childDetached, child});
+}
+
+std::weak_ptr<Widget> Widget::setParent(std::weak_ptr<Widget> parent) {
+	std::weak_ptr<Widget> oldParent = parent_;
+	if(!oldParent.expired())
+		oldParent.lock()->detachChild(*this);
+	parent_ = parent;
+	if(!parent_.expired())
+		parent_.lock()->attachChild(*this);
+
+	recycleEvent(WidgetEventType::parentChanged);
+
+	return oldParent;
 }
 
 int Widget::recycleEvent(WidgetEventType event, WidgetEventParams &params) {
@@ -203,6 +218,14 @@ int Widget::recycleEvent(WidgetEventType event, WidgetEventParams &params) {
 		break;
 	}
 	return 0;
+}
+
+int Widget::recycleEvent(WidgetEventType event, WidgetEventParams &&params) {
+	return recycleEvent(event, params);
+}
+
+int Widget::recycleEvent(WidgetEventType event) {
+	recycleEvent(event, WidgetEventParams{event});
 }
 
 void Widget::UpdateChildren() {
@@ -236,11 +259,6 @@ void Widget::setEventHandler(WidgetEventType event,
 		msgMap_.erase(event);
 }
 
-int Widget::recycleEvent(WidgetEventType event) {
-	WidgetEventParams params {event};
-	recycleEvent(event, params);
-}
-
 void Widget::reloadStyle() {
 	style_ = (WidgetStyle) getWindow().getStyle();
 }
@@ -263,8 +281,7 @@ void Widget::reloadShowState() {
 
 int Widget::wndDrawWindow(Window& sender, Drawing::Drawer &drawer) {
 	DrawWindow(drawer);
-	WidgetDrawEventParams params {WidgetEventType::drawWidget, drawer};
-	recycleEvent(WidgetEventType::drawWidget, params);
+	recycleEvent(WidgetEventType::drawWidget, WidgetDrawEventParams{WidgetEventType::drawWidget, drawer});
 	return 1;
 }
 
@@ -314,7 +331,6 @@ int Widget::wndMessage(Window& wnd, WinMessage_t& msg) {
 	default:
 		break;
 	}
-	WidgetWinMsgParams params {(WidgetEventType) msg.msg, msg};
-	msg.retVal = recycleEvent((WidgetEventType)msg.msg, params);
+	msg.retVal = recycleEvent((WidgetEventType)msg.msg, WidgetWinMsgParams{(WidgetEventType) msg.msg, msg});
 	return 0;
 }
