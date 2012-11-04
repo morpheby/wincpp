@@ -43,7 +43,8 @@ check_PROGRAMS = $(bins)/eventtest.exe$(EXEEXT) \
 	$(bins)/widgettest.exe$(EXEEXT) \
 	$(bins)/editboxtest.exe$(EXEEXT) \
 	$(bins)/labeltest.exe$(EXEEXT) $(bins)/btntest.exe$(EXEEXT) \
-	$(bins)/urltest.exe$(EXEEXT) $(bins)/cbtest.exe$(EXEEXT)
+	$(bins)/urltest.exe$(EXEEXT) $(bins)/cbtest.exe$(EXEEXT) \
+	$(bins)/tabstest.exe$(EXEEXT)
 subdir = src
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_cxx_compile_stdcxx_11.m4 \
@@ -109,6 +110,11 @@ __bins__labeltest_exe_OBJECTS = $(am___bins__labeltest_exe_OBJECTS)
 __bins__labeltest_exe_DEPENDENCIES =
 __bins__labeltest_exe_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
 	$(__bins__labeltest_exe_LDFLAGS) $(LDFLAGS) -o $@
+am___bins__tabstest_exe_OBJECTS = tabstest.$(OBJEXT)
+__bins__tabstest_exe_OBJECTS = $(am___bins__tabstest_exe_OBJECTS)
+__bins__tabstest_exe_DEPENDENCIES =
+__bins__tabstest_exe_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
+	$(__bins__tabstest_exe_LDFLAGS) $(LDFLAGS) -o $@
 am___bins__urltest_exe_OBJECTS = urltest.$(OBJEXT)
 __bins__urltest_exe_OBJECTS = $(am___bins__urltest_exe_OBJECTS)
 __bins__urltest_exe_DEPENDENCIES =
@@ -147,7 +153,7 @@ SOURCES = $(__bins__libwincpp_a_SOURCES) \
 	$(__bins__editboxtest_exe_SOURCES) \
 	$(__bins__eventtest_exe_SOURCES) \
 	$(__bins__labeltest_exe_SOURCES) \
-	$(__bins__urltest_exe_SOURCES) \
+	$(__bins__tabstest_exe_SOURCES) $(__bins__urltest_exe_SOURCES) \
 	$(__bins__widgettest_exe_SOURCES) \
 	$(__bins__wincpp_dll_SOURCES) \
 	$(__bins__windowtest_exe_SOURCES)
@@ -156,7 +162,7 @@ DIST_SOURCES = $(__bins__libwincpp_a_SOURCES) \
 	$(__bins__editboxtest_exe_SOURCES) \
 	$(__bins__eventtest_exe_SOURCES) \
 	$(__bins__labeltest_exe_SOURCES) \
-	$(__bins__urltest_exe_SOURCES) \
+	$(__bins__tabstest_exe_SOURCES) $(__bins__urltest_exe_SOURCES) \
 	$(__bins__widgettest_exe_SOURCES) \
 	$(__bins__wincpp_dll_SOURCES) \
 	$(__bins__windowtest_exe_SOURCES)
@@ -347,7 +353,8 @@ CLEANFILES = resources/main.manifest app.manifest \
 	$(bins)/widgettest.exe.manifest \
 	$(bins)/editboxtest.exe.manifest \
 	$(bins)/labeltest.exe.manifest $(bins)/btntest.exe.manifest \
-	$(bins)/cbtest.exe.manifest $(bins)/urltest.exe.manifest
+	$(bins)/cbtest.exe.manifest $(bins)/urltest.exe.manifest \
+	$(bins)/tabstest.exe.manifest
 
 # Wincpp.dll generates an implib, which shall be installed to the libdir
 lib_LIBRARIES = $(bins)/libwincpp.a
@@ -376,6 +383,9 @@ __bins__cbtest_exe_LDFLAGS = -municode -mwindows
 __bins__urltest_exe_SOURCES = test/urltest.cpp test/urltest.h
 __bins__urltest_exe_LDADD = -lwincpp -L$(bins)
 __bins__urltest_exe_LDFLAGS = -municode -mwindows
+__bins__tabstest_exe_SOURCES = test/tabstest.cpp
+__bins__tabstest_exe_LDADD = -lwincpp -L$(bins)
+__bins__tabstest_exe_LDFLAGS = -municode -mwindows
 all: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 
@@ -505,6 +515,9 @@ $(bins)/eventtest.exe$(EXEEXT): $(__bins__eventtest_exe_OBJECTS) $(__bins__event
 $(bins)/labeltest.exe$(EXEEXT): $(__bins__labeltest_exe_OBJECTS) $(__bins__labeltest_exe_DEPENDENCIES) $(bins)/$(am__dirstamp)
 	@rm -f $(bins)/labeltest.exe$(EXEEXT)
 	$(__bins__labeltest_exe_LINK) $(__bins__labeltest_exe_OBJECTS) $(__bins__labeltest_exe_LDADD) $(LIBS)
+$(bins)/tabstest.exe$(EXEEXT): $(__bins__tabstest_exe_OBJECTS) $(__bins__tabstest_exe_DEPENDENCIES) $(bins)/$(am__dirstamp)
+	@rm -f $(bins)/tabstest.exe$(EXEEXT)
+	$(__bins__tabstest_exe_LINK) $(__bins__tabstest_exe_OBJECTS) $(__bins__tabstest_exe_LDADD) $(LIBS)
 $(bins)/urltest.exe$(EXEEXT): $(__bins__urltest_exe_OBJECTS) $(__bins__urltest_exe_DEPENDENCIES) $(bins)/$(am__dirstamp)
 	@rm -f $(bins)/urltest.exe$(EXEEXT)
 	$(__bins__urltest_exe_LINK) $(__bins__urltest_exe_OBJECTS) $(__bins__urltest_exe_LDADD) $(LIBS)
@@ -539,6 +552,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eventtest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/labeltest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tabstest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/urltest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/widgettest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/windowtest.Po@am__quote@
@@ -626,6 +640,20 @@ labeltest.obj: test/labeltest.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='test/labeltest.cpp' object='labeltest.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o labeltest.obj `if test -f 'test/labeltest.cpp'; then $(CYGPATH_W) 'test/labeltest.cpp'; else $(CYGPATH_W) '$(srcdir)/test/labeltest.cpp'; fi`
+
+tabstest.o: test/tabstest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tabstest.o -MD -MP -MF $(DEPDIR)/tabstest.Tpo -c -o tabstest.o `test -f 'test/tabstest.cpp' || echo '$(srcdir)/'`test/tabstest.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/tabstest.Tpo $(DEPDIR)/tabstest.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='test/tabstest.cpp' object='tabstest.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tabstest.o `test -f 'test/tabstest.cpp' || echo '$(srcdir)/'`test/tabstest.cpp
+
+tabstest.obj: test/tabstest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT tabstest.obj -MD -MP -MF $(DEPDIR)/tabstest.Tpo -c -o tabstest.obj `if test -f 'test/tabstest.cpp'; then $(CYGPATH_W) 'test/tabstest.cpp'; else $(CYGPATH_W) '$(srcdir)/test/tabstest.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/tabstest.Tpo $(DEPDIR)/tabstest.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='test/tabstest.cpp' object='tabstest.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o tabstest.obj `if test -f 'test/tabstest.cpp'; then $(CYGPATH_W) 'test/tabstest.cpp'; else $(CYGPATH_W) '$(srcdir)/test/tabstest.cpp'; fi`
 
 urltest.o: test/urltest.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT urltest.o -MD -MP -MF $(DEPDIR)/urltest.Tpo -c -o urltest.o `test -f 'test/urltest.cpp' || echo '$(srcdir)/'`test/urltest.cpp
@@ -1112,6 +1140,9 @@ $(bins)/cbtest.exe.manifest: app.manifest
 	$(LN_S) $< $@
 urltest.$(OBJEXT): $(bins)/urltest.exe.manifest
 $(bins)/urltest.exe.manifest: app.manifest
+	$(LN_S) $< $@
+tabstest.$(OBJEXT): $(bins)/tabstest.exe.manifest
+$(bins)/tabstest.exe.manifest: app.manifest
 	$(LN_S) $< $@
 
 # dependencies for resource file

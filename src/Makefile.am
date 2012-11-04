@@ -65,7 +65,8 @@ check_PROGRAMS				= $(bins)/eventtest.exe		\
 							  $(bins)/labeltest.exe		\
 							  $(bins)/btntest.exe		\
 							  $(bins)/urltest.exe		\
-							  $(bins)/cbtest.exe
+							  $(bins)/cbtest.exe		\
+							  $(bins)/tabstest.exe
 
 TESTS						= $(check_PROGRAMS)
 
@@ -127,6 +128,14 @@ __bins__urltest_exe_LDFLAGS		= -municode -mwindows
 CLEANFILES					   += $(bins)/urltest.exe.manifest
 urltest.$(OBJEXT): $(bins)/urltest.exe.manifest
 $(bins)/urltest.exe.manifest: app.manifest
+	$(LN_S) $< $@
+
+__bins__tabstest_exe_SOURCES		= test/tabstest.cpp
+__bins__tabstest_exe_LDADD			= -lwincpp -L$(bins)
+__bins__tabstest_exe_LDFLAGS		= -municode -mwindows
+CLEANFILES						   += $(bins)/tabstest.exe.manifest
+tabstest.$(OBJEXT): $(bins)/tabstest.exe.manifest
+$(bins)/tabstest.exe.manifest: app.manifest
 	$(LN_S) $< $@
 
 # dependencies for resource file
