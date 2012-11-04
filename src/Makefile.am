@@ -82,7 +82,7 @@ windowtest.$(OBJEXT): $(bins)/windowtest.exe.manifest
 $(bins)/windowtest.exe.manifest: app.manifest
 	$(LN_S) $< $@
 
-__bins__widgettest_exe_SOURCES	= test/widgettest.cpp test/widgettest.h
+__bins__widgettest_exe_SOURCES	= test/widgettest.cpp
 __bins__widgettest_exe_LDADD	= -lwincpp -L$(bins)
 __bins__widgettest_exe_LDFLAGS	= -municode -mwindows
 CLEANFILES					   += $(bins)/widgettest.exe.manifest

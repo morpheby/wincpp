@@ -19,7 +19,9 @@ libwcppwindow_a_SOURCES			=						\
 	 							  ThemedDrawer.cpp		\
 	 							  CommonControlsInit.c
 
-pkginclude_HEADERS				= Cursors.h		\
+pkginclude_HEADERS				= 				\
+								  Window.h		\
+								  Cursors.h		\
 								  DPIScaler.h	\
 								  Bitmap.h		\
 								  vsstyle.h		\

@@ -51,7 +51,7 @@ int __stdcall wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 	MessageBoxW(GetActiveWindow(),
 			L"1. The window underneath should have five tabs,\n"
-			 "   each one has edittest window in it"
+			 "   each one has edittest window in it",
 			L"Instructions", MB_OK);
 
 	MSG msg;
