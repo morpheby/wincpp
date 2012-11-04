@@ -15,6 +15,7 @@
 #include <utility>
 // XXX include only on Win32
 #include <Window.h>
+#include <algorithm>
 
 const std::vector<WidgetEventType> wndRegisteredSimpleMessages = {
 		WidgetEventType::themeChange,
@@ -189,12 +190,12 @@ std::shared_ptr<Widget> Widget::getShared() {
 }
 
 void Widget::attachChild(Widget &child) {
-	attachedWidgets_.insert(child.getShared());
+	attachedWidgets_.push_back(child.getShared());
 	recycleEvent(WidgetEventType::childAttached, WidgetToWidgetEventParams{WidgetEventType::childAttached, child});
 }
 
 void Widget::detachChild(Widget &child) {
-	attachedWidgets_.erase(child.getShared());
+	attachedWidgets_.erase(std::find(attachedWidgets_.begin(), attachedWidgets_.end(), child.getShared()));
 	recycleEvent(WidgetEventType::childDetached, WidgetToWidgetEventParams{WidgetEventType::childDetached, child});
 }
 
@@ -226,12 +227,6 @@ int Widget::recycleEvent(WidgetEventType event, WidgetEventParams &&params) {
 
 int Widget::recycleEvent(WidgetEventType event) {
 	recycleEvent(event, WidgetEventParams{event});
-}
-
-void Widget::UpdateChildren() {
-	for(auto i : attachedWidgets_) {
-
-	}
 }
 
 void Widget::Show() {
@@ -324,6 +319,11 @@ int Widget::wndShowStateChange(Window& wnd, WinMessage_t& msg) {
 
 void Widget::setOnWidgetReload(WidgetEventBase* handler) {
 	widgetReload_ = handler;
+}
+
+void Widget::setName(const std::wstring name) {
+	windowName_ = name;
+	getWindow().setName(name);
 }
 
 int Widget::wndMessage(Window& wnd, WinMessage_t& msg) {

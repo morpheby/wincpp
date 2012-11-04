@@ -10,14 +10,16 @@ noinst_LIBRARIES				= libwcppgenctl.a
 libwcppgenctl_a_SOURCES			=						\
 								Label/LabelWnd.cpp		\
 								Label/UrlWnd.cpp		\
-								NotifyWnd/NotifyWnd.cpp
+								NotifyWnd/NotifyWnd.cpp	\
+								Tabs/Tabs.cpp
 #								RenameWnd/RenameWnd.cpp		
 
 
 pkginclude_HEADERS				=						\
 								Label/LabelWnd.h		\
 								Label/UrlWnd.h			\
-								NotifyWnd/NotifyWnd.h	
+								NotifyWnd/NotifyWnd.h	\
+								Tabs/Tabs.h
 #								RenameWnd/RenameWnd.h
 
 

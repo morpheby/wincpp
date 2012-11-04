@@ -17,6 +17,7 @@
 #include <DPIScaler.h>
 
 #include "WidgetEventParams.h"
+#include <vector>
 
 class Window;
 class Widget;
@@ -172,6 +173,17 @@ public:
 
 	void setEventHandler(WidgetEventType event, WidgetEventExtBase<WidgetEventParams&> *handler);
 	void setOnWidgetReload(WidgetEventBase *handler);
+
+	void setName(const std::wstring name);
+
+	const std::vector<std::shared_ptr<Widget>>& getAttachedWidgets() const {
+		return attachedWidgets_;
+	}
+
+	const std::wstring& getName() const {
+		return windowName_;
+	}
+
 protected:
 	void KillWindow();
 	bool LoadWindow(); // return true on success
@@ -186,8 +198,7 @@ private:
 	WidgetEventCaller widgetReload_;
 
 	/* Platform-independent members */
-	std::set<std::shared_ptr<Widget>,
-				std::owner_less<std::shared_ptr<Widget>>> attachedWidgets_;
+	std::vector<std::shared_ptr<Widget>> attachedWidgets_;
 	std::wstring windowName_;
 	WidgetStyle style_;
 	bool visible_;
@@ -205,7 +216,6 @@ private:
 	void setInternalMessages();
 	void setExternalMessages();
 	void InitWindow();
-	void UpdateChildren();
 
 	void attachChild(Widget &child);
 	void detachChild(Widget &child);
