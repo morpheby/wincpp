@@ -44,7 +44,7 @@ MainWnd::MainWnd(void) :
 	label.setForcedWidth(true);
 
 	label.setText(L"1. This line shall be automatically word-wrapped to the next "
-			"line in case it doesn't fill the size of the window.\n"
+			"line in case it doesn't fit the size of the window.\n"
 			"2. Try resizing window -- word-wrapping shall occur right while you "
 			"are changing size\n"
 			"3. There are three links: the first points to web site, the second points to "
@@ -70,12 +70,24 @@ void MainWnd::WMSize() {
 }
 
 void MainWnd::Sizer() {
-	label.setWidth(getWidth());
+	label.setSizeX(getSizeX());
 	label.ImmediatelyUpdateWindow();
 
-	urlWeb.setY(label.getBottom());
-	urlNamedWeb.setY(urlWeb.getBottom());
-	urlApp.setY(urlNamedWeb.getBottom());
+	urlWeb.setPositionY(label.getCornerY());
+	urlNamedWeb.setPositionY(urlWeb.getCornerY());
+	urlApp.setPositionY(urlNamedWeb.getCornerY());
+}
+
+LRESULT MainWnd::WndProc(UINT msg, WPARAM wParam, LPARAM lParam) {
+	switch(msg) {
+	case WM_CLOSE:
+		WMClose();
+		break;
+	case WM_SIZE:
+		WMSize();
+		break;
+	}
+	return Window::WndProc(msg, wParam, lParam);
 }
 
 

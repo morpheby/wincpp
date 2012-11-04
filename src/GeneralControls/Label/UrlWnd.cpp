@@ -15,20 +15,20 @@
 
 using namespace std;
 
-URLWnd::URLWnd() : visited_(false) {
+URLWnd::URLWnd() : state_{0}, mBtnDown_{false} {
 }
 
 URLWnd::URLWnd(const wstring& url, int x, int y, HWND parentWnd) :
 		LabelWnd(url, x, y, parentWnd),
-		visited_(false), urlFull_(url, 0, 0, *this) {
+		state_{0}, urlFull_(url, 0, 0, *this), mBtnDown_{false} {
 	CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
 }
 
 URLWnd::URLWnd(const wstring& url, const wstring& name, int x, int y,
 		HWND parentWnd) :
 		LabelWnd(name, x, y, parentWnd),
-		visited_(false), url_(url), urlFull_(url, 0, 0, *this) {
-
+		state_{0}, url_{url}, urlFull_(url, 0, 0, *this), mBtnDown_{false} {
+	CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
 }
 
 URLWnd::~URLWnd() {
@@ -47,35 +47,50 @@ void URLWnd::setUrl(const std::wstring& url) {
 }
 
 bool URLWnd::isVisited() const {
-	return visited_;
+	return state_ == 1;
 }
 
 void URLWnd::PaintWindow(Drawing::Drawer &drawer) {
-	COLORREF prevColor = visited_ ?
-			drawer.setTextColor(RGB(0x58, 0x1C, 0x90)) :
-			drawer.setTextColor(RGB(0, 0, 0xFF));
+	COLORREF color = state_ ?
+			RGB(0x58, 0x1C, 0x90) :
+			RGB(0, 0, 0xFF);
 
 	if(Drawing::ThemedDrawer *tDrawer = dynamic_cast<Drawing::ThemedDrawer*>(&drawer)) {
-		LOGFONT font;
-		tDrawer->getThemeLogFont(TEXT_HYPERLINKTEXT, TS_HYPERLINK_NORMAL, font);
+		LOGFONT font = tDrawer->getThemeLogFont(TEXT_HYPERLINKTEXT, TS_HYPERLINK_NORMAL, TMT_FONT);
 		font.lfUnderline = true;
 		tDrawer->setFont(CreateFontIndirect(&font));
+//		color = tDrawer->getThemeColor(TEXT_HYPERLINKTEXT, state_ == 1 ? TS_HYPERLINK_PRESSED :
+//				TS_HYPERLINK_NORMAL, TMT_TEXTCOLOR); // those colors look ugly...
 	}
 
+	if(state_ < 0)
+		color = ~color & 0x00FFFFFF;
+	else if(state_ > 1)
+		color -= 0x00000020;
+	color = drawer.setTextColor(color);
 	SetBkMode(drawer.getDC(), TRANSPARENT);
 	drawer.drawText(txt, 0, txtRect);
-	drawer.setFontDefault();
-	drawer.setTextColor(prevColor);
+	drawer.clearFont();
+	drawer.setTextColor(color);
 }
 
 LRESULT URLWnd::WndProc(UINT msg, WPARAM wParam, LPARAM lParam) {
 	POINTS pt;
 	RECT pos = {0,0,0,0};
 	switch(msg) {
-	case WM_LBUTTONUP:
-		ShellExecuteW(*this, 0, getUrl().c_str(), 0, 0, SW_SHOWNORMAL);
-		visited_ = true;
+	case WM_LBUTTONDOWN:
+		state_ = -1;
+		mBtnDown_ = true;
+		TrackMouseEvent(TME_LEAVE);
 		UpdateWindow();
+		break;
+	case WM_LBUTTONUP:
+		if(mBtnDown_) {
+			ShellExecuteW(*this, 0, getUrl().c_str(), 0, 0, SW_SHOWNORMAL);
+			state_ = 1;
+			UpdateWindow();
+			mBtnDown_ = false;
+		}
 		break;
 	case WM_SETCURSOR:
 		SetCursor(LoadCursor(0, IDC_HAND));
@@ -91,9 +106,20 @@ LRESULT URLWnd::WndProc(UINT msg, WPARAM wParam, LPARAM lParam) {
 		break;
 	case WM_MOUSELEAVE:
 		urlFull_.Hide();
+		if(mBtnDown_) {
+			state_ = 0;
+			UpdateWindow();
+		}
 		break;
 	case WM_MOUSEMOVE:
-		TrackMouseEvent(TME_HOVER);
+		if((mBtnDown_ && !(wParam & MK_LBUTTON)) || !mBtnDown_) {
+			mBtnDown_ = false;
+			TrackMouseEvent(TME_HOVER);
+		} else if(mBtnDown_ && !state_) {
+			state_ = -1;
+			UpdateWindow();
+			TrackMouseEvent(TME_LEAVE);
+		}
 		break;
 	default:
 		break;
@@ -109,4 +135,21 @@ void URLWnd::TrackMouseEvent(DWORD event) {
 	tme.dwHoverTime = HOVER_DEFAULT;
 	tme.dwFlags = event;
 	::TrackMouseEvent(&tme);
+}
+
+void URLWnd::CalcTxtRect() {
+	if(isForcedWidth())
+		GetClientRect(*this, &txtRect);
+	else
+		memset(&txtRect, 0, sizeof(txtRect));
+
+	std::shared_ptr<Drawing::Drawer> drawerPtr = getDrawer();
+	if(std::shared_ptr<Drawing::ThemedDrawer> tDrawer = std::dynamic_pointer_cast<Drawing::ThemedDrawer>(drawerPtr)) {
+		LOGFONT font = tDrawer->getThemeLogFont(TEXT_HYPERLINKTEXT, TS_HYPERLINK_NORMAL, TMT_FONT);
+		font.lfUnderline = true;
+		tDrawer->setFont(CreateFontIndirect(&font));
+	}
+
+	drawerPtr->drawText(txt, ((isForcedWidth() ? DT_WORDBREAK : 0) | DT_CALCRECT), txtRect);
+	drawerPtr->clearFont();
 }

@@ -26,7 +26,7 @@ void NotifyWnd::setText(const wstring &text) {
 	std::shared_ptr<Drawing::Drawer> drawer = getDrawer();
 
 	if(shared_ptr<Drawing::ThemedDrawer> tDrawer = std::dynamic_pointer_cast<Drawing::ThemedDrawer>(drawer))
-		tDrawer->setFontThemed(TTP_BALLOON, TTBS_NORMAL);
+		tDrawer->setFontThemed(TTP_BALLOON, TTBS_NORMAL, TMT_FONT);
 
 	drawer->drawText(txt, DT_CALCRECT, txtRect);
 
@@ -38,9 +38,10 @@ void NotifyWnd::setText(const wstring &text) {
 
 void NotifyWnd::PaintWindow(Drawing::Drawer &drawer) {
 	if(Drawing::ThemedDrawer *tDrawer = dynamic_cast<Drawing::ThemedDrawer*>(&drawer))
-		tDrawer->setFontThemed(TTP_BALLOON, TTBS_NORMAL);
+		tDrawer->setFontThemed(TTP_BALLOON, TTBS_NORMAL, TMT_FONT);
 
 	drawer.drawText(txt, 0, txtRect);
+	drawer.clearFont();
 }
 
 NotifyWnd::~NotifyWnd(void) {
@@ -54,7 +55,8 @@ bool NotifyWnd::WMEraseBackground(Drawing::Drawer &drawer) {
 }
 
 wstring NotifyWnd::GetThemeApplicableClassList() {
-	return wstring(TOOLTIPS_CLASSW) + L";TOOLTIP;" + Window::GetThemeApplicableClassList();
+	return L"Tooltip;" VSCLASS_TOOLTIP L";" + Window::GetThemeApplicableClassList();
+//	return VSCLASS_TOOLTIP L";" + wstring(TOOLTIPS_CLASSW) + L";" + Window::GetThemeApplicableClassList();
 	// TOOLTIPS_CLASS does not always work
 }
 
