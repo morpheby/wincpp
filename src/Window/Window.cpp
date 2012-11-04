@@ -241,6 +241,13 @@ HTHEME Window::getTheme() {
 	return hTheme_; // It may still fail, then and only then we'll have zero
 }
 
+LONG_PTR Window::setStyle(LONG_PTR style) {
+	LONG_PTR res = ::SetWindowLongPtr(getWindowHandle(), GWL_STYLE, style);
+	//Setting style does not change anything before we actually move window
+	SetWindowPos(0, 0, 0, 0, 0, SWP_NOACTIVATE | SWP_NOSIZE | SWP_NOMOVE | SWP_NOZORDER | SWP_FRAMECHANGED);
+	return res;
+}
+
 void Window::IntCachedPaint(DC::DeviceContext dc, RECT updateRect) {
 	if (NeedsUpdate()) {
 		DC::DeviceContext cacheDC = DC::CreateCompatibleDC(dc);
@@ -489,12 +496,8 @@ HMENU Window::getMenu() const {
 	return ::GetMenu(getWindowHandle());
 }
 
-LONG_PTR Window::setStyle(LONG_PTR style) {
-	LONG_PTR res = ::SetWindowLongPtr(getWindowHandle(), GWL_STYLE,
-			getStyle() | style);
-	//Setting style does not change anything before we actually move window
-	SetWindowPos(0, 0, 0, 0, 0, SWP_NOACTIVATE | SWP_NOSIZE | SWP_NOMOVE | SWP_NOZORDER | SWP_FRAMECHANGED);
-	return res;
+LONG_PTR Window::addStyle(LONG_PTR style) {
+	return setStyle(getStyle() | style);
 }
 
 LONG_PTR Window::getStyle() const {
@@ -502,11 +505,7 @@ LONG_PTR Window::getStyle() const {
 }
 
 LONG_PTR Window::clearStyle(LONG_PTR clearBits) {
-	LONG_PTR res = ::SetWindowLongPtr(getWindowHandle(), GWL_STYLE,
-			getStyle() & ~clearBits);
-	// Setting style does not change anything before we actually move window
-	SetWindowPos(0, 0, 0, 0, 0, SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
-	return res;
+	return setStyle(getStyle() & ~clearBits);
 }
 
 LONG_PTR Window::clearStyleEx(LONG_PTR clearBits) {
@@ -517,7 +516,7 @@ LONG_PTR Window::clearStyleEx(LONG_PTR clearBits) {
 	return res;
 }
 
-LONG_PTR Window::setStyleEx(LONG_PTR styleEx) {
+LONG_PTR Window::addStyleEx(LONG_PTR styleEx) {
 	LONG_PTR res = ::SetWindowLongPtr(getWindowHandle(), GWL_EXSTYLE,
 			getStyleEx() | styleEx);
 	// Setting style does not change anything before we actually move window

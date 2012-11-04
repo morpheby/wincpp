@@ -26,7 +26,7 @@ EditboxWndInternal::EditboxWndInternal(int style, int x, int y,
 		int width, int height, HWND parent) : CommCtlWnd (L"",	style,
 				parent, x, y, width, height, VSCLASS_EDIT), etMode_(true), charPlus_(false),
 				parentBack_(false) {
-	setStyleEx(WS_EX_CLIENTEDGE);
+	addStyleEx(WS_EX_CLIENTEDGE);
 }
 
 EditboxWndInternal::EditboxWndInternal(int x, int y, int width, int height,

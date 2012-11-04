@@ -124,10 +124,11 @@ public:
 	HMENU getMenu() const;
 
 	LONG_PTR setStyle(LONG_PTR style);
+	LONG_PTR addStyle(LONG_PTR style);
 	LONG_PTR clearStyle(LONG_PTR clearBits);
 	LONG_PTR getStyle() const;
 
-	LONG_PTR setStyleEx(LONG_PTR styleEx);
+	LONG_PTR addStyleEx(LONG_PTR styleEx);
 	LONG_PTR clearStyleEx(LONG_PTR clearBits);
 	LONG_PTR getStyleEx() const;
 
