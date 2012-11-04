@@ -9,31 +9,39 @@
 #include <ThemedDrawer.h>
 
 Tabs::Tabs() :
-		Widget(L"Tab Group", 100_scaled, 100_scaled, 500_scaled, 500_scaled) {
+		Widget(L"Tab Group", 100_scaled, 100_scaled, 500_scaled, 500_scaled, getWindowDefaultStyle()) {
+	setEventHandler(WidgetEventType::childAttached, NewEventExt(*this, &Tabs::onChildAttached));
+	setEventHandler(WidgetEventType::childDetach, NewEventExt(*this, &Tabs::onChildDetached));
 	setEventHandler(WidgetEventType::geometryChange, NewEventExt(*this, &Tabs::onGeometryChange));
 }
 
 Tabs::~Tabs() {
 }
 
-int Tabs::onChildAttached(Widget& sender, WidgetToWidgetEventParams& params) {
-	sender.setSize(getWidth(), getHeight()-30_scaled);
-	sender.setPosition(0, 30_scaled);
-	sender.Hide();
+int Tabs::onChildAttached(Widget& sender, WidgetEventParams& _params) {
+	WidgetToWidgetEventParams& params = static_cast<WidgetToWidgetEventParams&> (_params);
+	params.refWidget.setSize(getWidth(), getHeight()-30_scaled);
+	params.refWidget.setPosition(0, 30_scaled);
+	params.refWidget.Hide();
 	UpdateTabButtons();
+	params.refWidget.setStyle(wsCombine(WidgetStyle::isChild, WidgetStyle::borderThin));
 	return 0;
 }
 
-int Tabs::onChildDetached(Widget& sender, WidgetToWidgetEventParams& params) {
-	sender.Show();
+int Tabs::onChildDetached(Widget& sender, WidgetEventParams& _params) {
+	WidgetToWidgetEventParams& params = static_cast<WidgetToWidgetEventParams&> (_params);
+	params.refWidget.Show();
 	UpdateTabButtons();
+	params.refWidget.setStyle(getWindowDefaultStyle());
 	return 0;
 }
 
-int Tabs::onBtnClicked(ButtonWnd& sender) {
+int Tabs::onBtnClicked(Window& sender) {
 	setName(sender.getName());
-	selection_->setSelected(false);
-	selection_->getControlledWidget()->Hide();
+	if(selection_) {
+		selection_->setSelected(false);
+		selection_->getControlledWidget()->Hide();
+	}
 	selection_ = dynamic_cast<TabButton&>(sender).getShared();
 	selection_->setSelected(true);
 	selection_->getControlledWidget()->Show();
@@ -50,7 +58,8 @@ void Tabs::UpdateTabButtons() {
 	int xPosition = 5_scaled;
 	for(auto tab : getAttachedWidgets()) {
 		tabs_.push_back(SharePtr(new TabButton(tab, xPosition, 5_scaled, 25_scaled, getWindow())));
-		xPosition += 105_scaled;
+		tabs_.back()->setOnClick(NewEvent(*this, &Tabs::onBtnClicked));
+		xPosition += tabs_.back()->getSizeX() + 5_scaled;
 	}
 }
 
@@ -65,12 +74,10 @@ Tabs::TabButton::TabButton(std::shared_ptr<Widget> controlledWidget, int x, int 
 		tDrawer->setFontThemed(TEXT_LABEL, 0, TMT_FONT);
 	drawerPtr->drawText(controlledWidget->getName(), DT_CALCRECT, txtRect);
 	drawerPtr->clearFont();
-	setSizeX(txtRect.right + 5_scaled);
+	setSizeX(txtRect.right + 10_scaled);
 }
 
 void Tabs::TabButton::PaintWindow(Drawing::Drawer& drawer) {
 	if(isSelected()) {
-		MoveToEx(drawer.getDC(), 0, getSizeY(), 0);
-		LineTo(drawer.getDC(), getSizeX(), getSizeY());
 	}
 }

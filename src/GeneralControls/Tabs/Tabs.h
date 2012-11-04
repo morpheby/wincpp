@@ -47,9 +47,9 @@ private:
 	std::vector<std::shared_ptr<TabButton>> tabs_;
 	std::shared_ptr<TabButton> selection_;
 
-	int onChildAttached(Widget &sender, WidgetToWidgetEventParams &params);
-	int onChildDetached(Widget &sender, WidgetToWidgetEventParams &params);
-	int onBtnClicked(ButtonWnd &sender);
+	int onChildAttached(Widget &sender, WidgetEventParams &params);
+	int onChildDetached(Widget &sender, WidgetEventParams &params);
+	int onBtnClicked(Window &sender);
 	int onGeometryChange(Widget &sender, WidgetEventParams &params);
 
 	void UpdateTabButtons();

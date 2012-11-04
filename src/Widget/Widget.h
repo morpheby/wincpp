@@ -48,7 +48,7 @@ enum class WidgetEventType : UINT {
 	drawWidget		= WM_PAINT,
 	internalEvent	= WM_USER + 1,	// don't allow overlap between window
 	childAttached,					// and widget events
-	childDetached,
+	childDetach,
 	parentChanged
 };
 
@@ -59,6 +59,16 @@ constexpr WidgetStyle wsCombine(WidgetStyle style, _styles... styles) {
 
 template<>
 constexpr WidgetStyle wsCombine(WidgetStyle style) {
+	return style;
+}
+
+template <typename... _styles>
+constexpr WidgetStyle wsExclude(WidgetStyle style, _styles... styles) {
+	return (WidgetStyle) ( ( (DWORD) style ) & (~ (DWORD) wsCombine(styles...) ) );
+}
+
+template<>
+constexpr WidgetStyle wsExclude(WidgetStyle style) {
 	return style;
 }
 
@@ -149,14 +159,14 @@ public:
 	void setSize(int width, int height);
 	inline void setWidth(int width) {setSize(width, getHeight());}
 	inline void setHeight(int height) {setSize(getWidth(), height);}
-	inline int getWidth() const {return width_;}
-	inline int getHeight() const {return height_;}
+	int getWidth() const;
+	int getHeight() const;
 
 	void setPosition(int x, int y);
 	inline void setX(int x) {setPosition(x, getY());}
 	inline void setY(int y) {setPosition(getX(), y);}
-	inline int getX() const {return x_;}
-	inline int getY() const {return y_;}
+	int getX() const;
+	int getY() const;
 
 	inline int getRight() const {return getX()+getWidth();}
 	inline int getBottom() const {return getY()+getHeight();}
@@ -184,6 +194,9 @@ public:
 		return windowName_;
 	}
 
+	WidgetStyle setStyle(WidgetStyle newStyle);
+	WidgetStyle getStyle();
+
 protected:
 	void KillWindow();
 	bool LoadWindow(); // return true on success
@@ -191,6 +204,7 @@ protected:
 	virtual void DrawWindow(Drawing::Drawer &drawer);
 
 	Window & getWindow();
+	Window & getWindowConst() const;
 private:
 	/* Platform-dependent members */
 	std::unique_ptr<Window> window_; // to allow Window reload

@@ -195,8 +195,8 @@ void Widget::attachChild(Widget &child) {
 }
 
 void Widget::detachChild(Widget &child) {
+	recycleEvent(WidgetEventType::childDetach, WidgetToWidgetEventParams{WidgetEventType::childDetach, child});
 	attachedWidgets_.erase(std::find(attachedWidgets_.begin(), attachedWidgets_.end(), child.getShared()));
-	recycleEvent(WidgetEventType::childDetached, WidgetToWidgetEventParams{WidgetEventType::childDetached, child});
 }
 
 std::weak_ptr<Widget> Widget::setParent(std::weak_ptr<Widget> parent) {
@@ -204,8 +204,12 @@ std::weak_ptr<Widget> Widget::setParent(std::weak_ptr<Widget> parent) {
 	if(!oldParent.expired())
 		oldParent.lock()->detachChild(*this);
 	parent_ = parent;
-	if(!parent_.expired())
-		parent_.lock()->attachChild(*this);
+	if(!parent_.expired()) {
+		auto parentPtr = parent_.lock();
+		parentPtr->attachChild(*this);
+		getWindow().setParent(parentPtr->getWindow());
+	} else
+		getWindow().setParent(0);
 
 	recycleEvent(WidgetEventType::parentChanged);
 
@@ -324,6 +328,55 @@ void Widget::setOnWidgetReload(WidgetEventBase* handler) {
 void Widget::setName(const std::wstring name) {
 	windowName_ = name;
 	getWindow().setName(name);
+}
+
+WidgetStyle Widget::setStyle(WidgetStyle newStyle) {
+	WidgetStyle oldStyle = style_;
+	style_ = newStyle;
+	getWindow().setStyle((LONG_PTR)style_);
+	return oldStyle;
+}
+
+WidgetStyle Widget::getStyle() {
+	return style_;
+}
+
+int Widget::getWidth() const {
+	if(showState_ > 0 && window_)
+		return getWindowConst().getSizeX();
+	else
+		return width_;
+}
+
+int Widget::getHeight() const {
+	if(showState_ > 0 && window_)
+		return getWindowConst().getSizeY();
+	else
+		return height_;
+}
+
+int Widget::getX() const {
+	if(showState_ > 0 && window_)
+		return getWindowConst().getPositionX();
+	else
+		return x_;
+}
+
+int Widget::getY() const {
+	if(showState_ > 0 && window_)
+		return getWindowConst().getPositionY();
+	else
+		return y_;
+}
+
+Window& Widget::getWindowConst() const {
+	if( !window_) {
+		ShowAppError(
+				L"No window present",
+				L"Critical error", MB_OK|MB_ICONERROR);
+		exit(GetLastError());
+	}
+	return *window_;
 }
 
 int Widget::wndMessage(Window& wnd, WinMessage_t& msg) {
