@@ -75,7 +75,6 @@ void Window::PostWindowCreate(const wstring& wndName, DWORD style, int x, int y,
 
 	--wndCreating;
 
-	OpenTheme();
 	UpdateWindow();
 }
 
@@ -145,8 +144,8 @@ LRESULT Window::WndProc(UINT msg, WPARAM wParam, LPARAM lParam) {
 	case WM_ERASEBKGND:
 		processed = true;
 		if(!cacheOn_ && !defMsgProc) {
-			if(hTheme_) {
-				Drawing::ThemedDrawer drawer ((HDC)wParam, hTheme_);
+			if(getTheme()) {
+				Drawing::ThemedDrawer drawer ((HDC)wParam, getTheme());
 				WMEraseBackground(drawer);
 			} else {
 				Drawing::Drawer drawer ((HDC)wParam);
@@ -165,6 +164,8 @@ LRESULT Window::WndProc(UINT msg, WPARAM wParam, LPARAM lParam) {
 		// pass it to defproc
 		break;
 	case WM_THEMECHANGED:
+		if(hTheme_)
+			CloseThemeData(hTheme_);
 		OpenTheme();
 		UpdateWindow();
 		break;
@@ -212,8 +213,8 @@ DC::DeviceContext Window::getDC() {
 }
 
 std::shared_ptr<Drawing::Drawer> Window::getDrawer() {
-	if(hTheme_)
-		return SharePtr(new Drawing::ThemedDrawer(getDC(), hTheme_));
+	if(getTheme())
+		return SharePtr(new Drawing::ThemedDrawer(getDC(), getTheme()));
 	else
 		return SharePtr(new Drawing::Drawer(getDC()));
 }
@@ -234,14 +235,20 @@ void Window::clearMessageMap() {
 	msgMap_.clear();
 }
 
+HTHEME Window::getTheme() {
+	if(!hTheme_)
+		OpenTheme();
+	return hTheme_; // It may still fail, then and only then we'll have zero
+}
+
 void Window::IntCachedPaint(DC::DeviceContext dc, RECT updateRect) {
 	if (NeedsUpdate()) {
 		DC::DeviceContext cacheDC = DC::CreateCompatibleDC(dc);
 		HBITMAP bmp = CreateCompatibleBitmap(dc, getSize().cx, getSize().cy);
 		bmp = (HBITMAP) cacheDC.selectObject(bmp);
 		// First perform internal painting, then external
-		if(hTheme_) {
-			Drawing::ThemedDrawer drawer (cacheDC, hTheme_);
+		if(getTheme()) {
+			Drawing::ThemedDrawer drawer (cacheDC, getTheme());
 			WMEraseBackground(drawer);
 			PaintWindow(drawer);
 			painter_(*this, drawer);
@@ -275,8 +282,8 @@ void Window::IntPaintWindow() {
 			IntCachedPaint(dc, updateRect);
 		else {
 			// First perform internal painting, then external
-			if(hTheme_) {
-				Drawing::ThemedDrawer drawer (dc, hTheme_);
+			if(getTheme()) {
+				Drawing::ThemedDrawer drawer (dc, getTheme());
 				PaintWindow(drawer);
 				painter_(*this, drawer);
 			} else {
@@ -346,8 +353,6 @@ wstring Window::GetThemeApplicableClassList() {
 //}
 
 void Window::OpenTheme() {
-	if(hTheme_)
-		CloseThemeData(hTheme_);
 	hTheme_ = OpenThemeData(getWindowHandle(), GetThemeApplicableClassList().c_str());
 }
 
@@ -386,7 +391,7 @@ void Window::RegisterWndClass() {
 	wcex.hInstance = GetModuleHandle(0);
 	wcex.hIcon = NULL;
 	wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
-	wcex.hbrBackground = (HBRUSH) (COLOR_WINDOW+1);
+	wcex.hbrBackground = NULL; //(HBRUSH) (COLOR_WINDOW+1);
 	wcex.lpszMenuName = NULL;
 	wcex.lpszClassName = MYWNDCLASS_NAME;
 	wcex.hIconSm = NULL;

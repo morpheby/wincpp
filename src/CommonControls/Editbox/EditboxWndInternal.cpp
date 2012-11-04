@@ -83,6 +83,7 @@ void EditboxWndInternal::PaintWindow(Drawing::Drawer &drawer) {
 		COLORREF prevColor = drawer.setTextColor(GetSysColor(COLOR_GRAYTEXT));
 		drawer.setFontDefault();
 		drawer.drawText(eText_, DT_EDITCONTROL | DT_SINGLELINE, rect);
+		drawer.clearFont();
 		drawer.setTextColor(prevColor);
 	}
 }

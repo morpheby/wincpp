@@ -41,8 +41,9 @@ const wstring& LabelWnd::getText() const {
 
 void LabelWnd::PaintWindow(Drawing::Drawer &drawer) {
 	if(Drawing::ThemedDrawer *tDrawer = dynamic_cast<Drawing::ThemedDrawer*>(&drawer))
-		tDrawer->setFontThemed(TEXT_LABEL, 0);
+		tDrawer->setFontThemed(TEXT_LABEL, 0, TMT_FONT);
 	drawer.drawText(txt, (isForcedWidth() ? DT_WORDBREAK : 0), txtRect);
+	drawer.clearFont();
 }
 
 bool LabelWnd::WMEraseBackground(Drawing::Drawer &drawer) {
@@ -78,8 +79,9 @@ void LabelWnd::CalcTxtRect() {
 		memset(&txtRect, 0, sizeof(txtRect));
 	std::shared_ptr<Drawing::Drawer> drawerPtr = getDrawer();
 	if(shared_ptr<Drawing::ThemedDrawer> tDrawer = std::dynamic_pointer_cast<Drawing::ThemedDrawer>(drawerPtr))
-		tDrawer->setFontThemed(TEXT_LABEL, 0);
-	drawerPtr->drawText(txt, (isForcedWidth() ? DT_WORDBREAK | DT_CALCRECT : 0), txtRect);
+		tDrawer->setFontThemed(TEXT_LABEL, 0, TMT_FONT);
+	drawerPtr->drawText(txt, ((isForcedWidth() ? DT_WORDBREAK : 0) | DT_CALCRECT), txtRect);
+	drawerPtr->clearFont();
 }
 
 

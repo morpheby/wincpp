@@ -31,7 +31,7 @@ protected:
 	void PaintWindow(Drawing::Drawer &drawer) override;
 	bool WMEraseBackground(Drawing::Drawer &drawer) override;
 	std::wstring GetThemeApplicableClassList();
-	void CalcTxtRect();
+	virtual void CalcTxtRect();
 protected:
 	std::wstring txt;
 	RECT txtRect;

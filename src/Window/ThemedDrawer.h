@@ -27,14 +27,17 @@ public:
 	~ThemedDrawer();
 
 	void setBackgroundThemed(int partId, int stateId); // see MSDN for "Parts and States"
-	void setFontThemed(int partId, int stateId);
+	void setFontThemed(int partId, int stateId, int propId);
 
-	HFONT getThemeFont(int partId, int stateId);
-	BOOL getThemeLogFont(int partId, int stateId, LOGFONT &logFont);
+	HFONT getThemeFont(int partId, int stateId, int propId);
+	LOGFONT getThemeLogFont(int partId, int stateId, int propId);
+	COLORREF getThemeColor(int partId, int stateId, int propId);
 protected:
 	int drawBackground_int(const RECT &rect, const RECT *clipRect);
 	HFONT getDefFont_int();
 
+	BOOL getThemeColor_int(int partId, int stateId, int propId, COLORREF &color);
+	BOOL getThemeLogFont_int(int partId, int stateId, int propId, LOGFONT &logFont);
 private:
 	HTHEME theme_;
 	int bkgPartId_, bkgStateId_;

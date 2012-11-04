@@ -189,12 +189,12 @@ protected:
 			int x, int y, int width, int height, HWND parentWnd, HMENU menu,
 			HINSTANCE instance, LPVOID lpParam);
 //	HPEN CreateCosmeticPen(COLORREF color);
-	void OpenTheme();
 //	long int GetThemeFontInt(int iPartId, int iStateId, LOGFONT& logFont);
 	void setDefMsgProcessing();
 	void resetDefMsgProcessing();
 	void setRedraw(bool redraw);
 
+	HTHEME getTheme();
 private:
 	HWND hWnd;
 	Bitmap* cachedBmp;
@@ -211,6 +211,7 @@ private:
 
 	static void RegisterWndClass();
 	static bool CheckScreenResolution(int width, int height);
+	void OpenTheme();
 
 	void IntCachedPaint(DC::DeviceContext dc, RECT updateRect);
 

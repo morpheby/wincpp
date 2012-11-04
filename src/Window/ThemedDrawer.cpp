@@ -22,15 +22,15 @@ ThemedDrawer::ThemedDrawer(const DC::DeviceContext dc, HTHEME theme) :
 ThemedDrawer::~ThemedDrawer() {
 }
 
-void ThemedDrawer::setFontThemed(int partId, int stateId) {
-	setFont(getThemeFont(partId, stateId));
+void ThemedDrawer::setFontThemed(int partId, int stateId, int propId) {
+	setFont(getThemeFont(partId, stateId, propId));
 }
 
-HFONT ThemedDrawer::getThemeFont(int partId, int stateId) {
+HFONT ThemedDrawer::getThemeFont(int partId, int stateId, int propId) {
 	LOGFONT font;
 
-	if(getThemeLogFont(partId, stateId, font))
-		return getDefaultGuiFont();
+	if(getThemeLogFont_int(partId, stateId, propId, font)) // that most certainly won't
+		return getDefaultGuiFont();				   // be good, if we recreate default fonts
 	else
 		return ::CreateFontIndirect(&font);
 }
@@ -40,23 +40,47 @@ void ThemedDrawer::setBackgroundThemed(int partId, int stateId) {
 	bkgStateId_ = stateId;
 }
 
-BOOL ThemedDrawer::getThemeLogFont(int partId, int stateId, LOGFONT& logFont) {
-	::GetThemeFont(theme_, 0, partId, stateId, TMT_FONT, &logFont);
+LOGFONT ThemedDrawer::getThemeLogFont(int partId, int stateId, int propId) {
+	LOGFONT font;
+	if(getThemeLogFont_int(partId, stateId, propId, font))
+		return getLogFont(getDefaultGuiFont());
+	else
+		return font;
+
+}
+
+COLORREF ThemedDrawer::getThemeColor(int partId, int stateId, int propId) {
+	COLORREF color;
+	if(getThemeColor_int(partId, stateId, propId, color))
+		return getTextColor();
+	else
+		return color;
 }
 
 HFONT ThemedDrawer::getDefFont_int() {
-	return getThemeFont(TEXT_BODYTEXT, 0);
+	return getThemeFont(TEXT_BODYTEXT, 0, TMT_FONT);
 }
 
 int ThemedDrawer::drawBackground_int(const RECT& rect,
 		const RECT* clipRect) {
-	if(!bkgPartId_ || !theme_) // all Parts have index starting from 1
+	if(!theme_) // all Parts have index starting from 1
 		return Drawer::drawBackground_int(rect, clipRect);
 
-	if (getDC().getOwner() && IsThemeBackgroundPartiallyTransparent(theme_, bkgPartId_, bkgStateId_))
-		DrawThemeParentBackground(getDC().getOwner(), getDC(), 0);
 
-	return DrawThemeBackground(theme_, getDC(), bkgPartId_, bkgStateId_, &rect, clipRect);
+	if(IsThemePartDefined(theme_, bkgPartId_, /*bkgStateId_*/0)) { // MSDN states stateId currently should be zero
+		if (getDC().getOwner() && ::IsThemeBackgroundPartiallyTransparent(theme_, bkgPartId_, bkgStateId_))
+			::DrawThemeParentBackground(getDC().getOwner(), getDC(), 0);
+		return ::DrawThemeBackground(theme_, getDC(), bkgPartId_, bkgStateId_, &rect, clipRect);
+	} else
+		return Drawer::drawBackground_int(rect, clipRect);
+}
+
+BOOL ThemedDrawer::getThemeColor_int(int partId, int stateId, int propId, COLORREF &color) {
+	return ::GetThemeColor(theme_, partId, stateId, propId, &color);
+}
+
+BOOL ThemedDrawer::getThemeLogFont_int(int partId, int stateId, int propId, LOGFONT& logFont) {
+	return ::GetThemeFont(theme_, getDC(), partId, stateId, propId, &logFont);
 }
 
 } /* namespace Drawing */

@@ -90,5 +90,18 @@ HBRUSH Drawer::getDefBkgndBrush_int() {
 	return getDefWhiteBackgroundBrush();
 }
 
+COLORREF Drawer::getTextColor() {
+	return GetTextColor(getDC());
+}
+
+void Drawer::clearFont() {
+	setFont((HFONT) GetStockObject(SYSTEM_FONT));
+}
+
+LOGFONT Drawer::getLogFont(HFONT font) {
+	LOGFONT logFont;
+	GetObject(font, sizeof(LOGFONT), &logFont);
+	return logFont;
+}
 
 }

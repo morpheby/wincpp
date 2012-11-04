@@ -32,7 +32,10 @@ public:
 	HFONT getDefaultFont();
 	HBRUSH getDefaultBkgndBrush();
 
+	COLORREF getTextColor();
 	COLORREF setTextColor(COLORREF color);
+
+	void clearFont();
 protected:
 	virtual int drawBackground_int(const RECT &rect, const RECT *clipRect);
 	virtual int drawText_int(const  std::wstring &text, DWORD dwFlags, RECT &rect);
@@ -41,6 +44,7 @@ protected:
 
 	static HFONT getDefaultGuiFont();
 	static HBRUSH getDefWhiteBackgroundBrush();
+	static LOGFONT getLogFont(HFONT font);
 private:
 	DC::DeviceContext dc_;
 	HBRUSH bkgnd_;
