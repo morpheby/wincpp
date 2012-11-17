@@ -1,5 +1,8 @@
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
+/* Outputs debugging data */
+#undef DBG_OUT
+
 /* Use for building library with debug information */
 #undef DEBUG
 
