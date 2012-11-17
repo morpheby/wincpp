@@ -26,17 +26,15 @@ libwcppcommctl_a_SOURCES		=					\
 					Trackbar/TrackBarWndInternal.cpp
 
 
-pkginclude_HEADERS				=					\
-					CommCtlWnd.h					\
-					Button/ButtonWnd.h				\
-					ComboBox/SimpleCB.h				\
-					ComboBox/DropDownCB.h			\
-					ComboBox/DropDownListCB.h		\
-					ComboBox/CBWndInternal.h		\
-					ComboBox/ComboBoxWnd.h			\
-					ComboBox/ComboBox.h				\
-					Editbox/EditboxWndInternal.h	\
-					Editbox/EditboxWnd.h			\
-					Editbox/EditorWnd.h				\
-					Trackbar/TrackBarWndInternal.h	\
-					Trackbar/TrackbarWnd.h
+pkginclude_HEADERS				=			\
+					CommCtlWnd.h			\
+					ButtonWnd.h				\
+					SimpleCB.h				\
+					DropDownCB.h			\
+					DropDownListCB.h		\
+					CBWndInternal.h			\
+					ComboBoxWnd.h			\
+					ComboBox.h				\
+					EditboxWnd.h			\
+					EditorWnd.h				\
+					TrackbarWnd.h
