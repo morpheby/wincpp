@@ -24,8 +24,9 @@ protected:
 
 class Main {
 public:
-	Main() {
-		widget1 = SharePtr(new Widget(L"Blank window", 50_scaled, 50_scaled, 500_scaled, 500_scaled, getWindowDefaultStyle()));
+	Main() :
+			widget1{new Widget(L"Blank window", 50_scaled, 50_scaled,
+					500_scaled, 500_scaled, getWindowDefaultStyle())} {
 		widget1->Show();
 
 		widget2 = SharePtr(new MainWidget());

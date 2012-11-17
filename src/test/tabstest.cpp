@@ -22,8 +22,8 @@ private:
 
 class Main {
 public:
-	Main() {
-		tabController_ = SharePtr(new Tabs());
+	Main() :
+		tabController_{new Tabs()} {
 		tabController_->Show();
 		tabController_->setEventHandler(WidgetEventType::close, NewEventExt(*this, &Main::OnWidgetClose));
 		SharePtr(new MainWidget(L"Test 1"))->setParent(tabController_);

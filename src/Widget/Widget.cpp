@@ -325,7 +325,7 @@ void Widget::setOnWidgetReload(WidgetEventBase* handler) {
 	widgetReload_ = handler;
 }
 
-void Widget::setName(const std::wstring name) {
+void Widget::setName(const std::wstring &name) {
 	windowName_ = name;
 	getWindow().setName(name);
 }

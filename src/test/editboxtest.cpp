@@ -21,8 +21,8 @@ private:
 
 class Main {
 public:
-	Main() {
-		widget = SharePtr(new MainWidget());
+	Main() :
+			widget{new MainWidget()} {
 		widget->Show();
 		widget->setEventHandler(WidgetEventType::close, NewEventExt(*this, &Main::OnWidgetClose));
 	}

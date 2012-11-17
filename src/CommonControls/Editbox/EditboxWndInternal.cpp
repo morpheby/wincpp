@@ -78,7 +78,6 @@ void EditboxWndInternal::PaintWindow(Drawing::Drawer &drawer) {
 		RECT rect;
 		Edit_GetRect(*this, &rect);
 		LOGFONT font;
-		HFONT prevFont;
 		SetBkMode(drawer.getDC(), TRANSPARENT);
 		COLORREF prevColor = drawer.setTextColor(GetSysColor(COLOR_GRAYTEXT));
 		drawer.setFontDefault();

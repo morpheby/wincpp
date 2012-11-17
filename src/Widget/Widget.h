@@ -184,7 +184,7 @@ public:
 	void setEventHandler(WidgetEventType event, WidgetEventExtBase<WidgetEventParams&> *handler);
 	void setOnWidgetReload(WidgetEventBase *handler);
 
-	void setName(const std::wstring name);
+	void setName(const std::wstring &name);
 
 	const std::vector<std::shared_ptr<Widget>>& getAttachedWidgets() const {
 		return attachedWidgets_;
