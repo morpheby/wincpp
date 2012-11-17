@@ -41,7 +41,7 @@ DIST_COMMON = $(pkginclude_HEADERS) $(srcdir)/Makefile.am \
 subdir = src/WCppUtils
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_cxx_compile_stdcxx_11.m4 \
-	$(top_srcdir)/m4/lf_local.m4 $(top_srcdir)/configure.ac
+	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
@@ -162,7 +162,6 @@ build_alias = @build_alias@
 builddir = @builddir@
 datadir = @datadir@
 datarootdir = @datarootdir@
-default_includes = @default_includes@
 docdir = @docdir@
 dvidir = @dvidir@
 exec_prefix = @exec_prefix@
@@ -192,7 +191,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 SUFFIXES = .rc .manifest
 INCLUDES = $(default_includes)
-EXTRA_DIST = Headers
+EXTRA_DIST = 
 noinst_LIBRARIES = libwcpputils.a
 libwcpputils_a_SOURCES = \
 								  errorParse.cpp	\
