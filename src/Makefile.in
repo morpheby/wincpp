@@ -46,7 +46,7 @@ check_PROGRAMS = $(bins)/eventtest.exe$(EXEEXT) \
 subdir = src
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_cxx_compile_stdcxx_11.m4 \
-	$(top_srcdir)/m4/lf_local.m4 $(top_srcdir)/configure.ac
+	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
@@ -264,7 +264,6 @@ build_alias = @build_alias@
 builddir = @builddir@
 datadir = @datadir@
 datarootdir = @datarootdir@
-default_includes = @default_includes@
 docdir = @docdir@
 dvidir = @dvidir@
 exec_prefix = @exec_prefix@
@@ -300,7 +299,13 @@ SUBDIRS = \
 							  CommonControls	\
 							  GeneralControls
 
-INCLUDES = $(default_includes)
+INCLUDES = $(default_includes)			\
+									-I$(srcdir)/Window			\
+									-I$(srcdir)/WCppUtils		\
+									-I$(srcdir)/EventSystem		\
+									-I$(srcdir)/CommonControls	\
+									-I$(srcdir)/GeneralControls
+
 EXTRA_DIST = app.premf
 BUILT_IMP_LIBS = \
 						-Wl,WCppUtils/libwcpputils.a		\

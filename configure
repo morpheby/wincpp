@@ -605,7 +605,6 @@ ac_includes_default="\
 ac_subst_vars='am__EXEEXT_FALSE
 am__EXEEXT_TRUE
 LTLIBOBJS
-default_includes
 LIBOBJS
 CXXCPP
 EGREP
@@ -5506,98 +5505,6 @@ _ACEOF
 
 fi
 done
-
-
-
-
-  # Find out how to link files if we haven't already
-  if test -z "$LN_S"; then
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether ln -s works" >&5
-$as_echo_n "checking whether ln -s works... " >&6; }
-LN_S=$as_ln_s
-if test "$LN_S" = "ln -s"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no, using $LN_S" >&5
-$as_echo "no, using $LN_S" >&6; }
-fi
-
-  fi
-
-  # Remove the include directory if we haven't done that yet
-  if test -z "$lf_link_headers"
-  then
-    lf_link_headers="we are all Kosh"
-    rm -rf "$srcdir/include"
-  fi
-
-  # Get the directory from the second argument which is optional
-  lf_directory="$srcdir/include"
-  $MKDIR_P "$lf_directory"
-
-  # Link them
-  lf_subdirs="`echo 	src/WCppUtils		\
-					src/EventSystem		\
-					src/Window			\
-					src/CommonControls	\
-					src/GeneralControls	\
-				`"
-  for lf_dir in $lf_subdirs
-  do
-    # Otherwise go ahead and link
-    echo "linking headers from $srcdir/$lf_dir"
-    # Check if the Headers file exists
-    if test -f "$srcdir/$lf_dir/Headers"
-    then
-      for lf_file in `(cd $srcdir/$lf_dir; cat Headers)`
-      do
-        rm -f $lf_directory/$(basename "$lf_file")
-        $LN_S "$srcdir/$lf_dir/$lf_file" "$lf_directory/$(basename "$lf_file")"
-      done
-    else
-      echo "Warning: No Headers file for $srcdir/$lf_dir"
-    fi
-  done
-
-
-  # See whether to put an entry for the prefix
-  if test "$prefix" = "/usr" || test "$prefix" = "/usr/local"
-  then
-    default_includes=""
-  else
-    default_includes="-I\$(prefix) "
-  fi
-
-  # Get the directory list
-  lf_dirs="`echo `"
-
-  # Check whether we have a lib directory. If so put it in
-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether sources have a lib directory" >&5
-$as_echo_n "checking whether sources have a lib directory... " >&6; }
-  if test -d "`pwd`/$srcdir/lib"
-  then
-    { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }
-    default_includes="$default_includes -I\$(top_srcdir)/lib"
-  else
-    { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-  fi
-
-  # Now add in the directories. If the list is empty then just add include/
-  # If the list is not empty then add the subdirectories.
-  if test -z "$lf_dirs"
-  then
-    default_includes="$default_includes -I\$(top_srcdir)/include"
-  else
-    for lf_dir in $lf_dirs
-    do
-      default_includes="$default_includes -I\$(top_srcdir)/include/$lf_dir"
-    done
-  fi
-
-  # And that's it
 
 
 

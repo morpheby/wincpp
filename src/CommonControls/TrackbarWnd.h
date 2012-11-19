@@ -8,7 +8,12 @@
 #ifndef TRACKBARWND_H_
 #define TRACKBARWND_H_
 
-#include "TrackBarWndInternal.h"
+#include <Window.h>
+#include <SharedPtr.h>
+
+namespace TrackbarInternal {
+class TrackBarWndInternal;
+}
 
 class TrackbarWnd : public Window {
 public:
@@ -22,9 +27,7 @@ public:
 	Window * setDownBuddy(Window *newBuddy);
 	Window * setUpBuddy(Window *newBuddy);
 
-	bool isHorizontal() const {
-		return tb.isHorizontal();
-	}
+	bool isHorizontal() const;
 
 	void setOnPosChange(WndEventExtBase<int> *onPosChange) {
 		this->onPosChange = onPosChange;
@@ -38,13 +41,15 @@ public:
 	void setTicksFreq(int freq);
 	void clearTicks();
 	void setTick(int pos);
+
+	TrackbarInternal::TrackBarWndInternal &
+	getTBInternal() const;
 protected:
 	LRESULT WndProc(UINT msg, WPARAM wParam, LPARAM lParam);
 	void WMSize();
 private:
 	Window * setBuddy(Window *newBuddy, bool left);
 	WndEventExtCaller<int> onPosChange;
-	TrackbarInternal::TrackBarWndInternal tb;
+	std::unique_ptr<TrackbarInternal::TrackBarWndInternal> tb;
 };
-
 #endif /* TRACKBARWND_H_ */

@@ -2,8 +2,9 @@ SUFFIXES =
 include $(top_srcdir)/src/rc-build.mk
 include $(top_srcdir)/src/lib-build.mk
 
-INCLUDES 						= $(default_includes)
-EXTRA_DIST 						= Headers
+INCLUDES 						=	$(default_includes)
+
+EXTRA_DIST 						= 
 
 noinst_LIBRARIES				= libwcpputils.a
 

@@ -41,7 +41,7 @@ DIST_COMMON = $(pkginclude_HEADERS) $(srcdir)/Makefile.am \
 subdir = src/GeneralControls
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_cxx_compile_stdcxx_11.m4 \
-	$(top_srcdir)/m4/lf_local.m4 $(top_srcdir)/configure.ac
+	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
@@ -54,7 +54,7 @@ ARFLAGS = cru
 libwcppgenctl_a_AR = $(AR) $(ARFLAGS)
 libwcppgenctl_a_LIBADD =
 am_libwcppgenctl_a_OBJECTS = LabelWnd.$(OBJEXT) UrlWnd.$(OBJEXT) \
-	NotifyWnd.$(OBJEXT) RenameWnd.$(OBJEXT)
+	NotifyWnd.$(OBJEXT)
 libwcppgenctl_a_OBJECTS = $(am_libwcppgenctl_a_OBJECTS)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -162,7 +162,6 @@ build_alias = @build_alias@
 builddir = @builddir@
 datadir = @datadir@
 datarootdir = @datarootdir@
-default_includes = @default_includes@
 docdir = @docdir@
 dvidir = @dvidir@
 exec_prefix = @exec_prefix@
@@ -191,20 +190,22 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 SUFFIXES = .rc .manifest
-INCLUDES = $(default_includes)
-EXTRA_DIST = Headers
+INCLUDES = $(default_includes)			\
+									-I$(srcdir)/../Window		\
+									-I$(srcdir)/../WCppUtils	\
+									-I$(srcdir)/../EventSystem
+
+EXTRA_DIST = 
 noinst_LIBRARIES = libwcppgenctl.a
 libwcppgenctl_a_SOURCES = \
 								Label/LabelWnd.cpp		\
 								Label/UrlWnd.cpp		\
-								NotifyWnd/NotifyWnd.cpp	\
-								RenameWnd/RenameWnd.cpp		
+								NotifyWnd/NotifyWnd.cpp
 
 pkginclude_HEADERS = \
-								Label/LabelWnd.h		\
-								Label/UrlWnd.h			\
-								NotifyWnd/NotifyWnd.h	\
-								RenameWnd/RenameWnd.h
+								LabelWnd.h				\
+								UrlWnd.h				\
+								NotifyWnd.h
 
 all: all-am
 
@@ -256,7 +257,6 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LabelWnd.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NotifyWnd.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RenameWnd.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UrlWnd.Po@am__quote@
 
 .cpp.o:
@@ -314,20 +314,6 @@ NotifyWnd.obj: NotifyWnd/NotifyWnd.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='NotifyWnd/NotifyWnd.cpp' object='NotifyWnd.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o NotifyWnd.obj `if test -f 'NotifyWnd/NotifyWnd.cpp'; then $(CYGPATH_W) 'NotifyWnd/NotifyWnd.cpp'; else $(CYGPATH_W) '$(srcdir)/NotifyWnd/NotifyWnd.cpp'; fi`
-
-RenameWnd.o: RenameWnd/RenameWnd.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RenameWnd.o -MD -MP -MF $(DEPDIR)/RenameWnd.Tpo -c -o RenameWnd.o `test -f 'RenameWnd/RenameWnd.cpp' || echo '$(srcdir)/'`RenameWnd/RenameWnd.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/RenameWnd.Tpo $(DEPDIR)/RenameWnd.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='RenameWnd/RenameWnd.cpp' object='RenameWnd.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RenameWnd.o `test -f 'RenameWnd/RenameWnd.cpp' || echo '$(srcdir)/'`RenameWnd/RenameWnd.cpp
-
-RenameWnd.obj: RenameWnd/RenameWnd.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RenameWnd.obj -MD -MP -MF $(DEPDIR)/RenameWnd.Tpo -c -o RenameWnd.obj `if test -f 'RenameWnd/RenameWnd.cpp'; then $(CYGPATH_W) 'RenameWnd/RenameWnd.cpp'; else $(CYGPATH_W) '$(srcdir)/RenameWnd/RenameWnd.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/RenameWnd.Tpo $(DEPDIR)/RenameWnd.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='RenameWnd/RenameWnd.cpp' object='RenameWnd.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RenameWnd.obj `if test -f 'RenameWnd/RenameWnd.cpp'; then $(CYGPATH_W) 'RenameWnd/RenameWnd.cpp'; else $(CYGPATH_W) '$(srcdir)/RenameWnd/RenameWnd.cpp'; fi`
 install-pkgincludeHEADERS: $(pkginclude_HEADERS)
 	@$(NORMAL_INSTALL)
 	test -z "$(pkgincludedir)" || $(MKDIR_P) "$(DESTDIR)$(pkgincludedir)"

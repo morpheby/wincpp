@@ -83,14 +83,6 @@ AC_FUNC_MALLOC
 AC_CHECK_FUNCS([memset])
 
 
-LF_LINK_HEADERS([	src/WCppUtils		\
-					src/EventSystem		\
-					src/Window			\
-					src/CommonControls	\
-					src/GeneralControls	\
-				])
-LF_SET_INCLUDES
-
 
 AC_CONFIG_FILES([	Makefile
 					src/Makefile
