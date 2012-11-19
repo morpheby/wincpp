@@ -69,6 +69,10 @@ CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 CXXLD = $(CXX)
 CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
 	-o $@
+COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
+	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+CCLD = $(CC)
+LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 SOURCES = $(libwcppcommctl_a_SOURCES)
 DIST_SOURCES = $(libwcppcommctl_a_SOURCES)
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
@@ -210,10 +214,12 @@ libwcppcommctl_a_SOURCES = \
 					ComboBox/CBWndInternal.cpp		\
 					ComboBox/ComboBoxWnd.cpp		\
 					Editbox/EditboxWndInternal.cpp	\
+					Editbox/EditboxWndInternal.h	\
 					Editbox/EditboxWnd.cpp			\
 					Editbox/EditorWnd.cpp			\
 					Trackbar/TrackbarWnd.cpp		\
-					Trackbar/TrackBarWndInternal.cpp
+					Trackbar/TrackBarWndInternal.cpp\
+					Trackbar/TrackBarWndInternal.h
 
 pkginclude_HEADERS = \
 					CommCtlWnd.h			\

@@ -20,10 +20,12 @@ libwcppcommctl_a_SOURCES		=					\
 					ComboBox/CBWndInternal.cpp		\
 					ComboBox/ComboBoxWnd.cpp		\
 					Editbox/EditboxWndInternal.cpp	\
+					Editbox/EditboxWndInternal.h	\
 					Editbox/EditboxWnd.cpp			\
 					Editbox/EditorWnd.cpp			\
 					Trackbar/TrackbarWnd.cpp		\
-					Trackbar/TrackBarWndInternal.cpp
+					Trackbar/TrackBarWndInternal.cpp\
+					Trackbar/TrackBarWndInternal.h
 
 
 pkginclude_HEADERS				=			\
