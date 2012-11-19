@@ -2,8 +2,12 @@ SUFFIXES =
 include $(top_srcdir)/src/rc-build.mk
 include $(top_srcdir)/src/lib-build.mk
 
-INCLUDES 						= $(default_includes)
-EXTRA_DIST 						= Headers
+INCLUDES 						=	$(default_includes)			\
+									-I$(srcdir)/../Window		\
+									-I$(srcdir)/../WCppUtils	\
+									-I$(srcdir)/../EventSystem
+
+EXTRA_DIST 						= 
 
 noinst_LIBRARIES				= libwcppcommctl.a
 
@@ -16,23 +20,23 @@ libwcppcommctl_a_SOURCES		=					\
 					ComboBox/CBWndInternal.cpp		\
 					ComboBox/ComboBoxWnd.cpp		\
 					Editbox/EditboxWndInternal.cpp	\
+					Editbox/EditboxWndInternal.h	\
 					Editbox/EditboxWnd.cpp			\
 					Editbox/EditorWnd.cpp			\
 					Trackbar/TrackbarWnd.cpp		\
-					Trackbar/TrackBarWndInternal.cpp
+					Trackbar/TrackBarWndInternal.cpp\
+					Trackbar/TrackBarWndInternal.h
 
 
-pkginclude_HEADERS				=					\
-					CommCtlWnd.h					\
-					Button/ButtonWnd.h				\
-					ComboBox/SimpleCB.h				\
-					ComboBox/DropDownCB.h			\
-					ComboBox/DropDownListCB.h		\
-					ComboBox/CBWndInternal.h		\
-					ComboBox/ComboBoxWnd.h			\
-					ComboBox/ComboBox.h				\
-					Editbox/EditboxWndInternal.h	\
-					Editbox/EditboxWnd.h			\
-					Editbox/EditorWnd.h				\
-					Trackbar/TrackBarWndInternal.h	\
-					Trackbar/TrackbarWnd.h
+pkginclude_HEADERS				=			\
+					CommCtlWnd.h			\
+					ButtonWnd.h				\
+					SimpleCB.h				\
+					DropDownCB.h			\
+					DropDownListCB.h		\
+					CBWndInternal.h			\
+					ComboBoxWnd.h			\
+					ComboBox.h				\
+					EditboxWnd.h			\
+					EditorWnd.h				\
+					TrackbarWnd.h

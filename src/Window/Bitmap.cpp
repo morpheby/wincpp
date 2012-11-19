@@ -10,6 +10,7 @@
 #endif
 
 #include "Bitmap.h"
+#include <string.h>
 
 Bitmap::Bitmap(HDC dc, HBITMAP bmp) {
 	BITMAP bitmap;
@@ -36,6 +37,14 @@ Bitmap::Bitmap(HDC dc, HBITMAP bmp) {
 
 Bitmap::~Bitmap() {
 	free(bits_);
+}
+
+Bitmap::Bitmap(const Bitmap &copyFrom) :
+			bmi_(copyFrom.bmi_),
+			bits_{nullptr} {
+	DWORD bmpSize = ((bmi_.bmiHeader.biWidth * bmi_.bmiHeader.biBitCount + 31) / 32) * 4 * bmi_.bmiHeader.biHeight;
+	bits_ = malloc(bmpSize);
+	memcpy(bits_, copyFrom.bits_, bmpSize);
 }
 
 HBITMAP Bitmap::CreateDDB(HDC dc) {

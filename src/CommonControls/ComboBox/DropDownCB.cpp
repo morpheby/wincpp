@@ -11,6 +11,7 @@
 #endif
 
 #include "DropDownCB.h"
+#include "../Editbox/EditboxWndInternal.h"
 
 using namespace std;
 

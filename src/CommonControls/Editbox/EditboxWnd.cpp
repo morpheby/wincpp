@@ -13,12 +13,18 @@
 #include <windowsx.h>
 #endif
 
+#include "EditboxWndInternal.h"
 #include "EditboxWnd.h"
 
 using namespace std;
+using namespace EditboxInternal;
+
+EditboxWndInternal& EditboxWnd::getEBInternal() const {
+	return *eb;
+}
 
 EditboxWnd::EditboxWnd() :
-		eText_(), eb(0, 0, 0, 0, *this) {
+		eText_(), eb(new EditboxWndInternal(0, 0, 0, 0, *this)) {
 	InitEBInternal();
 }
 
@@ -30,19 +36,19 @@ EditboxWnd::EditboxWnd(const wstring& initialText, int x, int y, int width, int 
 EditboxWnd::EditboxWnd(int style, const wstring& initialText, int x, int y, int width,
 		int height, HWND parent) :
 	Window(L"", WS_CHILD, x, y, width, height, parent, 0, 0),
-	 eText_(initialText), eb(style, 0, 0, width, height, *this) {
+	 eText_(initialText), eb(new EditboxWndInternal(style, 0, 0, width, height, *this)) {
 	InitEBInternal();
 }
 
 EditboxWnd::EditboxWnd(HWND convertFrom) :
 		Window(L"", WS_CHILD | WS_VISIBLE, 0, 0, 0, 0, GetParent(convertFrom), 0, 0),
-		eb(convertFrom) {
+		eb(new EditboxWndInternal(convertFrom)) {
 	InitEBInternal();
 	// Inject itself in-between actual edit and it's parent
-	setPosition(eb.getPosition().x, eb.getPosition().y);
-	setSize(eb.getSize().cx, eb.getSize().cy);
-	eb.setParent(*this);
-	eb.setPosition(0, 0);
+	setPosition(getEBInternal().getPosition());
+	setSize(getEBInternal().getSize());
+	getEBInternal().setParent(*this);
+	getEBInternal().setPosition(0, 0);
 }
 
 EditboxWnd::~EditboxWnd() {
@@ -50,11 +56,11 @@ EditboxWnd::~EditboxWnd() {
 
 void EditboxWnd::setText(const wstring& text) {
 	text_ = text;
-	eb.setText(text);
+	getEBInternal().setText(text);
 }
 
 void EditboxWnd::setEmptyText(const wstring& eText) {
-	eb.setEmptyText(eText);
+	getEBInternal().setEmptyText(eText);
 }
 
 LRESULT EditboxWnd::WndProc(UINT msg, WPARAM wParam, LPARAM lParam) {
@@ -72,14 +78,14 @@ LRESULT EditboxWnd::WndProc(UINT msg, WPARAM wParam, LPARAM lParam) {
 		// changing text selection, or i.e. invoking autocomplete
 		// is a bit smoother than with EN_CHANGE.
 		case EN_UPDATE:
-			if(eb.resetCharPlusFlag()) {
-				wstring newTextVal = eb.getText();
+			if(getEBInternal().resetCharPlusFlag()) {
+				wstring newTextVal = getEBInternal().getText();
 				if(text_ == newTextVal)
 					break;
 				text_= newTextVal;
 				retval = onTextInput_(*this, newTextVal);
 			} else
-				text_ = eb.getText();
+				text_ = getEBInternal().getText();
 
 			retval |= onTextChange_(*this, text_);
 			break;
@@ -99,12 +105,12 @@ LRESULT EditboxWnd::WndProc(UINT msg, WPARAM wParam, LPARAM lParam) {
 }
 
 void EditboxWnd::setSelection(int start, int end) {
-	eb.setSelection(start, end);
+	getEBInternal().setSelection(start, end);
 }
 
 void EditboxWnd::WMSize() {
-	if(eb.getSize().cx != getSize().cx || eb.getSize().cy != getSize().cy) {
-		eb.setSize(getSize());
+	if(getEBInternal().getSize().cx != getSize().cx || getEBInternal().getSize().cy != getSize().cy) {
+		getEBInternal().setSize(getSize());
 	}
 }
 
@@ -117,14 +123,14 @@ int EditboxWnd::OnKillFocusInternal(Window& sender, WinMessage_t& msg) {
 }
 
 void EditboxWnd::InitEBInternal() {
-	eb.setProcessMessage(WM_SETFOCUS, NewEventExt(*this, &EditboxWnd::OnSetFocusInternal));
-	eb.setProcessMessage(WM_KILLFOCUS, NewEventExt(*this, &EditboxWnd::OnKillFocusInternal));
-	eb.setEmptyTextMode(true);
-	eb.setEmptyText(eText_);
+	getEBInternal().setProcessMessage(WM_SETFOCUS, NewEventExt(*this, &EditboxWnd::OnSetFocusInternal));
+	getEBInternal().setProcessMessage(WM_KILLFOCUS, NewEventExt(*this, &EditboxWnd::OnKillFocusInternal));
+	getEBInternal().setEmptyTextMode(true);
+	getEBInternal().setEmptyText(eText_);
 }
 
 void EditboxWnd::setReadonly(bool ro) {
-	Edit_SetReadOnly(eb, ro);
+	Edit_SetReadOnly(getEBInternal(), ro);
 }
 
 

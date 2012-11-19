@@ -9,7 +9,11 @@
 #define EDITBOXWND_H_
 
 #include <Window.h>
-#include "EditboxWndInternal.h"
+#include <SharedPtr.h>
+
+namespace EditboxInternal {
+class EditboxWndInternal;
+}
 
 class EditboxWnd : public Window {
 public:
@@ -36,9 +40,7 @@ public:
 
 	void setReadonly(bool ro);
 
-	EditboxInternal::EditboxWndInternal& getEBInternal() {
-		return eb;
-	}
+	EditboxInternal::EditboxWndInternal& getEBInternal() const;
 
 protected:
 	EditboxWnd(int style, const std::wstring& initialText, int x, int y,
@@ -46,25 +48,18 @@ protected:
 
 	LRESULT WndProc(UINT msg, WPARAM wParam, LPARAM lParam);
 
-	bool WMSetFocus() {
-		SetFocus(eb);
-		return true;
-	}
-
-	bool WMKillFocus() {
-		return true;
-	}
+	bool WMSetFocus();
+	bool WMKillFocus();
 
 private:
 	std::wstring text_, eText_;
 	WndEventExtCaller<const std::wstring&> onTextChange_;
 	WndEventExtCaller<const std::wstring&> onTextInput_;
-	EditboxInternal::EditboxWndInternal eb;
+	std::unique_ptr<EditboxInternal::EditboxWndInternal> eb;
 	int OnSetFocusInternal(Window& sender, WinMessage_t& msg);
 	int OnKillFocusInternal(Window& sender, WinMessage_t& msg);
 	void InitEBInternal();
 
 	void WMSize();
 };
-
 #endif /* EDITBOXWND_H_ */

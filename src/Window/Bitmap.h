@@ -13,6 +13,7 @@
 class Bitmap {
 public:
 	Bitmap(HDC dc, HBITMAP bmp);
+	Bitmap(const Bitmap &copyFrom);
 	virtual ~Bitmap();
 
 	HBITMAP CreateDDB(HDC dc);

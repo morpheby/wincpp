@@ -1,3 +1,6 @@
+#!/bin/bash
+
+cd $srcdir
 rm -rf "./include"
 
 lf_directory="./include"
