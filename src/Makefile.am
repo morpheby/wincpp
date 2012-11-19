@@ -9,12 +9,12 @@ SUBDIRS						= 					\
 							  CommonControls	\
 							  GeneralControls
 
-INCLUDES 						=	$(default_includes)				\
-									-I$(srcdir)/../Window			\
-									-I$(srcdir)/../WCppUtils		\
-									-I$(srcdir)/../EventSystem		\
-									-I$(srcdir)/../CommonControls	\
-									-I$(srcdir)/../GeneralControls
+INCLUDES 						=	$(default_includes)			\
+									-I$(srcdir)/Window			\
+									-I$(srcdir)/WCppUtils		\
+									-I$(srcdir)/EventSystem		\
+									-I$(srcdir)/CommonControls	\
+									-I$(srcdir)/GeneralControls
 
 EXTRA_DIST 						= 
 

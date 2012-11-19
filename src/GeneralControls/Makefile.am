@@ -18,8 +18,8 @@ libwcppgenctl_a_SOURCES			=						\
 
 
 pkginclude_HEADERS				=						\
-								Label/LabelWnd.h		\
-								Label/UrlWnd.h			\
-								NotifyWnd/NotifyWnd.h
+								LabelWnd.h				\
+								UrlWnd.h				\
+								NotifyWnd.h
 
 
