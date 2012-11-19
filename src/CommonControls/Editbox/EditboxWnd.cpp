@@ -114,6 +114,15 @@ void EditboxWnd::WMSize() {
 	}
 }
 
+bool EditboxWnd::WMSetFocus() {
+	SetFocus(getEBInternal());
+	return true;
+}
+
+bool EditboxWnd::WMKillFocus() {
+	return true;
+}
+
 int EditboxWnd::OnSetFocusInternal(Window& sender, WinMessage_t& msg) {
 	return CallMsgProc(msg); // pass event
 }

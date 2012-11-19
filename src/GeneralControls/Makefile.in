@@ -192,6 +192,7 @@ top_srcdir = @top_srcdir@
 SUFFIXES = .rc .manifest
 INCLUDES = $(default_includes)			\
 									-I$(srcdir)/../Window		\
+									-I$(srcdir)/../Widget		\
 									-I$(srcdir)/../WCppUtils	\
 									-I$(srcdir)/../EventSystem
 
