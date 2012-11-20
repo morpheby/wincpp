@@ -1,7 +1,5 @@
 #!/bin/sh
-rm -f config.cache
-aclocal -I
-autoconf
-autoheader
-automake -a
-exit
+
+autoreconf -v -f -W all
+
+rm -rf autom4te.cache

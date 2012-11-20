@@ -1,8 +1,8 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ([2.60])
-AC_INIT([WinCpp], [0.0.2.0], [morpheby@gmail.com])
+AC_PREREQ([2.69])
+AC_INIT([WinCpp],[0.0.2.0],[morpheby@gmail.com])
 
 AC_SUBST([VERSION_4D], ["0.0.2.0"])
 AC_DEFINE([PACKAGE_VERSION_NUM], [0,0,2,0],
@@ -27,20 +27,39 @@ AC_DEFINE([ISOLATION_AWARE_ENABLED], [0], [Necessary for isolating module depend
 AC_DEFINE([WINVER], [0x0501], [Define to the target windows version])
 AC_DEFINE([WIN32_IE], [0x600], [Define to the target windows IE version])
 
+AC_CANONICAL_TARGET
+if [[ ${target_cpu} == x86_64 ]]; then
+	rescomp_target=-Fpe-x86-64
+	cxx_target=-m64
+	manifest_arch=AMD64
+else
+	rescomp_target=-Fpe-i386
+	cxx_target=-m32
+	manifest_arch=x86
+fi
+
+AC_SUBST([MANIFEST_ARCH], "${manifest_arch}")
 
 AC_CONFIG_SRCDIR([src/main.cpp])
 AC_CONFIG_MACRO_DIR([m4])
-AM_CONFIG_HEADER([config.h])
+AC_CONFIG_HEADERS([config.h])
+AC_CONFIG_AUX_DIR([.])
 AM_INIT_AUTOMAKE
 
 # Checks for programs.
 AC_PROG_CXX
 AC_PROG_CC
+AM_PROG_CC_C_O
 AC_PROG_RANLIB
 AC_PROG_MKDIR_P
 AC_PROG_LN_S
 AC_PROG_SED
-AC_CHECK_PROG(RESCOMP, windres, windres)
+AM_PROG_AR
+AC_CHECK_PROG(RESCOMP, windres, windres ${rescomp_target})
+AC_PROG_INSTALL
+
+CFLAGS="${CFLAGS} ${cxx_target}"
+LDFLAGS="${LDFLAGS} ${cxx_target}"
 
 
 # Checks for libraries.
@@ -61,7 +80,7 @@ AC_CHECK_HEADERS([commctrl.h uxtheme.h], [], [], [
 	])
 
 # Check for c++11 compatible compiler
-AC_LANG_CPLUSPLUS
+AC_LANG([C++])
 AX_CXX_COMPILE_STDCXX_11([], \
                          [
                           AC_MSG_WARN([
