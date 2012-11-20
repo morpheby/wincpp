@@ -39,8 +39,8 @@ fi
 AC_CONFIG_SRCDIR([src/main.cpp])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_HEADERS([config.h])
+AC_CONFIG_AUX_DIR([.])
 AM_INIT_AUTOMAKE
-
 
 # Checks for programs.
 AC_PROG_CXX
@@ -52,10 +52,10 @@ AC_PROG_LN_S
 AC_PROG_SED
 AM_PROG_AR
 AC_CHECK_PROG(RESCOMP, windres, windres ${rescomp_target})
+AC_PROG_INSTALL
 
-CXX += ${cxx_target}
-CC += ${cxx_target}
-CPP += ${cxx_target}
+CFLAGS="${CFLAGS} ${cxx_target}"
+LDFLAGS="${LDFLAGS} ${cxx_target}"
 
 
 # Checks for libraries.
