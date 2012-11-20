@@ -2,7 +2,7 @@
 <assembly xmlns="urn:schemas-microsoft-com:asm.v1"
 	manifestVersion="1.0">
 	<assemblyIdentity version="_VERSION_"
-		processorArchitecture="x86" name="wincpp" type="win32" publicKeyToken="0000000000000000" />
+		processorArchitecture="_ARCH_" name="wincpp" type="win32" publicKeyToken="0000000000000000" />
 	<description>Morphe.Win.C++.General</description>
 	<dependency>
 		<dependentAssembly>

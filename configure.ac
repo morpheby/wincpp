@@ -31,10 +31,14 @@ AC_CANONICAL_TARGET
 if [[ ${target_cpu} == x86_64 ]]; then
 	rescomp_target=-Fpe-x86-64
 	cxx_target=-m64
+	manifest_arch=AMD64
 else
 	rescomp_target=-Fpe-i386
 	cxx_target=-m32
+	manifest_arch=x86
 fi
+
+AC_SUBST([MANIFEST_ARCH], "${manifest_arch}")
 
 AC_CONFIG_SRCDIR([src/main.cpp])
 AC_CONFIG_MACRO_DIR([m4])
