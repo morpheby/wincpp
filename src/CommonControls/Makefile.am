@@ -2,11 +2,6 @@ SUFFIXES =
 include $(top_srcdir)/src/rc-build.mk
 include $(top_srcdir)/src/lib-build.mk
 
-INCLUDES 						=	$(default_includes)			\
-									-I$(srcdir)/../Window		\
-									-I$(srcdir)/../WCppUtils	\
-									-I$(srcdir)/../EventSystem
-
 EXTRA_DIST 						= 
 
 noinst_LIBRARIES				= libwcppcommctl.a
@@ -26,6 +21,11 @@ libwcppcommctl_a_SOURCES		=					\
 					Trackbar/TrackbarWnd.cpp		\
 					Trackbar/TrackBarWndInternal.cpp\
 					Trackbar/TrackBarWndInternal.h
+
+libwcppcommctl_a_CPPFLAGS		=					\
+					-I$(top_srcdir)/src/Window		\
+					-I$(top_srcdir)/src/WCppUtils	\
+					-I$(top_srcdir)/src/EventSystem
 
 
 pkginclude_HEADERS				=			\

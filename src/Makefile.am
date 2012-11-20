@@ -10,13 +10,13 @@ SUBDIRS						= 					\
 							  CommonControls	\
 							  GeneralControls
 
-INCLUDES 						=	$(default_includes)			\
-									-I$(srcdir)/Window			\
+AM_CPPFLAGS						=						\
+							-I$(srcdir)/Window			\
 									-I$(srcdir)/Widget			\
-									-I$(srcdir)/WCppUtils		\
-									-I$(srcdir)/EventSystem		\
-									-I$(srcdir)/CommonControls	\
-									-I$(srcdir)/GeneralControls
+							-I$(srcdir)/WCppUtils		\
+							-I$(srcdir)/EventSystem		\
+							-I$(srcdir)/CommonControls	\
+							-I$(srcdir)/GeneralControls
 
 EXTRA_DIST 						= 
 
