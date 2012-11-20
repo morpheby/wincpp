@@ -59,8 +59,7 @@ fi
 
 
 # Using custom method, which relies on GCC and maybe fallbacks to uname
-
-[[ x`which gcc 2>/dev/null` != x ]] && echo `./config.sub \`gcc -dumpmachine\`` && exit 0
+[[ x`which gcc 2>/dev/null` != x ]] && echo `gcc -dumpmachine` && exit 0
 
 UNAME_MACHINE=`(uname -m) 2>/dev/null` || UNAME_MACHINE=unknown
 UNAME_RELEASE=`(uname -r) 2>/dev/null` || UNAME_RELEASE=unknown
