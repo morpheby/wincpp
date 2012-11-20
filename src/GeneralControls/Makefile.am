@@ -15,8 +15,10 @@ libwcppgenctl_a_SOURCES			=						\
 								
 libwcppgenctl_a_CPPFLAGS		=								\
 								-I$(top_srcdir)/src/Window		\
+								-I$(top_srcdir)/src/Widget		\
 								-I$(top_srcdir)/src/WCppUtils	\
-								-I$(top_srcdir)/src/EventSystem
+								-I$(top_srcdir)/src/EventSystem	\
+								-I$(top_srcdir)/src/CommonControls
 
 
 pkginclude_HEADERS				=						\
