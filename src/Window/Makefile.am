@@ -13,7 +13,7 @@ libwcppwindow_a_SOURCES			=						\
 	 							  Bitmap.cpp			\
 	 							  CommonControlsInit.c
 								
-libwcppgenctl_a_CPPFLAGS		=								\
+libwcppwindow_a_CPPFLAGS		=								\
 								-I$(top_srcdir)/src/WCppUtils	\
 								-I$(top_srcdir)/src/EventSystem
 
