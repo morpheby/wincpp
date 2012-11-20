@@ -1,8 +1,8 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ([2.60])
-AC_INIT([WinCpp], [0.0.2.0], [morpheby@gmail.com])
+AC_PREREQ([2.69])
+AC_INIT([WinCpp],[0.0.2.0],[morpheby@gmail.com])
 
 AC_SUBST([VERSION_4D], ["0.0.2.0"])
 AC_DEFINE([PACKAGE_VERSION_NUM], [0,0,2,0],
@@ -29,7 +29,7 @@ AC_DEFINE([WIN32_IE], [0x600], [Define to the target windows IE version])
 
 AC_CONFIG_SRCDIR([src/main.cpp])
 AC_CONFIG_MACRO_DIR([m4])
-AM_CONFIG_HEADER([config.h])
+AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE
 
 # Checks for programs.
@@ -39,6 +39,7 @@ AC_PROG_RANLIB
 AC_PROG_MKDIR_P
 AC_PROG_LN_S
 AC_PROG_SED
+AM_PROG_AR
 AC_CHECK_PROG(RESCOMP, windres, windres)
 
 
@@ -60,7 +61,7 @@ AC_CHECK_HEADERS([commctrl.h uxtheme.h], [], [], [
 	])
 
 # Check for c++11 compatible compiler
-AC_LANG_CPLUSPLUS
+AC_LANG([C++])
 AX_CXX_COMPILE_STDCXX_11([], \
                          [
                           AC_MSG_WARN([

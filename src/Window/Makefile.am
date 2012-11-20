@@ -2,10 +2,6 @@ SUFFIXES =
 include $(top_srcdir)/src/rc-build.mk
 include $(top_srcdir)/src/lib-build.mk
 
-INCLUDES 						=	$(default_includes)			\
-									-I$(srcdir)/../WCppUtils	\
-									-I$(srcdir)/../EventSystem
-
 EXTRA_DIST 						= 
 
 noinst_LIBRARIES				= libwcppwindow.a
@@ -16,6 +12,10 @@ libwcppwindow_a_SOURCES			=						\
 	 							  DPIScaler.cpp			\
 	 							  Bitmap.cpp			\
 	 							  CommonControlsInit.c
+								
+libwcppgenctl_a_CPPFLAGS		=								\
+								-I$(top_srcdir)/src/WCppUtils	\
+								-I$(top_srcdir)/src/EventSystem
 
 pkginclude_HEADERS				= Window.h		\
 								  Cursors.h	\
