@@ -27,20 +27,35 @@ AC_DEFINE([ISOLATION_AWARE_ENABLED], [0], [Necessary for isolating module depend
 AC_DEFINE([WINVER], [0x0501], [Define to the target windows version])
 AC_DEFINE([WIN32_IE], [0x600], [Define to the target windows IE version])
 
+AC_CANONICAL_TARGET
+if [[ ${target_cpu} == x86_64 ]]; then
+	rescomp_target=-Fpe-x86-64
+	cxx_target=-m64
+else
+	rescomp_target=-Fpe-i386
+	cxx_target=-m32
+fi
+
 AC_CONFIG_SRCDIR([src/main.cpp])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE
 
+
 # Checks for programs.
 AC_PROG_CXX
 AC_PROG_CC
+AM_PROG_CC_C_O
 AC_PROG_RANLIB
 AC_PROG_MKDIR_P
 AC_PROG_LN_S
 AC_PROG_SED
 AM_PROG_AR
-AC_CHECK_PROG(RESCOMP, windres, windres)
+AC_CHECK_PROG(RESCOMP, windres, windres ${rescomp_target})
+
+CXX += ${cxx_target}
+CC += ${cxx_target}
+CPP += ${cxx_target}
 
 
 # Checks for libraries.
