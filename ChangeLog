@@ -1,43 +1,4 @@
-0.0.2.0:
-	Shifted to widget model
-	Events now using shared_ptr's 
-	LOTS of modifications and _simplifications_ to Window model
-		- Implemented DC
-		- Implemented Drawer/ThemedDrawer
-		- Got Window/Widget to be _a bit_ better ready for cross-platform implementation
-		- Implemented message maps instead of a bunch of virtual functions
-	Fixed some bugs, arised in developing widget-model
-	Added widget test
+2012-11-30  Morphe  <Morphe@Morphe-PC>
+
+	* ChangeLog: Created new changelog
 	
-	
-0.0.1.2:
-	Added button test
-	Added URL test
-	Fixed text in label test
-	Added ability for URLWnd to display a name instead of URL
-	URLWnd remastered - now it may have name, sets as visited, shows tooltip with 
-		full link on mouse hover and has 'Hand' cursor
-	Implemented basic Cursor class and CursorFactory
-	LabelWnd::getText now returns const reference
-	BUGFIX NotifyWnd updated to comply with new DrawTText implementation
-	
-	
-0.0.1.1:
-	Added testcase for ComboBox.
-	Implemented ComboBox::NamedSelector
-	Corrected ComboBox::Selector to support initializer_list
-	Corrected some problems with interaction of ComboBox with its EditBox
-	Corrected drop-down combobox behavior
-		BUGFIX - mouse pointer dissapears on autocmplete
-		BUGFIX - opening drop-down selects first item matching the input string
-	Tuned autocomplete to correctly select items
-	Added message inhibition functionality to CommCtlWnd
-	Editbox processes EN_UPDATE instead of EN_CHANGE
-	Corrected LabelWnd to better handle word-wrapping
-	Moved all built binaries to $(top_builddir)/bin
-	Changed name of Window::SetPosition to Window::setPosition
-	Added getBottom(), getRight(), setX, setY, setWidth and setHeight to Window
-	
-	
-0.0.1.0:
-	Initial release of project as a seperate library
