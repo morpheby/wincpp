@@ -8,6 +8,10 @@
 #ifndef TABCONTROLLER_H_
 #define TABCONTROLLER_H_
 
+namespace Tabs {
+class TabController;
+}
+
 #include <Widget.h>
 #include "Tab.h"
 
@@ -17,7 +21,7 @@ class TabController: public Widget {
 public:
 	TabController();
 	~TabController();
-
+	using Widget::Widget;
 
 private:
 	static class TabPool tabPool_;
@@ -25,7 +29,7 @@ private:
 	bool isMouseCaptured_;
 
 
-	void TransferCapture(std::shared_ptr<Tab> movingTab);
+	void transferCapture(std::shared_ptr<Tab>  movingTab);
 };
 
 } /* namespace Tabs */

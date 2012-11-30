@@ -8,16 +8,25 @@
 #ifndef TAB_H_
 #define TAB_H_
 
+namespace Tabs {
+class Tab;
+}
+
 #include <Widget.h>
+#include "TabController.h"
 
 namespace Tabs {
 
 class Tab {
+	friend class Tabs::TabController;
 public:
 	Tab();
 	~Tab();
 private:
+	std::shared_ptr<TabController> controller_;
+
 	Widget *getThisWidget();
+	void changeController(std::shared_ptr<TabController> newController);
 };
 
 } /* namespace Tabs */

@@ -1,4 +1,10 @@
 2012-11-30  Morphe  <Morphe@Morphe-PC>
 
+	* src\GeneralControls\Tabs\Tab.cpp (Tab::getThisWidget): Changed dynamic_cast to C-cast, since check is done in ctor
+	(Tab::changeController): Implemented changeController
+	(Tab::Tab): Using dynamic_cast to check for base merged class ! Testing required
+
+2012-11-30  Morphe  <Morphe@Morphe-PC>
+
 	* ChangeLog: Created new changelog
 	

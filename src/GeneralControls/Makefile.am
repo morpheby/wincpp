@@ -10,8 +10,9 @@ noinst_LIBRARIES				= libwcppgenctl.a
 libwcppgenctl_a_SOURCES			=						\
 								Label/LabelWnd.cpp		\
 								Label/UrlWnd.cpp		\
-								NotifyWnd/NotifyWnd.cpp		\
-								Tabs/Tabs.cpp
+								NotifyWnd/NotifyWnd.cpp	\
+								Tabs/TabController.cpp	\
+								Tabs/Tab.cpp
 								
 libwcppgenctl_a_CPPFLAGS		=								\
 								-I$(top_srcdir)/src/Window		\
@@ -24,7 +25,6 @@ libwcppgenctl_a_CPPFLAGS		=								\
 pkginclude_HEADERS				=						\
 								LabelWnd.h				\
 								UrlWnd.h				\
-								NotifyWnd.h			\
-								Tabs.h
+								NotifyWnd.h
 
 
