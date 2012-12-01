@@ -33,8 +33,6 @@ private:
 	std::wstring url_;
 	NotifyWnd urlFull_;
 	bool mBtnDown_;
-
-	void TrackMouseEvent(DWORD event);
 };
 
 #endif /* URLWND_H_ */

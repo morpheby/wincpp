@@ -196,6 +196,7 @@ protected:
 	void setRedraw(bool redraw);
 
 	HTHEME getTheme();
+	void TrackMouseEvent(DWORD event);
 private:
 	HWND hWnd;
 	Bitmap* cachedBmp;

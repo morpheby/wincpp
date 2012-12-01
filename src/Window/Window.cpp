@@ -248,6 +248,15 @@ LONG_PTR Window::setStyle(LONG_PTR style) {
 	return res;
 }
 
+void Window::TrackMouseEvent(DWORD event) {
+	TRACKMOUSEEVENT tme;
+	tme.cbSize = sizeof tme;
+	tme.hwndTrack = getWindowHandle();
+	tme.dwHoverTime = HOVER_DEFAULT;
+	tme.dwFlags = event;
+	::TrackMouseEvent(&tme);
+}
+
 void Window::IntCachedPaint(DC::DeviceContext dc, RECT updateRect) {
 	if (NeedsUpdate()) {
 		DC::DeviceContext cacheDC = DC::CreateCompatibleDC(dc);

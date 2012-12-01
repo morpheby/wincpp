@@ -32,6 +32,8 @@ public:
 	HFONT getThemeFont(int partId, int stateId, int propId);
 	LOGFONT getThemeLogFont(int partId, int stateId, int propId);
 	COLORREF getThemeColor(int partId, int stateId, int propId);
+
+	int drawThemedEdges(RECT &rect, int partId, int stateId, UINT style, UINT flags);
 protected:
 	int drawBackground_int(const RECT &rect, const RECT *clipRect);
 	HFONT getDefFont_int();

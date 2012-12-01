@@ -79,6 +79,11 @@ BOOL ThemedDrawer::getThemeColor_int(int partId, int stateId, int propId, COLORR
 	return ::GetThemeColor(theme_, partId, stateId, propId, &color);
 }
 
+int Drawing::ThemedDrawer::drawThemedEdges(RECT& rect, int partId, int stateId,
+		UINT style, UINT flags) {
+	return ::DrawThemeEdge(theme_, getDC(), partId, stateId, &rect, style, flags, &rect);
+}
+
 BOOL ThemedDrawer::getThemeLogFont_int(int partId, int stateId, int propId, LOGFONT& logFont) {
 	return ::GetThemeFont(theme_, getDC(), partId, stateId, propId, &logFont);
 }

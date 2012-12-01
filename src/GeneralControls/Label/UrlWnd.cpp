@@ -128,15 +128,6 @@ LRESULT URLWnd::WndProc(UINT msg, WPARAM wParam, LPARAM lParam) {
 	return LabelWnd::WndProc(msg, wParam, lParam);
 }
 
-void URLWnd::TrackMouseEvent(DWORD event) {
-	TRACKMOUSEEVENT tme;
-	tme.cbSize = sizeof tme;
-	tme.hwndTrack = getWindowHandle();
-	tme.dwHoverTime = HOVER_DEFAULT;
-	tme.dwFlags = event;
-	::TrackMouseEvent(&tme);
-}
-
 void URLWnd::CalcTxtRect() {
 	if(isForcedWidth())
 		GetClientRect(*this, &txtRect);
