@@ -53,7 +53,11 @@ void Drawer::setFont(HFONT &&font) {
 }
 
 HFONT Drawer::getDefaultGuiFont() {
-	return (HFONT) ::GetStockObject(DEFAULT_GUI_FONT);
+//	return (HFONT) ::GetStockObject(DEFAULT_GUI_FONT);
+	NONCLIENTMETRICS ncMetrics;
+	ncMetrics.cbSize = sizeof(NONCLIENTMETRICS);
+	::SystemParametersInfo(SPI_GETNONCLIENTMETRICS, ncMetrics.cbSize, &ncMetrics, 0);
+	return ::CreateFontIndirect(&ncMetrics.lfMessageFont);
 }
 
 COLORREF Drawer::setTextColor(COLORREF color) {
@@ -91,16 +95,16 @@ HBRUSH Drawer::getDefBkgndBrush_int() {
 }
 
 COLORREF Drawer::getTextColor() {
-	return GetTextColor(getDC());
+	return ::GetTextColor(getDC());
 }
 
 void Drawer::clearFont() {
-	setFont((HFONT) GetStockObject(SYSTEM_FONT));
+	setFont((HFONT) ::GetStockObject(SYSTEM_FONT));
 }
 
 LOGFONT Drawer::getLogFont(HFONT font) {
 	LOGFONT logFont;
-	GetObject(font, sizeof(LOGFONT), &logFont);
+	::GetObject(font, sizeof(LOGFONT), &logFont);
 	return logFont;
 }
 
