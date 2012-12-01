@@ -37,9 +37,16 @@ TabButton::TabButton(const std::wstring& text, int x, int y,
 TabButton::~TabButton() {
 }
 
+void TabButton::setActive(bool active) {
+	active_ = active;
+	ImmediatelyUpdateWindow();
+}
+
 LRESULT TabButton::WndProc(UINT msg, WPARAM wParam, LPARAM lParam) {
 	switch(msg) {
 	case WM_MOUSEMOVE:
+		if(mouseHovering_)
+			break;
 		mouseHovering_ = true;
 		TrackMouseEvent(TME_LEAVE);
 		ImmediatelyUpdateWindow();
@@ -63,13 +70,13 @@ void TabButton::PaintWindow(Drawing::Drawer& drawer) {
 			tDrawer->drawThemedEdges(rect, TABP_TABITEM, TIS_NORMAL, BDR_RAISEDOUTER | BDR_SUNKENINNER, BF_BOTTOM);
 	}
 	SetBkMode(drawer.getDC(), TRANSPARENT);
-	drawer.drawText(getName(), 0, textRect_);
+	drawer.drawText(getName(), DT_SINGLELINE, textRect_);
 	drawer.clearFont();
 }
 
 bool TabButton::WMEraseBackground(Drawing::Drawer& drawer) {
 	if(Drawing::ThemedDrawer *tDrawer = dynamic_cast<Drawing::ThemedDrawer*>(&drawer))
-		tDrawer->setBackgroundThemed(TABP_TABITEM, mouseHovering_ ? TIS_HOT : (active_ ? TIS_SELECTED : TIS_NORMAL));
+		tDrawer->setBackgroundThemed(TABP_TABITEM, active_ ? TIS_SELECTED : mouseHovering_ ? TIS_HOT : TIS_NORMAL);
 	return Window::WMEraseBackground(drawer);
 }
 
@@ -93,7 +100,7 @@ void TabButton::CalcTxtRect() {
 	std::shared_ptr<Drawing::Drawer> drawerPtr = getDrawer();
 	if(std::shared_ptr<Drawing::ThemedDrawer> tDrawer = std::dynamic_pointer_cast<Drawing::ThemedDrawer>(drawerPtr))
 		tDrawer->setFontThemed(TABP_TABITEM, TIS_NORMAL, TMT_FONT);
-	drawerPtr->drawText(getName(), DT_CALCRECT, textRect_);
+	drawerPtr->drawText(getName(), DT_CALCRECT | DT_SINGLELINE, textRect_);
 	drawerPtr->clearFont();
 	textRect_.bottom += 5_scaled;
 	textRect_.right += 5_scaled;

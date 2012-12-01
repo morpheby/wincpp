@@ -12,16 +12,14 @@
 
 namespace Tabs {
 
-class TabButton: public Window {
+class TabButton: public Window, public std::enable_shared_from_this<TabButton> {
 public:
 	TabButton();
 	TabButton(const std::wstring &text, int x, int y, Window &parentWnd);
 	void setName(const std::wstring &text);
 	~TabButton();
 
-	void setActive(bool active) {
-		active_ = active;
-	}
+	void setActive(bool active);
 protected:
 	LRESULT WndProc(UINT msg, WPARAM wParam, LPARAM lParam) override;
 	void PaintWindow(Drawing::Drawer &drawer) override;

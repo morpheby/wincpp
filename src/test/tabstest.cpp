@@ -4,9 +4,12 @@
 #include <Widget.h>
 #include <Window.h>
 #include <EditboxWnd.h>
-#include <Tabs.h>
+#include <Tabs/TabController.h>
+#include <Tabs/TabWidget.h>
 
-class MainWidget : public Widget {
+using Tabs::TabWidget;
+
+class MainWidget : public TabWidget {
 public:
 	MainWidget(const std::wstring &name);
 protected:
@@ -23,7 +26,7 @@ private:
 class Main {
 public:
 	Main() :
-		tabController_{new Tabs()} {
+		tabController_{new Tabs::TabController(100_scaled, 100_scaled, 500_scaled, 500_scaled, getWindowDefaultStyle())} {
 		tabController_->Show();
 		tabController_->setEventHandler(WidgetEventType::close, NewEventExt(*this, &Main::OnWidgetClose));
 		SharePtr(new MainWidget(L"Test 1"))->setParent(tabController_);
@@ -85,7 +88,7 @@ int MainWidget::onWidgetReload(Widget& sender) {
 }
 
 MainWidget::MainWidget(const std::wstring &name)  :
-		Widget(name, 100_scaled, 100_scaled, 500_scaled, 500_scaled, getWindowDefaultStyle()) {
+		TabWidget(name, 100_scaled, 100_scaled, 500_scaled, 500_scaled, getWindowDefaultStyle()) {
 	setOnWidgetReload(NewEvent(*this, &MainWidget::onWidgetReload));
 	setEventHandler(WidgetEventType::geometryChange, NewEventExt(*this, &MainWidget::onGeometryChange));
 }

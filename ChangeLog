@@ -1,5 +1,12 @@
+2012-12-02  Morphe  <Morphe@Morphe-PC>
+
+	* src\Widget\Widget.cpp (Widget::Widget): Ctor with size and style was using WidgetStyle::none instead of style
+	(Widget::getParent): Implemented
+
 2012-12-01  Morphe  <Morphe@Morphe-PC>
 
+	* src\Window\ThemedDrawer.cpp (Drawing::ThemedDrawer::drawThemedEdges): Impleneted
+	* src\Window\Window.cpp (Window::TrackMouseEvent): Moved from URLWnd
 	* src\Window\Drawer.cpp (Drawer::getDefaultGuiFont): Changed to recieve font from SystemParametersInfo
 	* src\Widget\Widget.h: Added mouse events for Widget class
 

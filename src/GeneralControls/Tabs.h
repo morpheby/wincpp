@@ -43,7 +43,6 @@ private:
 		std::shared_ptr<Widget> controlledWidget_;
 	};
 
-
 	std::vector<std::shared_ptr<TabButton>> tabs_;
 	std::shared_ptr<TabButton> selection_;
 

@@ -9,7 +9,7 @@
 #define TAB_H_
 
 namespace Tabs {
-class Tab;
+class TabWidget;
 }
 
 #include <Widget.h>
@@ -17,17 +17,17 @@ class Tab;
 
 namespace Tabs {
 
-class Tab {
+class TabWidget : public Widget {
 	friend class Tabs::TabController;
 public:
-	Tab();
-	~Tab();
+	~TabWidget();
+	using Widget::Widget;
 private:
 	std::shared_ptr<TabController> controller_;
 
-	Widget *getThisWidget();
 	void changeController(std::shared_ptr<TabController> newController);
 };
 
 } /* namespace Tabs */
+
 #endif /* TAB_H_ */

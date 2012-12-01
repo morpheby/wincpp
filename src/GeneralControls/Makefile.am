@@ -12,7 +12,11 @@ libwcppgenctl_a_SOURCES			=						\
 								Label/UrlWnd.cpp		\
 								NotifyWnd/NotifyWnd.cpp	\
 								Tabs/TabController.cpp	\
-								Tabs/Tab.cpp
+								Tabs/TabWidget.cpp		\
+								Tabs/TabButton.cpp		\
+								Tabs/TabButton.h		\
+								Tabs/TabCloseButton.cpp	\
+								Tabs/TabCloseButton.h
 								
 libwcppgenctl_a_CPPFLAGS		=								\
 								-I$(top_srcdir)/src/Window		\
