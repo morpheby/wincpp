@@ -46,7 +46,17 @@ enum class WidgetEventType : UINT {
 	styleChange		= WM_STYLECHANGED,
 	close			= WM_CLOSE,
 	drawWidget		= WM_PAINT,
-	internalEvent	= WM_USER + 1,	// don't allow overlap between window
+	mouseMove		= WM_MOUSEMOVE,
+	mouseLBtnDown	= WM_LBUTTONDOWN,
+	mouseRBtnDown	= WM_RBUTTONDOWN,
+	mouseMBtnDown	= WM_MBUTTONDOWN,
+	mouseLBtnUp		= WM_LBUTTONUP,
+	mouseRBtnUp		= WM_RBUTTONUP,
+	mouseMBtnUp		= WM_MBUTTONUP,
+	mouseLBtnDClick	= WM_LBUTTONDBLCLK,
+	mouseRBtnDClick	= WM_RBUTTONDBLCLK,
+	mouseMBtnDClick	= WM_MBUTTONDBLCLK,
+	__internalEvent	= WM_USER + 1,	// don't allow overlap between window
 	childAttached,					// and widget events
 	childDetach,
 	parentChanged
