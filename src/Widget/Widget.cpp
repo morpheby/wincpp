@@ -68,9 +68,9 @@ Widget::Widget(int x, int y, int width, int height, WidgetStyle style) :
 	Widget(L"", x, y, width, height, style) {}
 Widget::Widget(int x, int y, int width, int height, WidgetStyle style,
 		Widget& parent) :
-	Widget(L"", x, y, width, height, WidgetStyle::none, parent) {}
+	Widget(L"", x, y, width, height, style, parent) {}
 Widget::Widget(const std::wstring& name, int x, int y, int width, int height) :
-	Widget(name, x, y, width, height, style) {}
+	Widget(name, x, y, width, height, WidgetStyle::none) {}
 Widget::Widget(const std::wstring& name, int x, int y, int width, int height,
 		Widget& parent) :
 	Widget(name, x, y, width, height, WidgetStyle::none, parent) {}
