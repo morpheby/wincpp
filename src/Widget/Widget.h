@@ -186,6 +186,7 @@ public:
 	template<class _ChildTp>
 	std::shared_ptr<_ChildTp> getShared();
 
+	std::shared_ptr<Widget> getParent();
 	std::weak_ptr<Widget> setParent(std::weak_ptr<Widget> parent);
 
 	void Show();

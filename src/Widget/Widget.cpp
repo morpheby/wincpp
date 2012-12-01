@@ -379,6 +379,13 @@ Window& Widget::getWindowConst() const {
 	return *window_;
 }
 
+std::shared_ptr<Widget> Widget::getParent() {
+	if(!parent_.expired())
+		return parent_.lock();
+	else
+		return nullptr;
+}
+
 int Widget::wndMessage(Window& wnd, WinMessage_t& msg) {
 	switch ((WidgetEventType) msg.msg) {
 	default:
