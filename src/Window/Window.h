@@ -150,8 +150,10 @@ public:
 	void setPaintCachingMode(bool cacheOn);
 
 	DC::DeviceContext getDC();
+	DC::DeviceContext getDesktopDC();
 
 	std::shared_ptr<Drawing::Drawer> getDrawer();
+	std::shared_ptr<Drawing::Drawer> getDesktopDrawer();
 
 	void setPainter(WndEventExtBase<Drawing::Drawer&> *painter);
 	void setProcessMessage(UINT msg, WndEventExtBase<WinMessage_t&> *msgProc);

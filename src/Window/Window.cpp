@@ -144,11 +144,12 @@ LRESULT Window::WndProc(UINT msg, WPARAM wParam, LPARAM lParam) {
 	case WM_ERASEBKGND:
 		processed = true;
 		if(!cacheOn_ && !defMsgProc) {
+			HDC bkgDc = (HDC) wParam;
 			if(getTheme()) {
-				Drawing::ThemedDrawer drawer ((HDC)wParam, getTheme());
+				Drawing::ThemedDrawer drawer (bkgDc, getTheme());
 				WMEraseBackground(drawer);
 			} else {
-				Drawing::Drawer drawer ((HDC)wParam);
+				Drawing::Drawer drawer (bkgDc);
 				WMEraseBackground(drawer);
 			}
 		}
@@ -214,9 +215,9 @@ DC::DeviceContext Window::getDC() {
 
 std::shared_ptr<Drawing::Drawer> Window::getDrawer() {
 	if(getTheme())
-		return SharePtr(new Drawing::ThemedDrawer(getDC(), getTheme()));
+		return std::make_shared<Drawing::ThemedDrawer>(getDC(), getTheme());
 	else
-		return SharePtr(new Drawing::Drawer(getDC()));
+		return std::make_shared<Drawing::Drawer>(getDC());
 }
 
 BOOL Window::setSize(SIZE sz) {
@@ -255,6 +256,17 @@ void Window::TrackMouseEvent(DWORD event) {
 	tme.dwHoverTime = HOVER_DEFAULT;
 	tme.dwFlags = event;
 	::TrackMouseEvent(&tme);
+}
+
+std::shared_ptr<Drawing::Drawer> Window::getDesktopDrawer() {
+	if(getTheme())
+		return std::make_shared<Drawing::ThemedDrawer>(getDesktopDC(), getTheme());
+	else
+		return std::make_shared<Drawing::Drawer>(getDesktopDC());
+}
+
+DC::DeviceContext Window::getDesktopDC() {
+	return ::GetDC(GetDesktopWindow());
 }
 
 void Window::IntCachedPaint(DC::DeviceContext dc, RECT updateRect) {

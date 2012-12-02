@@ -1,5 +1,6 @@
 2012-12-02  Morphe  <Morphe@Morphe-PC>
 
+	* src\Window\Window.cpp (Window::WndProc): Used move ctor instead of copy in ERASEBKGND
 	* src\Widget\Widget.cpp (Widget::Widget): Ctor with size and style was using WidgetStyle::none instead of style
 	(Widget::getParent): Implemented
 
