@@ -50,6 +50,10 @@ private:
 	static class TabPool tabPool_;
 
 	bool mouseCaptured_ {false};
+	bool btnMouseDown_ {false};
+	bool registered_ {false};
+	bool firstInversion_{true};
+	POINT mouseMovePos_{0,0};
 	std::vector<std::shared_ptr<TabButton>> tabs_;
 	std::shared_ptr<TabWidget> selection_;
 	std::shared_ptr<TabButton> selectionBtn_;
@@ -62,13 +66,21 @@ private:
 	int onChildDetach(Widget& sender, WidgetEventParams& params);
 	int onGeometryChange(Widget& sender, WidgetEventParams& params);
 	int onBtnClicked(Window &sender, WinMessage_t &msg);
+	int onBtnMouseReleased(Window &sender, WinMessage_t &msg);
+	int onBtnMouseMove(Window &sender, WinMessage_t &msg);
 	int onCloseBtnClicked(Window &sender);
 
+	int onCloseInternal(Widget &sender, WidgetEventParams &params);
+
+	int onMouseMove(Widget& sender, WidgetEventParams& params);
+	int onMouseLBtnUp(Widget& sender, WidgetEventParams& params);
+
 	void addTabBtn(const std::wstring &name);
-	void removeTab(const std::shared_ptr<TabButton> &tab);
-	void selectTab(const std::shared_ptr<TabButton> &tab);
+	void removeTab(std::shared_ptr<TabButton> tab);
+	void selectTab(std::shared_ptr<TabButton> tab);
 
 	void UpdateTabButtons();
+	void drawSquareInv(std::shared_ptr<Drawing::Drawer> drawerPtr);
 };
 
 } /* namespace Tabs */

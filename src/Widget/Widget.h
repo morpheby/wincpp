@@ -172,6 +172,9 @@ public:
 	int getWidth() const;
 	int getHeight() const;
 
+	int getHeightOuter() const;
+	int getWidthOuter() const;
+
 	void setPosition(int x, int y);
 	inline void setX(int x) {setPosition(x, getY());}
 	inline void setY(int y) {setPosition(getX(), y);}
@@ -266,6 +269,7 @@ private:
 	int wndGeomChange(Window &wnd, WinMessage_t &msg); // Updates position and size
 	int wndStyleChange(Window &wnd, WinMessage_t &msg);
 	int wndShowStateChange(Window &wnd, WinMessage_t &msg);
+	int wndMouseMove(Window &wnd, WinMessage_t &msg);
 
 	int recycleEvent(WidgetEventType event);
 	int recycleEvent(WidgetEventType event, WidgetEventParams &params); // Passes all registered events
@@ -276,7 +280,7 @@ private:
 
 template<class _ChildTp>
 inline std::shared_ptr<_ChildTp> Widget::getShared() {
-	std::dynamic_pointer_cast<_ChildTp>(getShared());
+	return std::dynamic_pointer_cast<_ChildTp>(getShared());
 }
 
 constexpr bool operator & (const WidgetStyle &__lsv, const WidgetStyle &__rsv) {

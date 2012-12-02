@@ -102,6 +102,11 @@ void Drawer::clearFont() {
 	setFont((HFONT) ::GetStockObject(SYSTEM_FONT));
 }
 
+int Drawer::drawRectColorInverted(int x, int y, int width, int height) {
+	return BitBlt(getDC(), x, y, width, height,
+			getDC(), x, y, NOTSRCCOPY);
+}
+
 LOGFONT Drawer::getLogFont(HFONT font) {
 	LOGFONT logFont;
 	::GetObject(font, sizeof(LOGFONT), &logFont);

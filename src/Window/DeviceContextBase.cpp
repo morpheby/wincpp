@@ -27,7 +27,7 @@ struct _dc_deleter {
 };
 
 DeviceContextBase::DeviceContextBase(const HDC & dc)
-		: pdc_{new _DC_t{dc, 0}} {
+		: pdc_{std::make_shared<_DC_t>(_DC_t{dc, 0})} {
 }
 
 DeviceContextBase::DeviceContextBase(HDC && dc)
@@ -39,11 +39,11 @@ DeviceContextBase::DeviceContextBase(const DeviceContextBase & dc)
 }
 
 DeviceContextBase::DeviceContextBase(DeviceContextBase && dc)
-		: pdc_{dc.pdc_} {
+		: pdc_{std::move(dc.pdc_)} {
 }
 
 DeviceContextBase::DeviceContextBase(const _DC_t & dc)
-		:pdc_{new _DC_t(dc)} {
+		:pdc_{std::make_shared<_DC_t>(dc)} {
 }
 
 DeviceContextBase::DeviceContextBase(_DC_t && dc)

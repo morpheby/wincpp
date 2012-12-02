@@ -27,6 +27,12 @@ struct WidgetWinMsgParams : public WidgetEventParams {
 				WidgetEventParams(_event), winMsg(winMsg_) {}
 };
 
+struct WidgetMouseEventParams : public WidgetEventParams {
+	POINT &mousePoint_;
+	constexpr WidgetMouseEventParams(WidgetEventType _event, POINT &mousePoint) :
+				WidgetEventParams(_event), mousePoint_(mousePoint) {}
+};
+
 namespace Drawing {
 class Drawer;
 }

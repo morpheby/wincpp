@@ -35,6 +35,7 @@ const std::set<WidgetEventType> wndInternalMessages = {
 		WidgetEventType::styleChange,
 		WidgetEventType::close,
 		WidgetEventType::drawWidget,
+		WidgetEventType::mouseMove,
 		(WidgetEventType) WM_ACTIVATE
 };
 
@@ -155,6 +156,7 @@ void Widget::setInternalMessages() {
 	getWindow().setProcessMessage((UINT) WidgetEventType::showStateChange, NewEventExt(*this, &Widget::wndShowStateChange));
 	getWindow().setProcessMessage((UINT) WidgetEventType::destroy, NewEventExt(*this, &Widget::wndDestroy));
 	getWindow().setProcessMessage((UINT) WidgetEventType::geometryChange, NewEventExt(*this, &Widget::wndGeomChange));
+	getWindow().setProcessMessage((UINT) WidgetEventType::mouseMove, NewEventExt(*this, &Widget::wndMouseMove));
 	getWindow().setPainter(NewEventExt(*this, &Widget::wndDrawWindow));
 }
 
@@ -325,6 +327,13 @@ int Widget::wndShowStateChange(Window& wnd, WinMessage_t& msg) {
 	return 1;
 }
 
+int Widget::wndMouseMove(Window& wnd, WinMessage_t& msg) {
+	POINT mousePos;
+	GetCursorPos(&mousePos);
+	recycleEvent(WidgetEventType::mouseMove, WidgetMouseEventParams{WidgetEventType::mouseMove, mousePos});
+	return 1;
+}
+
 void Widget::setOnWidgetReload(WidgetEventBase* handler) {
 	widgetReload_ = handler;
 }
@@ -401,4 +410,12 @@ int Widget::wndMessage(Window& wnd, WinMessage_t& msg) {
 	}
 	msg.retVal = recycleEvent((WidgetEventType)msg.msg, WidgetWinMsgParams{(WidgetEventType) msg.msg, msg});
 	return 0;
+}
+
+int Widget::getHeightOuter() const {
+	return heightOuter_;
+}
+
+int Widget::getWidthOuter() const {
+	return widthOuter_;
 }

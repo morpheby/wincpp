@@ -4,8 +4,8 @@
 #include <Widget.h>
 #include <Window.h>
 #include <EditboxWnd.h>
-#include <Tabs/TabController.h>
-#include <Tabs/TabWidget.h>
+#include <TabController.h>
+#include <TabWidget.h>
 
 using Tabs::TabWidget;
 
@@ -26,7 +26,7 @@ private:
 class Main {
 public:
 	Main() :
-		tabController_{new Tabs::TabController(100_scaled, 100_scaled, 500_scaled, 500_scaled, getWindowDefaultStyle())} {
+		tabController_{std::make_shared<Tabs::TabController>(100_scaled, 100_scaled, 500_scaled, 500_scaled, getWindowDefaultStyle())} {
 		tabController_->Show();
 		tabController_->setEventHandler(WidgetEventType::close, NewEventExt(*this, &Main::OnWidgetClose));
 		std::shared_ptr<Widget> w;

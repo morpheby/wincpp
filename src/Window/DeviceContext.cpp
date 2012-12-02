@@ -17,19 +17,19 @@ namespace DC {
 DeviceContext::DeviceContext(const DeviceContext& dc) :
 	DeviceContextBase(dc) {}
 DeviceContext::DeviceContext(DeviceContext&& dc) :
-	DeviceContextBase(dc) {}
+	DeviceContextBase(std::move(dc)) {}
 DeviceContext::DeviceContext(const HDC& dc) :
 	DeviceContextBase(dc) {}
 DeviceContext::DeviceContext(HDC&& dc) :
-	DeviceContextBase(dc) {}
+	DeviceContextBase(std::move(dc)) {}
 DeviceContext::DeviceContext(const _DC_t& dc) :
 	DeviceContextBase(dc) {}
 DeviceContext::DeviceContext(_DC_t&& dc) :
-	DeviceContextBase(dc) {}
+	DeviceContextBase(std::move(dc)) {}
 DeviceContext::DeviceContext(const DeviceContextBase& dc) :
 	DeviceContextBase(dc) {}
 DeviceContext::DeviceContext(DeviceContextBase&& dc) :
-	DeviceContextBase(dc) {}
+	DeviceContextBase(std::move(dc)) {}
 
 DeviceContext::~DeviceContext() {
 }

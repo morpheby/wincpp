@@ -19,6 +19,7 @@ public:
 	int drawText(const std::wstring &text, DWORD dwFlags, RECT &rect);
 	int drawBackground(const RECT &rect);
 	int drawBackground(const RECT &rect, const RECT &clipRect);
+	int drawRectColorInverted(int x, int y, int width, int height);
 	int fillRect(const RECT &rect, HBRUSH brush);
 	void setBackgroundDefault();
 	void setBackroundSolid(HBRUSH brush);

@@ -266,7 +266,7 @@ std::shared_ptr<Drawing::Drawer> Window::getDesktopDrawer() {
 }
 
 DC::DeviceContext Window::getDesktopDC() {
-	return ::GetDC(GetDesktopWindow());
+	return ::GetDC(0);
 }
 
 void Window::IntCachedPaint(DC::DeviceContext dc, RECT updateRect) {
