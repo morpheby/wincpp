@@ -188,6 +188,9 @@ public:
 
 	std::shared_ptr<Widget> getParent();
 	std::weak_ptr<Widget> setParent(std::weak_ptr<Widget> parent);
+	std::weak_ptr<Widget> setParent(std::nullptr_t) {
+		return setParent(std::shared_ptr<Widget> ());
+	}
 
 	void Show();
 	void Hide();
@@ -208,6 +211,14 @@ public:
 	WidgetStyle setStyle(WidgetStyle newStyle);
 	WidgetStyle getStyle();
 
+	bool isSelfHoldEnabled() const {
+		return selfHoldEnabled_;
+	}
+
+	void setSelfHoldEnabled(bool selfHoldEnabled) {
+		selfHoldEnabled_ = selfHoldEnabled;
+	}
+
 protected:
 	void KillWindow();
 	bool LoadWindow(); // return true on success
@@ -216,6 +227,8 @@ protected:
 
 	Window & getWindow();
 	Window & getWindowConst() const;
+
+	virtual void widgetReload();
 private:
 	/* Platform-dependent members */
 	std::unique_ptr<Window> window_; // to allow Window reload
@@ -231,7 +244,7 @@ private:
 	int x_, y_, width_, height_, widthOuter_, heightOuter_;
 	std::weak_ptr<Widget> parent_;
 
-	bool deleting_ = false;
+	bool deleting_ = false, selfHoldEnabled_ = false;
 
 	void reloadSize();
 	void reloadPosition();

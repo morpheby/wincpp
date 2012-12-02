@@ -538,13 +538,24 @@ LONG_PTR Window::getStyleEx() const {
 }
 
 HWND Window::setParent(HWND parentWindow) {
-	HWND res = ::SetParent(getWindowHandle(), parentWindow);
+	RECT tmpRect = getWindowRect();
+	HWND oldParent = getParent();
+	if(oldParent)
+		::MapWindowPoints(0, oldParent, (POINT *) &tmpRect, 2);
+	oldParent = ::SetParent(getWindowHandle(), parentWindow);
+	if(oldParent) {
+		if(Window * w = SafeWindowFromHandle(oldParent))
+			w->UpdateWindow(&tmpRect);
+		else
+			::InvalidateRect(oldParent, &tmpRect, 1);
+		::UpdateWindow(oldParent);
+	}
 	// XXX MSDN recommends synchronization of UISTATE through WM_CHANGEUISTATE
-	return res;
+	return oldParent;
 }
 
 HWND Window::getParent() const {
-	return ::GetParent(getWindowHandle());
+	return ::GetAncestor(getWindowHandle(), GA_PARENT);
 }
 
 void Window::UpdateWindow() {

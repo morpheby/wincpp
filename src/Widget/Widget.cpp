@@ -120,7 +120,7 @@ bool Widget::LoadWindow() {
 	setInternalMessages();
 	setExternalMessages();
 	InitWindow();
-	widgetReload_(*this);
+	widgetReload();
 
 	if(visible_)
 		Show();
@@ -217,6 +217,10 @@ std::weak_ptr<Widget> Widget::setParent(std::weak_ptr<Widget> parent) {
 }
 
 int Widget::recycleEvent(WidgetEventType event, WidgetEventParams &params) {
+	// While we are recycling event, ensure we don't disappear...
+	std::shared_ptr<Widget> t;
+	if(selfHoldEnabled_)
+		t = getShared();
 	switch(event) {
 	default:
 		msgMap_[event](*this, params);
@@ -384,6 +388,10 @@ std::shared_ptr<Widget> Widget::getParent() {
 		return parent_.lock();
 	else
 		return nullptr;
+}
+
+void Widget::widgetReload() {
+	widgetReload_(*this);
 }
 
 int Widget::wndMessage(Window& wnd, WinMessage_t& msg) {

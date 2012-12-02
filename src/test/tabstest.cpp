@@ -29,11 +29,19 @@ public:
 		tabController_{new Tabs::TabController(100_scaled, 100_scaled, 500_scaled, 500_scaled, getWindowDefaultStyle())} {
 		tabController_->Show();
 		tabController_->setEventHandler(WidgetEventType::close, NewEventExt(*this, &Main::OnWidgetClose));
-		SharePtr(new MainWidget(L"Test 1"))->setParent(tabController_);
-		SharePtr(new MainWidget(L"Test 2"))->setParent(tabController_);
-		SharePtr(new MainWidget(L"Test 3"))->setParent(tabController_);
-		SharePtr(new MainWidget(L"Test 4.0.0"))->setParent(tabController_);
-		SharePtr(new MainWidget(L"Test 5"))->setParent(tabController_);
+		std::shared_ptr<Widget> w;
+		w = SharePtr(new MainWidget(L"Test 1"));
+		w->setSelfHoldEnabled(true); 	// since we are passing ownership, allow object to hold itself where necessary
+		w->setParent(tabController_);
+		w = SharePtr(new MainWidget(L"Test 2"));
+		w->setSelfHoldEnabled(true); 	// since we are passing ownership, allow object to hold itself where necessary
+		w->setParent(tabController_);
+		w = SharePtr(new MainWidget(L"Test 3.00000"));
+		w->setSelfHoldEnabled(true); 	// since we are passing ownership, allow object to hold itself where necessary
+		w->setParent(tabController_);
+		w = SharePtr(new MainWidget(L"Test 4.5"));
+		w->setSelfHoldEnabled(true); 	// since we are passing ownership, allow object to hold itself where necessary
+		w->setParent(tabController_);
 	}
 
 private:

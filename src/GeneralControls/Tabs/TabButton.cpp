@@ -18,8 +18,11 @@ TabButton::TabButton() :
 	Window(L"", WS_CHILD | WS_VISIBLE, 0, 0, 0, 0, nullptr, 0, 0),
 	textRect_({0, 0, 0, 0}),
 	active_{false},
-	mouseHovering_{false} {
-
+	mouseHovering_{false},
+	closeHover_{false},
+	close_(0, 0, 0, *this){
+	close_.Hide();
+	close_.setOnClick(NewEvent(*this, &TabButton::onCloseClicked));
 }
 
 TabButton::TabButton(const std::wstring& text, int x, int y,
@@ -27,10 +30,13 @@ TabButton::TabButton(const std::wstring& text, int x, int y,
 	Window(text, WS_CHILD | WS_VISIBLE, x, y, 0, 0, parentWnd, 0, 0),
 	textRect_({0, 0, 0, 0}),
 	active_{false},
-	mouseHovering_{false} {
+	mouseHovering_{false},
+	closeHover_{false},
+	close_(0, 5_scaled, 0, *this) {
+	close_.Hide();
+	close_.setOnClick(NewEvent(*this, &TabButton::onCloseClicked));
 	setPaintCachingMode(false);
-	CalcTxtRect();
-	setSize(textRect_.right, textRect_.bottom);
+	UpdateSizes();
 	ImmediatelyUpdateWindow();
 }
 
@@ -39,20 +45,34 @@ TabButton::~TabButton() {
 
 void TabButton::setActive(bool active) {
 	active_ = active;
+	if(active)
+		close_.Show();
+	else
+		close_.Hide();
 	ImmediatelyUpdateWindow();
 }
 
 LRESULT TabButton::WndProc(UINT msg, WPARAM wParam, LPARAM lParam) {
 	switch(msg) {
 	case WM_MOUSEMOVE:
-		if(mouseHovering_)
+		if(closeHover_)
+			closeHover_ = false;
+		else if(mouseHovering_)
 			break;
-		mouseHovering_ = true;
+		else
+			mouseHovering_ = true;
+		if(!active_)
+			close_.Show();
 		TrackMouseEvent(TME_LEAVE);
 		ImmediatelyUpdateWindow();
 		break;
 	case WM_MOUSELEAVE:
-		mouseHovering_ = false;
+		if(!close_.getState()) {
+			mouseHovering_ = false;
+			if(!active_)
+				close_.Hide();
+		} else
+			closeHover_ = true;
 		ImmediatelyUpdateWindow();
 		break;
 	case WM_LBUTTONDOWN:
@@ -87,13 +107,12 @@ std::wstring TabButton::GetThemeApplicableClassList() {
 
 void TabButton::setName(const std::wstring& text) {
 	Window::setName(text);
-	CalcTxtRect();
-	setSize(textRect_.right, textRect_.bottom);
+	UpdateSizes();
 	ImmediatelyUpdateWindow();
 	::UpdateWindow(getParent());
 }
 
-void TabButton::CalcTxtRect() {
+void TabButton::UpdateSizes() {
 	memset(&textRect_, 0, sizeof(textRect_));
 	textRect_.top += 5_scaled;
 	textRect_.left += 5_scaled;
@@ -102,8 +121,23 @@ void TabButton::CalcTxtRect() {
 		tDrawer->setFontThemed(TABP_TABITEM, TIS_NORMAL, TMT_FONT);
 	drawerPtr->drawText(getName(), DT_CALCRECT | DT_SINGLELINE, textRect_);
 	drawerPtr->clearFont();
+
+	close_.setSize(textRect_.bottom - textRect_.top, textRect_.bottom - textRect_.top);
+	textRect_.right += 5_scaled;
+	close_.setPositionX(textRect_.right);
+	textRect_.right += close_.getSizeX();
 	textRect_.bottom += 5_scaled;
 	textRect_.right += 5_scaled;
+	setSize(textRect_.right, textRect_.bottom);
+
+}
+
+void TabButton::setOnCloseClick(WndEventBase* closeClicked) {
+	closeClicked_ = closeClicked;
+}
+
+int TabButton::onCloseClicked(Window& sender) {
+	closeClicked_(*this);
 }
 
 } /* namespace Tabs */

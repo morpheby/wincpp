@@ -29,6 +29,8 @@ libwcppgenctl_a_CPPFLAGS		=								\
 pkginclude_HEADERS				=						\
 								LabelWnd.h				\
 								UrlWnd.h				\
-								NotifyWnd.h
+								NotifyWnd.h				\
+								TabController.h			\
+								TabWidget.h
 
 

@@ -9,6 +9,7 @@
 #define TABBUTTON_H_
 
 #include "Window.h"
+#include "TabCloseButton.h"
 
 namespace Tabs {
 
@@ -20,15 +21,21 @@ public:
 	~TabButton();
 
 	void setActive(bool active);
+	void setOnCloseClick(WndEventBase *closeClicked);
 protected:
 	LRESULT WndProc(UINT msg, WPARAM wParam, LPARAM lParam) override;
 	void PaintWindow(Drawing::Drawer &drawer) override;
 	bool WMEraseBackground(Drawing::Drawer &drawer) override;
 	std::wstring GetThemeApplicableClassList();
-	virtual void CalcTxtRect();
+	virtual void UpdateSizes();
 private:
 	RECT textRect_;
-	bool active_, mouseHovering_;
+	bool active_, mouseHovering_, closeHover_;
+
+	TabCloseButton close_;
+	WndEventCaller closeClicked_;
+
+	int onCloseClicked(Window &sender);
 };
 
 } /* namespace Tabs */

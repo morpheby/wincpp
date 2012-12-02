@@ -45,7 +45,7 @@ public:
 
 protected:
 	void DrawWindow(Drawing::Drawer &drawer) override;
-
+	void widgetReload() override;
 private:
 	static class TabPool tabPool_;
 
@@ -62,6 +62,7 @@ private:
 	int onChildDetach(Widget& sender, WidgetEventParams& params);
 	int onGeometryChange(Widget& sender, WidgetEventParams& params);
 	int onBtnClicked(Window &sender, WinMessage_t &msg);
+	int onCloseBtnClicked(Window &sender);
 
 	void addTabBtn(const std::wstring &name);
 	void removeTab(const std::shared_ptr<TabButton> &tab);

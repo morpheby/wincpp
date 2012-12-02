@@ -72,20 +72,39 @@ int TabController::onChildAttached(Widget& sender, WidgetEventParams& _params) {
 	return 0;
 }
 
-int TabController::onChildDetach(Widget& sender, WidgetEventParams& params) {
+int TabController::onChildDetach(Widget& sender, WidgetEventParams& _params) {
+	WidgetToWidgetEventParams& params = static_cast<WidgetToWidgetEventParams&> (_params);
+	dynamic_cast<TabWidget&> (params.refWidget).changeController(nullptr);
+	params.refWidget.setStyle(getWindowDefaultStyle());
 }
 
 int TabController::onGeometryChange(Widget& sender, WidgetEventParams& params) {
+	if(tabs_.empty())
+		return 0;
+	for(auto tab : getAttachedWidgets()) {
+		tab->setSize(getWidth(), getHeight() - tabs_.back()->getSizeY());
+	}
+	return 1;
 }
 
 int TabController::onBtnClicked(Window& sender, WinMessage_t& msg) {
 	selectTab(dynamic_cast<TabButton&> (sender).shared_from_this());
 }
 
+int TabController::onCloseBtnClicked(Window& sender) {
+	auto tabBtn = dynamic_cast<TabButton&> (sender).shared_from_this();
+	auto tabP = std::find(tabs_.begin(), tabs_.end(), tabBtn);
+	auto tabW = std::dynamic_pointer_cast<TabWidget> (*(getAttachedWidgets().begin() + (tabP - tabs_.begin())));
+	tabW->Hide();
+	removeTab(tabBtn);
+	tabW->setParent(nullptr);
+}
+
 void TabController::addTabBtn(const std::wstring& name) {
 	int lastXPos = tabs_.empty() ? 0 : tabs_.back()->getPositionX() + tabs_.back()->getSizeX();
 	tabs_.push_back(SharePtr(new TabButton(name, lastXPos, 0, getWindow())));
 	tabs_.back()->setProcessMessage(WM_LBUTTONDOWN, NewEventExt(*this, &TabController::onBtnClicked));
+	tabs_.back()->setOnCloseClick(NewEvent(*this, &TabController::onCloseBtnClicked));
 }
 
 void TabController::selectTab(const std::shared_ptr<TabButton> &tab) {
@@ -107,6 +126,28 @@ void TabController::selectTab(const std::shared_ptr<TabButton> &tab) {
 	selection_->Show();
 }
 
+void TabController::removeTab(const std::shared_ptr<TabButton>& tab) {
+	auto tabP = std::find(tabs_.begin(), tabs_.end(), tab);
+
+	if(selectionBtn_ == tab)
+		if(tabs_.size() == 1) {
+			selectionBtn_ = nullptr;
+			selection_ = nullptr;
+			getWindow().UpdateWindow(); // When all tab buttons are removed, remove bar
+		} else if(tabP + 1 == tabs_.end())
+			selectTab(*(tabP - 1));
+		else
+			selectTab(*(tabP + 1));
+
+	int xPos = tab->getPositionX();
+	tabs_.erase(tabP);
+
+	for(auto i = tabP; i != tabs_.end(); ++i) {
+		(*i)->setPositionX(xPos);
+		xPos += (*i)->getSizeX();
+	}
+}
+
 void TabController::DrawWindow(Drawing::Drawer& drawer) {
 	if(tabs_.empty())
 		return;
@@ -117,12 +158,17 @@ void TabController::DrawWindow(Drawing::Drawer& drawer) {
 	}
 }
 
+void TabController::widgetReload() {
+	UpdateTabButtons();
+}
+
 void TabController::UpdateTabButtons() {
 	tabs_.clear();
 	for(auto tab : getAttachedWidgets()) {
 		addTabBtn(tab->getName());
 	}
-	selectTab(tabs_.back());
+	if(!tabs_.empty())
+		selectTab(tabs_.back());
 }
 
 } /* namespace Tabs */
