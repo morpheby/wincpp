@@ -43,6 +43,10 @@ public:
 			WidgetStyle style, Widget &parent);
 	~TabController();
 
+	const std::shared_ptr<TabWidget>& getSelection() const {
+		return selection_;
+	}
+
 protected:
 	void DrawWindow(Drawing::Drawer &drawer) override;
 	void widgetReload() override;
@@ -74,6 +78,8 @@ private:
 
 	int onMouseMove(Widget& sender, WidgetEventParams& params);
 	int onMouseLBtnUp(Widget& sender, WidgetEventParams& params);
+
+	int onSetFocus(Widget &sender, WidgetEventParams &params);
 
 	void addTabBtn(const std::wstring &name);
 	void removeTab(std::shared_ptr<TabButton> tab);

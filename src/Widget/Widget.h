@@ -222,13 +222,14 @@ public:
 		selfHoldEnabled_ = selfHoldEnabled;
 	}
 
+	Window & getWindow();
+
 protected:
 	void KillWindow();
 	bool LoadWindow(); // return true on success
 
 	virtual void DrawWindow(Drawing::Drawer &drawer);
 
-	Window & getWindow();
 	Window & getWindowConst() const;
 
 	virtual void widgetReload();
