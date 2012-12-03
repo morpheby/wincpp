@@ -73,7 +73,8 @@ check_PROGRAMS				= $(bins)/eventtest.exe		\
 							  $(bins)/btntest.exe		\
 							  $(bins)/urltest.exe		\
 							  $(bins)/cbtest.exe		\
-							  $(bins)/tabstest.exe
+							  $(bins)/tabstest.exe		\
+							  $(bins)/xeditortest.exe
 
 TESTS						= $(check_PROGRAMS)
 
@@ -143,6 +144,14 @@ __bins__tabstest_exe_LDFLAGS		= -municode -mwindows
 CLEANFILES						   += $(bins)/tabstest.exe.manifest
 tabstest.$(OBJEXT): $(bins)/tabstest.exe.manifest
 $(bins)/tabstest.exe.manifest: app.manifest
+	$(LN_S) $< $@
+
+__bins__xeditortest_exe_SOURCES		= test/xeditortest.cpp
+__bins__xeditortest_exe_LDADD		= -lwincpp -L$(bins)
+__bins__xeditortest_exe_LDFLAGS		= -municode -mwindows
+CLEANFILES						   += $(bins)/xeditortest.exe.manifest
+xeditortest.$(OBJEXT): $(bins)/xeditortest.exe.manifest
+$(bins)/xeditortest.exe.manifest: app.manifest
 	$(LN_S) $< $@
 
 # dependencies for resource file

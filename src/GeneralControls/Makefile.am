@@ -16,7 +16,8 @@ libwcppgenctl_a_SOURCES			=						\
 								Tabs/TabButton.cpp		\
 								Tabs/TabButton.h		\
 								Tabs/TabCloseButton.cpp	\
-								Tabs/TabCloseButton.h
+								Tabs/TabCloseButton.h	\
+								XEditor/XEditorWindow.cpp
 								
 libwcppgenctl_a_CPPFLAGS		=								\
 								-I$(top_srcdir)/src/Window		\
@@ -31,6 +32,7 @@ pkginclude_HEADERS				=						\
 								UrlWnd.h				\
 								NotifyWnd.h				\
 								TabController.h			\
-								TabWidget.h
+								TabWidget.h				\
+								XEditorWindow.h
 
 

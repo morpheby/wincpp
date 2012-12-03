@@ -27,7 +27,7 @@ protected:
 	void PaintWindow(Drawing::Drawer &drawer) override;
 	bool WMEraseBackground(Drawing::Drawer &drawer) override;
 	std::wstring GetThemeApplicableClassList();
-	virtual void UpdateSizes();
+	void UpdateSizes();
 private:
 	RECT textRect_;
 	bool active_, mouseHovering_, closeHover_;

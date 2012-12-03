@@ -302,7 +302,7 @@ void Window::IntCachedPaint(DC::DeviceContext dc, RECT updateRect) {
 void Window::IntPaintWindow() {
 	RECT updateRect;
 	if (GetUpdateRect(getWindowHandle(), &updateRect, 0) != 0) {
-		PrePaintWindow(&updateRect);
+		PrePaintWindow(updateRect);
 		PAINTSTRUCT ps;
 		HDC dc = BeginPaint(getWindowHandle(), &ps);
 
@@ -322,6 +322,7 @@ void Window::IntPaintWindow() {
 		}
 
 		EndPaint(getWindowHandle(), &ps);
+		PostPaintWindow(updateRect);
 	}
 }
 

@@ -178,7 +178,10 @@ protected:
 	virtual void PaintWindow(Drawing::Drawer &drawer) {
 	}
 
-	virtual void PrePaintWindow(LPRECT updateRect) {
+	virtual void PrePaintWindow(RECT &updateRect) {
+	}
+
+	virtual void PostPaintWindow(RECT &updateRect) {
 	}
 
 	int CallMsgProc(WinMessage_t &msg);
