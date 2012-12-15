@@ -6,6 +6,7 @@
  */
 
 #include "XEditorWindow.h"
+#include <sstream>
 
 namespace XEditor {
 
@@ -20,7 +21,6 @@ XEditorWindow::XEditorWindow(int x, int y, int width, int height,
 	lines_.push_back(L"");
 	RECT t {0, 0, 0, 0};
 	calcTxtRect(L"A", textFont_, t); // initialize maxCharacterHeight_
-	currentLine_ = lines_.begin();
 }
 
 XEditorWindow::~XEditorWindow() {
@@ -49,12 +49,24 @@ LRESULT XEditorWindow::WndProc(UINT msg, WPARAM wParam, LPARAM lParam) {
 
 void XEditorWindow::PaintWindow(Drawing::Drawer& drawer) {
 	RECT txtRect {0, 0, 0, 0};
+	int top = 0;
 	drawer.setFont(CreateFontIndirect(&textFont_));
-	for(auto line : lines_) {
+	POINT org;
+	GetWindowOrgEx(drawer.getDC(), &org);
+//	HRGN oldClipRgn = CreateRectRgn(0, 0, 0, 0);
+//	GetClipRgn(drawer.getDC(), oldClipRgn);
+	for(auto line : getLines()) {
 		calcTxtRect(line, textFont_, txtRect);
-		drawer.drawText(line, 0, txtRect);
-		txtRect.top += maxCharHeight_;
+		SetWindowOrgEx(drawer.getDC(), org.x, org.y - top, 0);
+//		HRGN newClipRgn = CreateRectRgnIndirect(&txtRect);
+//		SelectClipRgn(drawer.getDC(), newClipRgn);
+//		DeleteObject(newClipRgn);
+		outputLine(drawer, line, txtRect);
+		top += maxCharHeight_;
 	}
+	SetWindowOrgEx(drawer.getDC(), org.x, org.y, 0);
+//	SelectClipRgn(drawer.getDC(), oldClipRgn);
+//	DeleteObject(oldClipRgn);
 	drawer.clearFont();
 }
 
@@ -92,18 +104,24 @@ void XEditorWindow::WMSetFocus() {
     ::ShowCaret(*this);
 }
 
-std::string XEditorWindow::getSelection() const {
+std::wstring XEditorWindow::getSelection() const {
 }
 
-void XEditorWindow::setSelection(std::wstring allocator) {
+void XEditorWindow::replaceSelection(std::wstring selection) {
 }
 
 void XEditorWindow::invalidateScreen() {
+	invalidatedLine_ = -1;
 	UpdateWindow();
 }
 
 void XEditorWindow::invalidateLine() {
-	UpdateWindow();
+	RECT lineRect {0, maxCharHeight_ * (currentLine_ - screenStartLine_), 0, 0};
+	if(lineRect.top < 0 || lineRect.top > getSizeY())
+		return;
+	invalidatedLine_ = currentLine_;
+	calcTxtRect(getCurrentLine(), textFont_, lineRect);
+	UpdateWindow(&lineRect);
 }
 
 void XEditorWindow::PrePaintWindow(RECT& updateRect) {
@@ -116,8 +134,9 @@ void XEditorWindow::PostPaintWindow(RECT& updateRect) {
 
 void XEditorWindow::repositionCaret() {
     RECT txtRect {0, 0, 0, 0};
-    calcTxtRect(currentLine_->substr(0, currentChar_), textFont_, txtRect);
-    ::SetCaretPos(txtRect.right, nCurrentLine_ * maxCharHeight_);
+    calcTxtRect(getCurrentLine().substr(0, currentChar_), textFont_, txtRect);
+    ::SetCaretPos(txtRect.right, getCurrentLinePosition() * maxCharHeight_);
+
 }
 
 void XEditorWindow::WMChar(wchar_t ch) {
@@ -130,73 +149,156 @@ void XEditorWindow::WMChar(wchar_t ch) {
 		break;
 
 	case 0x0D:  // carriage return
-		setSelection(L"");
-		currentLine_ = lines_.insert(++currentLine_, L"");
-		++nCurrentLine_;
-		currentChar_ = 0;
-		repositionCaret();
-		invalidateScreen();
+		replaceSelection(L"");
+//		insertLine(currentLine_ + 1, L"");
+		insertText(getCurrentLinePosition(), getCurrentCharPosition(), L"\n");
+		moveToNextLine();
 		break;
 
 	default:    // displayable character
-		currentLine_->insert(currentLine_->begin()+currentChar_, ch);
-		++currentChar_;
+		getLineIt(getCurrentLinePosition())->insert(getLineIt(getCurrentLinePosition())->begin() + getCurrentCharPosition(), ch);
+		moveToNextChar();
 		repositionCaret();
 		invalidateLine();
 		break;
 	}
 }
 
+void XEditorWindow::moveToLineEnd() {
+	setCurrentCharPosition(getCurrentLine().size());
+}
+
+void XEditorWindow::moveToLineBegin() {
+	setCurrentCharPosition(0);
+}
+
+void XEditorWindow::moveToNextLine() {
+	setCurrentLinePosition(getCurrentLinePosition() + 1);
+}
+
+void XEditorWindow::moveToPrevLine() {
+	setCurrentLinePosition(getCurrentLinePosition() - 1);
+}
+
+void XEditorWindow::moveToPrevChar() {
+	if(getCurrentCharPosition() == 0 &&
+			getCurrentLinePosition() != 0) {
+		moveToPrevLine();
+		moveToLineEnd();
+	} else
+		setCurrentCharPosition(getCurrentCharPosition() - 1);
+}
+
+void XEditorWindow::moveToNextChar() {
+	if(getCurrentCharPosition() == getCurrentLine().size() &&
+			getCurrentLinePosition() != getLines().size() - 1)
+		moveToNextLine();
+	else
+		setCurrentCharPosition(getCurrentCharPosition() + 1);
+}
+
+void XEditorWindow::setCurrentLinePosition(int line) {
+	if(line < 0)
+		currentLine_ = 0;
+	else if(line >= getLines().size())
+		currentLine_ = getLines().size() - 1;
+	else
+		currentLine_ = line;
+	setCurrentCharPosition(0);
+}
+
+void XEditorWindow::setCurrentCharPosition(int position) {
+	if(position < 0)
+		currentChar_ = 0;
+	else if(position > getCurrentLine().size())
+		currentChar_ = getCurrentLine().size();
+	else
+		currentChar_ = position;
+	repositionCaret();
+}
+
+void XEditorWindow::setCurrentPosition(int line, int position) {
+	setCurrentLinePosition(line);
+	setCurrentCharPosition(position);
+}
+
+std::wstring& XEditorWindow::insertLine(int at, const std::wstring &line) {
+	auto res = getLines().insert(getLineIt(at), line);
+
+	if(currentLine_ > at)
+		++currentLine_;
+	if(screenStartLine_ > at)
+		++screenStartLine_;
+
+	repositionCaret();
+	invalidateScreen();
+	return *res;
+}
+
+void XEditorWindow::insertText(int line, int position,
+		const std::wstring& text) {
+	std::vector<std::wstring> lines = split_lines(text);
+	std::wstring t = getLine(line).substr(0, position), rem = getLine(line).substr(position);
+
+	t += lines.front();
+	setLine(line, t);
+
+	getLines().insert(getLineIt(line+1), lines.begin() + 1, lines.end());
+	*getLineIt(line + lines.size() - 1) += rem;
+
+	if(currentLine_ > line)
+		currentLine_ += lines.size() - 1;
+	else if(currentLine_ == line && currentChar_ > position) {
+		currentLine_ += lines.size() - 1;
+		currentChar_ += lines.back().size() - t.size();
+	}
+
+	if(screenStartLine_ > line)
+		screenStartLine_ += lines.size();
+
+	repositionCaret();
+	invalidateScreen();
+}
+
+//void XEditorWindow::advanceLine(int diff) {
+//	if(diff > 0)	// for lists
+//		for(int i = 0; i < diff; ++i)
+//			++currentLine_;
+//	else
+//		for(int i = 0; i > diff; --i)
+//			--currentLine_;
+//	currentLine_ += diff;
+//}
+
 void XEditorWindow::WMKeyDown(char keyCode) {
+	int lastPosition;
 	switch(keyCode) {
 	case VK_UP:
-		if(currentLine_ != lines_.begin()) {
-			--currentLine_;
-			--nCurrentLine_;
-		}
-		if(currentChar_ > currentLine_->size())
-			currentChar_ = currentLine_->size();
+		lastPosition = getCurrentCharPosition();
+		moveToPrevLine();
+		setCurrentCharPosition(lastPosition);
 		break;
 	case VK_DOWN:
-		if(++currentLine_ == lines_.end())
-			--currentLine_;
-		else
-			++nCurrentLine_;
-		if(currentChar_ > currentLine_->size())
-			currentChar_ = currentLine_->size();
+		lastPosition = getCurrentCharPosition();
+		moveToNextLine();
+		setCurrentCharPosition(lastPosition);
 		break;
 	case VK_LEFT:
-		if(currentChar_ > 0)
-			--currentChar_;
-		else if(currentLine_ != lines_.begin()) {
-			--currentLine_;
-			--nCurrentLine_;
-			currentChar_ = currentLine_->size();
-		}
+		moveToPrevChar();
 		break;
 	case VK_RIGHT:
-		if(currentChar_ < currentLine_->size())
-			++currentChar_;
-		else if(++currentLine_ == lines_.end())
-			--currentLine_;
-		else {
-			++nCurrentLine_;
-			currentChar_ = 0;
-		}
+		moveToNextChar();
 		break;
 	case VK_HOME:
-		currentChar_ = 0;
+		moveToLineBegin();
 		break;
 	case VK_END:
-		currentChar_ = currentLine_->size();
+		moveToLineEnd();
 		break;
 	default:
 		break;
 	}
-	repositionCaret();
 }
-
-} /* namespace XEditor */
 
 std::ostream& operator <<(std::ostream& stream,
 		XEditor::XEditorWindow& xeditor) {
@@ -205,3 +307,58 @@ std::ostream& operator <<(std::ostream& stream,
 std::istream& operator >>(std::istream& stream,
 		XEditor::XEditorWindow& xeditor) {
 }
+
+int XEditorWindow::getCurrentCharPosition() const {
+	return currentChar_;
+}
+
+int XEditorWindow::getCurrentLinePosition() const {
+	return currentLine_;
+}
+
+const std::wstring& XEditorWindow::getCurrentLine() const {
+	return getLine(currentLine_);
+}
+
+const std::vector<std::wstring>& XEditorWindow::getLines() const {
+	return lines_;
+}
+
+std::vector<std::wstring>::iterator XEditorWindow::getLineIt(int line) {
+	return getLines().begin() + line;
+}
+
+const std::wstring& XEditorWindow::getLine(int line) const{
+	return getLines()[line];
+}
+
+void XEditorWindow::setCurrentLine(const std::wstring& line) {
+	setLine(getCurrentLinePosition(), line);
+}
+
+void XEditorWindow::outputLine(Drawing::Drawer& partDrawer,
+		const std::wstring& line, RECT txtRect) {
+	partDrawer.drawText(line, 0, txtRect);
+}
+
+std::vector<std::wstring>& XEditorWindow::getLines() {
+	return lines_;
+}
+
+void XEditorWindow::setLine(int line, const std::wstring& str) {
+	getLines()[line] = str;
+}
+
+std::vector<std::wstring> split_lines(const std::wstring& text) {
+	std::vector<std::wstring> lines;
+	std::wstringstream ss {text};
+	std::wstring tmp;
+	while(!ss.eof()) {
+		std::getline(ss, tmp);
+		lines.push_back(tmp);
+	}
+	return lines;
+}
+
+} /* namespace XEditor */
+

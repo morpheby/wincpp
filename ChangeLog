@@ -1,3 +1,10 @@
+2012-12-15  Morphe  <Morphe@Morphe-PC>
+
+	* src\GeneralControls\XEditorWindow.h (XEditorWindow): Moved lots of code handling position to methods
+	* src\GeneralControls\XEditor\XEditorWindow.cpp (XEditorWindow::invalidateLine): Replaced stub with actual code
+	(XEditorWindow::PaintWindow): Now using outputLine
+	* src\test\xeditortest.cpp: Changed info-text
+
 2012-12-02  Morphe  <Morphe@Morphe-PC>
 
 	* src\Window\Window.cpp (Window::WndProc): Used move ctor instead of copy in ERASEBKGND

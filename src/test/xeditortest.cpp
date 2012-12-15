@@ -15,7 +15,7 @@ int __stdcall wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	window.Show(nCmdShow);
 
 	MessageBoxW(GetActiveWindow(),
-			L"1. The window underneath should have label,\n"
+			L"1. The window underneath should have text,\n"
 			 "   which will provide further instructions",
 			L"Instructions", MB_OK);
 
