@@ -12,6 +12,7 @@
 #include <list>
 #include <vector>
 #include <iostream>
+#include <tuple>
 
 namespace XEditor {
 
@@ -31,9 +32,12 @@ public:
 	~XEditorWindow();
 
 	std::wstring getSelection() const;
-	void replaceSelection(std::wstring selection);
+	void removeSelection();
+	void setSelection(int startLine, int startPosition, int line, int position);
 	void invalidateScreen();
-	void invalidateLine();
+	void invalidateLine(int line);
+	void invalidateCurrentLine();
+	void invalidateLines(int start, int end);
 	void repositionCaret();
 
 	int getCurrentCharPosition() const;
@@ -55,10 +59,23 @@ public:
 	void moveToLineBegin();
 
 	std::wstring& insertLine(int after, const std::wstring &line);
-	void insertText(int line, int position, const std::wstring &text);
+	std::tuple<std::vector<std::wstring>::size_type, std::wstring::size_type>
+	insertText(int line, int position, const std::wstring &text);
 
 	void setLine(int line, const std::wstring& str);
 	void setCurrentLine(const std::wstring &line);
+
+	int getStdCharHeight() const;
+
+	std::pair<int, int> getSelectionStart() const;
+	std::pair<int, int> getSelectionEnd() const;
+
+	bool hasSelection() const;
+
+	void selectDefFont();
+	void selectFont(LOGFONT font);
+	void copySelection();
+	void pasteAtCursor();
 
 protected:
 	LRESULT WndProc(UINT msg, WPARAM wParam, LPARAM lParam) override;
@@ -68,14 +85,15 @@ protected:
 	bool WMEraseBackground(Drawing::Drawer &drawer) override;
 	std::wstring GetThemeApplicableClassList() override;
 
-	void calcTxtRect(const std::wstring &str, LOGFONT font, RECT &txtRect);
-	virtual void outputLine(Drawing::Drawer &partDrawer, const std::wstring &line, RECT txtRect);
+	void calcLineRect(const std::wstring &line, RECT &txtRect);
+	virtual void outputLine(Drawing::Drawer &partDrawer, const std::wstring &line,
+			RECT &txtRect, bool bSimulate = false, int selStart = -1, int selEnd = -1);
 
 private:
-	int maxCharHeight_ {0};
-	int currentLine_{0}, lastSelLine_{-1}, screenStartLine_{0};
-	int currentChar_{0}, lastSelChar_{-1}, screenStartChar_{0};
-	int invalidatedLine_{-1};
+	int stdCharHeight_{0};
+	int currentLine_{0}, selStartLine_{-1}, screenStartY_{0};
+	int currentChar_{0}, selStartChar_{-1}, screenStartX_{0};
+	bool selecting_{false};
 	LOGFONT textFont_;
 	std::vector<std::wstring> lines_;
 	WndEventExtCaller<XEditorOutputLineEventParams> onOutputLine_;
@@ -83,16 +101,22 @@ private:
 	void WMSize(POINTS size);
 	void WMKillFocus();
 	void WMSetFocus();
-	void WMChar(wchar_t ch);
+	void charInput(wchar_t ch);
+	void controlKey(wchar_t key);
 	void WMKeyDown(char keyCode);
+	void WMKeyUp(char keyCode);
+	void mouseMsg(UINT msg);
 
 	std::vector<std::wstring>& getLines();
 
 	std::vector<std::wstring>::iterator getLineIt(int line);
 //	void advanceLine(int offset);
+	void removeCharAt(int line, int position);
+	void removeLine(int line);
+	void startSelection();
+	void clearSelection();
 };
 
-std::vector<std::wstring> split_lines(const std::wstring &text);
 std::ostream& operator<< (std::ostream& stream, XEditor::XEditorWindow& xeditor);
 std::istream& operator>> (std::istream& stream, XEditor::XEditorWindow& xeditor);
 
