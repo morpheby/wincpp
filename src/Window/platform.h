@@ -10,5 +10,9 @@
 
 #include <windows.h>
 
+#ifndef WM_MOUSEHWHEEL
+#define WM_MOUSEHWHEEL 0x020E
+#endif
+
 
 #endif /* PLATFORM_H_ */

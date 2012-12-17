@@ -1,9 +1,16 @@
+2012-12-17  Morphe  <Morphe@Morphe-PC>
+
+	* src\Window\platform.h: Added WM_MOUSEHWHEEL, since it is OS-version specific
+	* src\Window\Window.h: Including paltform.h instead of window.h
+	* src\GeneralControls\XEditor\XEditorWindow.cpp (XEditorWindow::setCurrentCharPosition): Scrolls screen so that caret is visible
+
 2012-12-16  Morphe  <Morphe@Morphe-PC>
 
 	* src\GeneralControls\XEditor\XEditorWindow.cpp: Added config.h
 	Using custom font
 	Added copy-paste support
 	Added selection (only keyboard controlled) support
+	(XEditorWindow::outputLine): Selection processing part doesn't need to be executed in simulation
 
 2012-12-15  Morphe  <Morphe@Morphe-PC>
 

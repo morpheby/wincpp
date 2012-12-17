@@ -13,6 +13,7 @@
 #include <vector>
 #include <iostream>
 #include <tuple>
+#include <Cursors.h>
 
 namespace XEditor {
 
@@ -51,6 +52,9 @@ public:
 	void setCurrentLinePosition(int line);
 	void setCurrentCharPosition(int position);
 	void setCurrentPosition(int line, int position);
+	void setCurrentPosition(std::pair<int, int> pos) {
+		setCurrentPosition(pos.first, pos.second);
+	}
 	void moveToLineEnd();
 	void moveToNextLine();
 	void moveToPrevChar();
@@ -88,12 +92,17 @@ protected:
 	void calcLineRect(const std::wstring &line, RECT &txtRect);
 	virtual void outputLine(Drawing::Drawer &partDrawer, const std::wstring &line,
 			RECT &txtRect, bool bSimulate = false, int selStart = -1, int selEnd = -1);
+	virtual std::wstring processNewLine(int at, const std::wstring &line);
 
 private:
 	int stdCharHeight_{0};
 	int currentLine_{0}, selStartLine_{-1}, screenStartY_{0};
 	int currentChar_{0}, selStartChar_{-1}, screenStartX_{0};
-	bool selecting_{false};
+//	bool selecting_{false};
+	bool mouseHolding_{false};
+	POINT mouseDownPoint_{0, 0};
+	Cursor textCursor_{CursorFactory::GetCursor(0, IDC_IBEAM)},
+			arrowCursor_{CursorFactory::GetCursor(0, IDC_ARROW)};
 	LOGFONT textFont_;
 	std::vector<std::wstring> lines_;
 	WndEventExtCaller<XEditorOutputLineEventParams> onOutputLine_;
@@ -105,7 +114,9 @@ private:
 	void controlKey(wchar_t key);
 	void WMKeyDown(char keyCode);
 	void WMKeyUp(char keyCode);
-	void mouseMsg(UINT msg);
+	void mouseMsg(UINT msg, WPARAM wParam);
+	void scrollMsg(UINT msg, WPARAM wParam);
+	void mouseScroll(float scrollX, float scrollY);
 
 	std::vector<std::wstring>& getLines();
 
@@ -115,6 +126,11 @@ private:
 	void removeLine(int line);
 	void startSelection();
 	void clearSelection();
+	std::pair<int, int> getPositionAt(POINT pt);
+	void updateScrollInfo();
+	void scrollScreen();
+
+	std::vector<std::wstring>::iterator int_insertLine(int at, const std::wstring &line);
 };
 
 std::ostream& operator<< (std::ostream& stream, XEditor::XEditorWindow& xeditor);

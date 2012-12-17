@@ -16,7 +16,7 @@
 #include <stdlib.h>
 #include <map>
 
-#include <windows.h>
+#include <platform.h>
 
 #include <uxtheme.h>
 
