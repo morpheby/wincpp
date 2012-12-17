@@ -20,12 +20,19 @@ namespace XEditor {
 struct XEditorOutputLineEventParams {
 	Drawing::Drawer &partDrawer;
 	const std::wstring &line;
-	constexpr XEditorOutputLineEventParams(Drawing::Drawer &_partDrawer, const std::wstring &_line) : partDrawer(_partDrawer), line(_line) {}
+	RECT &txtRect;
+	bool bSimulate;
+	int selStart;
+	int selEnd;
+	constexpr XEditorOutputLineEventParams(Drawing::Drawer &_partDrawer, const std::wstring &_line,
+			RECT &_txtRect, bool _bSimulate, int _selStart, int _selEnd) :
+					partDrawer(_partDrawer), line(_line), txtRect(_txtRect), bSimulate(_bSimulate),
+					selStart(_selStart), selEnd(_selEnd) {};
 };
 
 class XEditorWindow: public Window {
 public:
-	friend std::ostream& operator<< (std::ostream& stream, XEditor::XEditorWindow& xeditor);
+	friend std::ostream& operator<< (std::ostream& stream, const XEditor::XEditorWindow& xeditor);
 	friend std::istream& operator>> (std::istream& stream, XEditor::XEditorWindow& xeditor);
 
 	XEditorWindow();
@@ -81,6 +88,8 @@ public:
 	void copySelection();
 	void pasteAtCursor();
 
+	void setOnOutputLine(WndEventExtBase<XEditorOutputLineEventParams> *event);
+
 protected:
 	LRESULT WndProc(UINT msg, WPARAM wParam, LPARAM lParam) override;
 	void PrePaintWindow(RECT &updateRect) override;
@@ -133,7 +142,7 @@ private:
 	std::vector<std::wstring>::iterator int_insertLine(int at, const std::wstring &line);
 };
 
-std::ostream& operator<< (std::ostream& stream, XEditor::XEditorWindow& xeditor);
+std::ostream& operator<< (std::ostream& stream, const XEditor::XEditorWindow& xeditor);
 std::istream& operator>> (std::istream& stream, XEditor::XEditorWindow& xeditor);
 
 } /* namespace XEditor */
