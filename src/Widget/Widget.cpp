@@ -193,10 +193,12 @@ std::shared_ptr<Widget> Widget::getShared() {
 
 void Widget::attachChild(Widget &child) {
 	attachedWidgets_.push_back(child.getShared());
+	child.setStyle(WidgetStyle::isChild);
 	recycleEvent(WidgetEventType::childAttached, WidgetToWidgetEventParams{WidgetEventType::childAttached, child});
 }
 
 void Widget::detachChild(Widget &child) {
+	child.setStyle(getWindowDefaultStyle());
 	recycleEvent(WidgetEventType::childDetach, WidgetToWidgetEventParams{WidgetEventType::childDetach, child});
 	attachedWidgets_.erase(std::find(attachedWidgets_.begin(), attachedWidgets_.end(), child.getShared()));
 }

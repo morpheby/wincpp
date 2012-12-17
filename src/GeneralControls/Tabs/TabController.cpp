@@ -57,6 +57,7 @@ void TabController::init() {
 	setEventHandler(WidgetEventType::geometryChange, NewEventExt(*this, &TabController::onGeometryChange));
 	setEventHandler(WidgetEventType::mouseMove, NewEventExt(*this, &TabController::onMouseMove));
 	setEventHandler(WidgetEventType::mouseLBtnUp, NewEventExt(*this, &TabController::onMouseLBtnUp));
+	setEventHandler(WidgetEventType::setFocus, NewEventExt(*this, &TabController::onSetFocus));
 }
 
 TabController::TabController() :
@@ -109,10 +110,8 @@ int TabController::onChildAttached(Widget& sender, WidgetEventParams& _params) {
 	params.refWidget.setSize(getWidth(), getHeight() - tabs_.back()->getSizeY());
 	params.refWidget.setPosition(0, tabs_.back()->getSizeY());
 	params.refWidget.Hide();
-	params.refWidget.setStyle(wsCombine(WidgetStyle::isChild));
 	dynamic_cast<TabWidget&> (params.refWidget).changeController(this->getShared<TabController>());
-	if(!selection_)
-		selectTab(tabs_.back());
+	selectTab(tabs_.back());
 	return 0;
 }
 
@@ -129,6 +128,12 @@ int TabController::onGeometryChange(Widget& sender, WidgetEventParams& params) {
 		tab->setSize(getWidth(), getHeight() - tabs_.back()->getSizeY());
 	}
 	return 1;
+}
+
+int TabController::onSetFocus(Widget& sender, WidgetEventParams& params) {
+	if(selection_)
+		::SetFocus(selection_->getWindow());
+	return 0;
 }
 
 int TabController::onBtnClicked(Window& sender, WinMessage_t& msg) {
@@ -175,6 +180,7 @@ void TabController::selectTab(std::shared_ptr<TabButton> tab) {
 
 	setName(selection_->getName());
 	selection_->Show();
+	::SetFocus(selection_->getWindow());
 }
 
 void TabController::removeTab(std::shared_ptr<TabButton> tab) {
