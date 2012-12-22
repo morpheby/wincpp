@@ -172,17 +172,7 @@ std::wstring XEditorWindow::getSelection() const {
 	if(!hasSelection())
 		return L""; // no selection
 
-
-	if(getSelectionStart().first == getSelectionEnd().first)
-		return getLine(getSelectionStart().first).substr(getSelectionStart().second, getSelectionEnd().second - getSelectionStart().second);
-
-	std::wstring selection;
-	selection += getLine(getSelectionStart().first).substr(getSelectionStart().second) + NEWLINE;
-	for(int i = getSelectionStart().first + 1; i < getSelectionEnd().first; ++i)
-		selection += getLine(i) + NEWLINE;
-	selection += getLine(getSelectionEnd().first).substr(0, getSelectionEnd().second);
-
-	return selection;
+	return getText(getSelectionStart().first, getSelectionStart().second, getSelectionEnd().first, getSelectionEnd().second);
 }
 
 void XEditorWindow::removeSelection() {
@@ -197,15 +187,7 @@ void XEditorWindow::removeSelection() {
 	clearSelection();
 	setCurrentPosition(selectionStartLine, selectionStartChar);
 
-	setLine(selectionStartLine, getLine(selectionStartLine).substr(0, selectionStartChar) +
-			getLine(selectionEndLine).substr(selectionEndChar));
-
-	if(selectionStartLine != selectionEndLine) {
-		getLines().erase(getLineIt(selectionStartLine + 1), getLineIt(selectionEndLine+1));
-		invalidateLines(selectionStartLine, getLines().size());
-	} else
-		invalidateLine(selectionStartLine);
-
+	removeText(selectionStartLine, selectionStartChar, selectionEndLine, selectionEndChar);
 }
 
 void XEditorWindow::invalidateScreen() {
@@ -214,28 +196,17 @@ void XEditorWindow::invalidateScreen() {
 
 void XEditorWindow::invalidateLines(int start, int end) {
 	RECT updateRect {0, 0, getSizeX(), 0};
-	int top = - screenStartY_;
 
 	if(start < 0)
 		start = 0;
 	if(end > getLines().size())
 		end = getLines().size();
 
-	for(int i = 0; i < end && top < getSizeY(); ++i) {
-		RECT txtRect {0, 0, 0, 0};
-		if(getLine(i).empty())
-			txtRect.bottom = stdCharHeight_;
-		else
-			calcLineRect(getLine(i), txtRect);
-		if(i == start)
-			updateRect.top = top;
-
-		top += txtRect.bottom - txtRect.top;
-	}
+	updateRect.top = start * getStdCharHeight() - screenStartY_;
 	if(end == getLines().size())
 		updateRect.bottom = getSizeY();
 	else
-		updateRect.bottom = top;
+		updateRect.bottom = getStdCharHeight() * end - screenStartY_;
 
 	UpdateWindow(&updateRect);
 }
@@ -775,7 +746,7 @@ void XEditorWindow::selectDefFont() {
 void XEditorWindow::selectFont(LOGFONT font) {
 	textFont_ = font;
 	RECT t {0, 0, 0, 0};
-	calcLineRect(L"A", t);
+	calcLineRect(L"Ay`,/|@#^_", t);
 	stdCharHeight_ = t.bottom;
 	invalidateScreen();
 }
@@ -846,16 +817,9 @@ void XEditorWindow::mouseScroll(float scrollX, float scrollY) {
 }
 
 std::pair<int, int> XEditorWindow::getPositionAt(POINT pt) {
-	int top = - screenStartY_;
 	int line, position, diff = 0;
 
-	for(line = 0; line < getLines().size() && top < pt.y; ++line) {
-		RECT lineRect {0, 0, 0, 0};
-		calcLineRect(getLine(line), lineRect);
-		top += lineRect.bottom - lineRect.top;
-	}
-	if(line > 0)
-		--line;
+	line = std::max((long int)0, std::min((long int)getLines().size() - 1, (long int)(pt.y + screenStartY_) / getStdCharHeight()));
 
 	int left = 0;
 	diff = 0;
@@ -946,6 +910,39 @@ void XEditorWindow::scrollScreen() {
 
 	repositionCaret();
 	invalidateScreen();
+}
+
+void XEditorWindow::undo() {
+}
+
+void XEditorWindow::removeText(int startLine, int startPos, int endLine,
+		int endPos) {
+	setLine(startLine, getLine(startLine).substr(0, startPos) +
+			getLine(endLine).substr(endPos));
+
+	if(startLine != endLine) {
+		getLines().erase(getLineIt(startLine + 1), getLineIt(endLine+1));
+		invalidateLines(startLine, getLines().size());
+	} else
+		invalidateLine(startLine);
+
+}
+
+std::wstring XEditorWindow::getText(int startLine, int startCh, int endLine,
+		int endCh) const {
+	if(startLine == endLine)
+		return getLine(startLine).substr(startCh, endCh - startCh);
+
+	std::wstring selection;
+	selection += getLine(startLine).substr(startCh) + NEWLINE;
+	for(int i = startLine + 1; i < endLine; ++i)
+		selection += getLine(i) + NEWLINE;
+	selection += getLine(endLine).substr(0, endCh);
+
+	return selection;
+}
+
+void XEditorWindow::redo() {
 }
 
 } /* namespace XEditor */

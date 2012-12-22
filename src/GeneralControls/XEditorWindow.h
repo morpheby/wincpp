@@ -14,6 +14,7 @@
 #include <iostream>
 #include <tuple>
 #include <Cursors.h>
+#include <stack>
 
 namespace XEditor {
 
@@ -47,6 +48,7 @@ public:
 	const std::wstring& getLine(int line) const;
 	const std::wstring& getCurrentLine() const;
 	const std::vector<std::wstring>& getLines() const;
+	std::wstring getText(int startLine, int startCh, int endLine, int endCh) const;
 
 
 	void setCurrentLinePosition(int line);
@@ -65,6 +67,7 @@ public:
 	std::wstring& insertLine(int after, const std::wstring &line);
 	std::tuple<std::vector<std::wstring>::size_type, std::wstring::size_type>
 	insertText(int line, int position, const std::wstring &text);
+	void removeText(int startLine, int startPos, int endLine, int endPos);
 
 	void setLine(int line, const std::wstring& str);
 	void setCurrentLine(const std::wstring &line);
@@ -80,6 +83,9 @@ public:
 	void selectFont(LOGFONT font);
 	void copySelection();
 	void pasteAtCursor();
+
+	void undo();
+	void redo();
 
 protected:
 	LRESULT WndProc(UINT msg, WPARAM wParam, LPARAM lParam) override;
@@ -129,6 +135,9 @@ private:
 	std::pair<int, int> getPositionAt(POINT pt);
 	void updateScrollInfo();
 	void scrollScreen();
+
+//	void storeInsertion(_UndoOperation operation);
+
 
 	std::vector<std::wstring>::iterator int_insertLine(int at, const std::wstring &line);
 };
