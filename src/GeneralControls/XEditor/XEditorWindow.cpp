@@ -10,6 +10,7 @@
 #endif
 
 #include "XEditorWindow.h"
+#include "UndoMaintainer.h"
 #include <sstream>
 #include <string.h>
 #include <utf8.h>
@@ -27,12 +28,14 @@ std::wstring StrClean(const std::wstring& str); /// Cleans string from any contr
 bool Inbetween(int a, int b, int x);
 
 XEditorWindow::XEditorWindow() :
-	Window(L"", WS_CHILD | WS_VISIBLE | WS_VSCROLL/* | WS_HSCROLL*/, 0, 0, 0, 0, 0, 0, 0){
+	Window(L"", WS_CHILD | WS_VISIBLE | WS_VSCROLL/* | WS_HSCROLL*/, 0, 0, 0, 0, 0, 0, 0),
+	undoMaintainer_(new UndoMaintainer(*this)) {
 }
 
 XEditorWindow::XEditorWindow(int x, int y, int width, int height,
 		Window& parentWnd) :
-	Window(L"", WS_CHILD | WS_VISIBLE | WS_VSCROLL/* | WS_HSCROLL*/, x, y, width, height, parentWnd, 0, 0) {
+	Window(L"", WS_CHILD | WS_VISIBLE | WS_VSCROLL/* | WS_HSCROLL*/, x, y, width, height, parentWnd, 0, 0),
+	undoMaintainer_(new UndoMaintainer(*this)) {
 	selectDefFont();
 	lines_.push_back(L"");
 	updateScrollInfo();
@@ -229,24 +232,28 @@ void XEditorWindow::invalidateCurrentLine() {
 	invalidateLine(getCurrentLinePosition());
 }
 
-void XEditorWindow::removeCharAt(int line, int position) {
+wchar_t XEditorWindow::removeCharAt(int line, int position) {
 	if(position == -1) {
 		// concat with prev line
 		if(line == 0)
-			return;
+			return 0;
 		setLine(line - 1, getLine(line - 1) + getLine(line));
 		invalidateLine(line - 1);
 		removeLine(line);
+		return L'\n';
 	} else if(position == getLine(line).size()) {
 		// concat with next line
 		if(line == getLines().size() - 1)
-			return;
+			return 0;
 		setLine(line, getLine(line) + getLine(line + 1));
 		invalidateLine(line);
 		removeLine(line + 1);
+		return L'\n';
 	} else {
+		wchar_t ch = getLineIt(line)->at(position);
 		getLineIt(line)->erase(position, 1);
 		invalidateLine(line);
+		return ch;
 	}
 
 }
@@ -264,20 +271,32 @@ void XEditorWindow::charInput(wchar_t ch) {
 			int line = getCurrentLinePosition(),
 				pos = getCurrentCharPosition();
 			moveToPrevChar();
-			removeCharAt(line, pos - 1);
-		} else
+			if(wchar_t ch = removeCharAt(line, pos - 1))
+				undoMaintainer_->accumulateRemove(getCurrentLinePosition(), getCurrentCharPosition(), ch, true);
+		} else {
+			undoMaintainer_->storeRemove(getSelectionStart().first, getSelectionStart().second, getSelection());
 			removeSelection();
+		}
 		break;
 
 	case 0x0D:  // carriage return
-		removeSelection();
-//		insertLine(currentLine_ + 1, L"");
+		if(hasSelection()) {
+			undoMaintainer_->storeReplace(getSelectionStart().first, getSelectionStart().second,
+					getSelectionStart().first + 1, 0, getSelection());
+			removeSelection();
+		} else
+			undoMaintainer_->accumulateInput(getCurrentLinePosition(), getCurrentCharPosition(), true);
 		insertText(getCurrentLinePosition(), getCurrentCharPosition(), L"\n");
 		moveToNextLine();
 		break;
 
 	default:    // displayable character
-		removeSelection();
+		if(hasSelection()) {
+			undoMaintainer_->storeReplace(getSelectionStart().first, getSelectionStart().second,
+					getSelectionStart().first, getSelectionStart().second + 1, getSelection());
+			removeSelection();
+		} else
+			undoMaintainer_->accumulateInput(getCurrentLinePosition(), getCurrentCharPosition(), false);
 		getLineIt(getCurrentLinePosition())->insert(getLineIt(getCurrentLinePosition())->begin() + getCurrentCharPosition(), ch);
 		moveToNextChar();
 		invalidateCurrentLine();
@@ -426,6 +445,7 @@ void XEditorWindow::WMKeyDown(char keyCode) {
 			startSelection();
 		else if(!shiftDown && hasSelection())
 			clearSelection();
+		undoMaintainer_->storeAccumulator();
 		break;
 	default:
 		break;
@@ -455,13 +475,18 @@ void XEditorWindow::WMKeyDown(char keyCode) {
 		moveToLineEnd();
 		break;
 	case VK_DELETE:
-		if(!hasSelection())
-			removeCharAt(getCurrentLinePosition(), getCurrentCharPosition());
-		else
+		if(!hasSelection()) {
+			if(wchar_t ch = removeCharAt(getCurrentLinePosition(), getCurrentCharPosition()))
+				undoMaintainer_->accumulateRemove(getCurrentLinePosition(), getCurrentCharPosition(), ch, false);
+		}
+		else {
+			undoMaintainer_->storeRemove(getSelectionStart().first, getSelectionStart().second, getSelection());
 			removeSelection();
+		}
 		break;
 	case VK_TAB:
 		getLineIt(getCurrentLinePosition())->insert(getCurrentCharPosition(), TABSTR);
+		undoMaintainer_->storeInput(getCurrentLinePosition(), getCurrentCharPosition(), getCurrentLinePosition(), getCurrentCharPosition() + wcslen(TABSTR));
 		setCurrentCharPosition(getCurrentCharPosition() + 3);
 		invalidateCurrentLine();
 		break;
@@ -567,10 +592,21 @@ void XEditorWindow::copySelection() {
 void XEditorWindow::pasteAtCursor() {
 	std::wstring buf;
 	buf = PasteFromClipboard(*this);
-	removeSelection();
-	auto pos = insertText(getCurrentLinePosition(), getCurrentCharPosition(),
-			buf);
-	setCurrentPosition(std::get<0>(pos), std::get<1>(pos));
+	if(hasSelection()) {
+		std::wstring oldText = getSelection();
+		removeSelection();
+		auto pos = insertText(getCurrentLinePosition(), getCurrentCharPosition(),
+				buf);
+
+		undoMaintainer_->storeReplace(getCurrentLinePosition(), getCurrentCharPosition(), std::get<0>(pos), std::get<1>(pos), oldText);
+		setCurrentPosition(std::get<0>(pos), std::get<1>(pos));
+	} else {
+		auto pos = insertText(getCurrentLinePosition(), getCurrentCharPosition(),
+				buf);
+
+		undoMaintainer_->storeInput(getCurrentLinePosition(), getCurrentCharPosition(), std::get<0>(pos), std::get<1>(pos));
+		setCurrentPosition(std::get<0>(pos), std::get<1>(pos));
+	}
 }
 
 void XEditorWindow::controlKey(wchar_t key) {
@@ -583,8 +619,13 @@ void XEditorWindow::controlKey(wchar_t key) {
 		pasteAtCursor();
 		break;
 	case 'X':
-		copySelection();
-		removeSelection();
+		cutSelection();
+		break;
+	case 'Z':
+		undo();
+		break;
+	case 'Y':
+		redo();
 		break;
 	}
 }
@@ -696,6 +737,7 @@ void XEditorWindow::removeLine(int line) {
 
 void XEditorWindow::setSelection(int startLine, int startPosition, int line,
 		int position) {
+	clearSelection();
 	selStartLine_ = startLine;
 	selStartChar_ = startPosition;
 	currentLine_ = line;
@@ -913,6 +955,7 @@ void XEditorWindow::scrollScreen() {
 }
 
 void XEditorWindow::undo() {
+	undoMaintainer_->undo();
 }
 
 void XEditorWindow::removeText(int startLine, int startPos, int endLine,
@@ -942,7 +985,14 @@ std::wstring XEditorWindow::getText(int startLine, int startCh, int endLine,
 	return selection;
 }
 
+void XEditorWindow::cutSelection() {
+	copySelection();
+	undoMaintainer_->storeRemove(getSelectionStart().first, getSelectionStart().second, getSelection());
+	removeSelection();
+}
+
 void XEditorWindow::redo() {
+	undoMaintainer_->redo();
 }
 
 } /* namespace XEditor */

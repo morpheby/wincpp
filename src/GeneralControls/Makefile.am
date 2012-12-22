@@ -7,16 +7,20 @@ EXTRA_DIST 						=
 
 noinst_LIBRARIES				= libwcppgenctl.a
 
-libwcppgenctl_a_SOURCES			=						\
-								Label/LabelWnd.cpp		\
-								Label/UrlWnd.cpp		\
-								NotifyWnd/NotifyWnd.cpp	\
-								Tabs/TabController.cpp	\
-								Tabs/TabWidget.cpp		\
-								Tabs/TabButton.cpp		\
-								Tabs/TabButton.h		\
-								Tabs/TabCloseButton.cpp	\
-								Tabs/TabCloseButton.h	\
+libwcppgenctl_a_SOURCES			=							\
+								Label/LabelWnd.cpp			\
+								Label/UrlWnd.cpp			\
+								NotifyWnd/NotifyWnd.cpp		\
+								Tabs/TabController.cpp		\
+								Tabs/TabWidget.cpp			\
+								Tabs/TabButton.cpp			\
+								Tabs/TabButton.h			\
+								Tabs/TabCloseButton.cpp		\
+								Tabs/TabCloseButton.h		\
+								XEditor/UndoOperation.h		\
+								XEditor/UndoOperation.cpp	\
+								XEditor/UndoMaintainer.h	\
+								XEditor/UndoMaintainer.cpp	\
 								XEditor/XEditorWindow.cpp
 								
 libwcppgenctl_a_CPPFLAGS		=								\

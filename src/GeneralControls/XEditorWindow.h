@@ -14,7 +14,6 @@
 #include <iostream>
 #include <tuple>
 #include <Cursors.h>
-#include <stack>
 
 namespace XEditor {
 
@@ -23,6 +22,8 @@ struct XEditorOutputLineEventParams {
 	const std::wstring &line;
 	constexpr XEditorOutputLineEventParams(Drawing::Drawer &_partDrawer, const std::wstring &_line) : partDrawer(_partDrawer), line(_line) {}
 };
+
+class UndoMaintainer;
 
 class XEditorWindow: public Window {
 public:
@@ -81,10 +82,20 @@ public:
 
 	void selectDefFont();
 	void selectFont(LOGFONT font);
+
+	/// Identical to Ctrl+C
 	void copySelection();
+
+	/// Identical to Ctrl+X
+	void cutSelection();
+
+	/// Identical to Ctrl+V
 	void pasteAtCursor();
 
+	/// Identical to Ctrl+Z
 	void undo();
+
+	/// Identical to Ctrl+Y
 	void redo();
 
 protected:
@@ -112,6 +123,7 @@ private:
 	LOGFONT textFont_;
 	std::vector<std::wstring> lines_;
 	WndEventExtCaller<XEditorOutputLineEventParams> onOutputLine_;
+	std::unique_ptr<UndoMaintainer> undoMaintainer_;
 
 	void WMSize(POINTS size);
 	void WMKillFocus();
@@ -128,16 +140,13 @@ private:
 
 	std::vector<std::wstring>::iterator getLineIt(int line);
 //	void advanceLine(int offset);
-	void removeCharAt(int line, int position);
+	wchar_t removeCharAt(int line, int position);
 	void removeLine(int line);
 	void startSelection();
 	void clearSelection();
 	std::pair<int, int> getPositionAt(POINT pt);
 	void updateScrollInfo();
 	void scrollScreen();
-
-//	void storeInsertion(_UndoOperation operation);
-
 
 	std::vector<std::wstring>::iterator int_insertLine(int at, const std::wstring &line);
 };
