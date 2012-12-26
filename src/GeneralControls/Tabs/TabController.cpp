@@ -52,6 +52,7 @@ std::shared_ptr<TabController> TabPool::findControllerAt(int x, int y) {
 }
 
 void TabController::init() {
+	origName_ = getName();
 	setEventHandler(WidgetEventType::childAttached, NewEventExt(*this, &TabController::onChildAttached));
 	setEventHandler(WidgetEventType::childDetach, NewEventExt(*this, &TabController::onChildDetach));
 	setEventHandler(WidgetEventType::geometryChange, NewEventExt(*this, &TabController::onGeometryChange));
@@ -112,12 +113,14 @@ int TabController::onChildAttached(Widget& sender, WidgetEventParams& _params) {
 	params.refWidget.Hide();
 	dynamic_cast<TabWidget&> (params.refWidget).changeController(this->getShared<TabController>());
 	selectTab(tabs_.back());
+	getWindow().UpdateWindow();
 	return 0;
 }
 
 int TabController::onChildDetach(Widget& sender, WidgetEventParams& _params) {
 	WidgetToWidgetEventParams& params = static_cast<WidgetToWidgetEventParams&> (_params);
 	dynamic_cast<TabWidget&> (params.refWidget).changeController(nullptr);
+	getWindow().UpdateWindow();
 	return 0;
 }
 
@@ -190,6 +193,7 @@ void TabController::removeTab(std::shared_ptr<TabButton> tab) {
 		if(tabs_.size() == 1) {
 			selectionBtn_ = nullptr;
 			selection_ = nullptr;
+			setName(origName_);
 			getWindow().UpdateWindow(); // When all tab buttons are removed, remove bar
 		} else if(tabP + 1 == tabs_.end())
 			selectTab(*(tabP - 1));
@@ -280,7 +284,7 @@ int TabController::onMouseLBtnUp(Widget& sender, WidgetEventParams& params) {
 		std::shared_ptr<TabController> c;
 		auto tab = selection_;
 		if(!(c = tabPool_.findControllerAt(pos.x, pos.y))) {
-			c = std::make_shared<TabController>(pos.x, pos.y, getWidthOuter(), getHeightOuter(), getWindowDefaultStyle());
+			c = buildController(pos.x, pos.y, getWidthOuter(), getHeightOuter());
 			c->setSelfHoldEnabled(true);
 			c->Show();
 			c->setEventHandler(WidgetEventType::close, NewEventExt(*c, &TabController::onCloseInternal));

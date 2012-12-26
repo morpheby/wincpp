@@ -50,9 +50,14 @@ public:
 protected:
 	void DrawWindow(Drawing::Drawer &drawer) override;
 	void widgetReload() override;
+
+	virtual std::shared_ptr<TabController> buildController(int x, int y, int width, int height) {
+		return std::make_shared<TabController>(x, y, width, height, getWindowDefaultStyle());
+	}
 private:
 	static class TabPool tabPool_;
 
+	std::wstring origName_;
 	bool mouseCaptured_ {false};
 	bool btnMouseDown_ {false};
 	bool registered_ {false};
