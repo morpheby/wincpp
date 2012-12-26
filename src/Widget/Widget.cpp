@@ -260,7 +260,7 @@ void Widget::setEventHandler(WidgetEventType event,
 		WidgetEventExtBase<WidgetEventParams&>* handler) {
 	if(handler) {
 		msgMap_[event] = handler;
-		if(!wndInternalMessages.count(event))
+		if(!wndInternalMessages.count(event) && window_)
 			getWindow().setProcessMessage((UINT) event, NewEventExt(*this, &Widget::wndMessage));
 	} else
 		msgMap_.erase(event);
