@@ -499,19 +499,28 @@ void XEditorWindow::WMKeyUp(char keyCode) {
 }
 
 std::ostream& operator <<(std::ostream& stream,
-		XEditor::XEditorWindow& xeditor) {
-	for(auto line : xeditor.getLines())
-		stream << utf8Str(StrTrimRight(line)) << std::endl;
+		const XEditor::XEditorWindow& xeditor) {
+	for(auto i = xeditor.getLines().begin(); i < xeditor.getLines().end() - 1; ++i)
+		stream << utf8Str(StrTrimRight(*i)) << std::endl;
+	if(!xeditor.getLines().back().empty())
+		stream << utf8Str(StrTrimRight(xeditor.getLines().back())) << std::endl;
 	return stream;
 }
 
 std::istream& operator >>(std::istream& stream,
 		XEditor::XEditorWindow& xeditor) {
+	int linePos = xeditor.getCurrentLinePosition(),
+		charPos = xeditor.getCurrentCharPosition();
+	xeditor.currentChar_ = 0;
+	xeditor.currentLine_ = 0;
+
+	xeditor.getLines().clear();
 	std::string line;
 	while(!stream.eof()) {
 		std::getline(stream, line);
 		xeditor.insertLine(xeditor.getLines().size(), StrClean(wideStr(line)));
 	}
+	xeditor.setCurrentPosition(linePos, charPos);
 	return stream;
 }
 
@@ -545,6 +554,8 @@ void XEditorWindow::setCurrentLine(const std::wstring& line) {
 
 void XEditorWindow::outputLine(Drawing::Drawer& partDrawer,
 		const std::wstring& line, RECT &txtRect, bool bSimulate, int selStart, int selEnd) {
+	if(onOutputLine_(*this, {partDrawer, line, txtRect, bSimulate, selStart, selEnd}))
+		return;
 
 	partDrawer.drawText(line, DT_CALCRECT, txtRect);
 	partDrawer.setTextColor(GetSysColor(COLOR_WINDOWTEXT));
@@ -773,7 +784,7 @@ bool XEditorWindow::hasSelection() const {
 
 void XEditorWindow::selectDefFont() {
 	LOGFONT font;
-	memset(&font, 0, sizeof(font));
+	memset(&font, 0, sizeof(LOGFONT));
 
 	wcscpy(font.lfFaceName, L"Consolas");
 	font.lfHeight = -MulDiv(10, GetDeviceCaps(getDC(), LOGPIXELSY), 72);
@@ -995,4 +1006,10 @@ void XEditorWindow::redo() {
 	undoMaintainer_->redo();
 }
 
+void XEditorWindow::setOnOutputLine(
+		WndEventExtBase<XEditorOutputLineEventParams>* event) {
+	onOutputLine_ = event;
+}
+
 } /* namespace XEditor */
+

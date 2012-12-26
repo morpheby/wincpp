@@ -43,7 +43,7 @@ public:
 			WidgetStyle style, Widget &parent);
 	~TabController();
 
-	const std::shared_ptr<TabWidget>& getSelection() const {
+	std::shared_ptr<TabWidget>& getSelection() {
 		return selection_;
 	}
 
