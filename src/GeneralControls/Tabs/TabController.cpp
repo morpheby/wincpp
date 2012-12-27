@@ -308,12 +308,20 @@ int TabController::onCloseInternal(Widget& sender, WidgetEventParams& params) {
 }
 
 void TabController::UpdateTabButtons() {
+	auto diff =  std::find(tabs_.begin(), tabs_.end(), selectionBtn_) - tabs_.begin();
+
 	tabs_.clear();
 	for(auto tab : getAttachedWidgets()) {
 		addTabBtn(tab->getName());
 	}
 	if(!tabs_.empty())
-		selectTab(tabs_.back());
+		selectTab(tabs_[diff]);
 }
 
+void TabController::updateCurrentTab() {
+	selectionBtn_->setName(selection_->getName());
+}
+
+
 } /* namespace Tabs */
+

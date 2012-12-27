@@ -54,6 +54,8 @@ protected:
 	virtual std::shared_ptr<TabController> buildController(int x, int y, int width, int height) {
 		return std::make_shared<TabController>(x, y, width, height, getWindowDefaultStyle());
 	}
+
+	void updateCurrentTab();
 private:
 	static class TabPool tabPool_;
 
