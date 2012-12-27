@@ -56,6 +56,7 @@ public:
 	const std::wstring& getLine(int line) const;
 	const std::wstring& getCurrentLine() const;
 	const std::vector<std::wstring>& getLines() const;
+	const std::vector<std::wstring>& getCLines() const { return getLines(); };
 	std::wstring getText(int startLine, int startCh, int endLine, int endCh) const;
 
 
@@ -105,7 +106,7 @@ public:
 
 	/// Identical to Ctrl+Y
 	void redo();
-	
+
 	void setOnOutputLine(WndEventExtBase<XEditorOutputLineEventParams> *event);
 
 
