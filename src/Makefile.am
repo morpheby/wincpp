@@ -146,7 +146,7 @@ tabstest.$(OBJEXT): $(bins)/tabstest.exe.manifest
 $(bins)/tabstest.exe.manifest: app.manifest
 	$(LN_S) $< $@
 
-__bins__xeditortest_exe_SOURCES		= test/xeditortest.cpp
+__bins__xeditortest_exe_SOURCES		= test/xeditortest.cpp test/xeditortest.h
 __bins__xeditortest_exe_LDADD		= -lwincpp -L$(bins)
 __bins__xeditortest_exe_LDFLAGS		= -municode -mwindows
 CLEANFILES						   += $(bins)/xeditortest.exe.manifest
