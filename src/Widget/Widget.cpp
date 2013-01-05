@@ -213,7 +213,8 @@ std::weak_ptr<Widget> Widget::setParent(std::weak_ptr<Widget> parent) {
 		parentPtr->attachChild(*this);
 		getWindow().setParent(parentPtr->getWindow());
 	} else
-		getWindow().setParent(0);
+		LoadWindow();
+//		getWindow().setParent(0);
 
 	recycleEvent(WidgetEventType::parentChanged);
 

@@ -204,6 +204,8 @@ void TabController::removeTab(std::shared_ptr<TabButton> tab) {
 			selection_ = nullptr;
 			setName(origName_);
 			getWindow().UpdateWindow(); // When all tab buttons are removed, remove bar
+			tabs_.clear();
+			return;
 		} else if(tabP + 1 == tabs_.end())
 			selectTab(*(tabP - 1));
 		else
