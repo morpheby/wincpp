@@ -14,6 +14,7 @@
 #include <ThemedDrawer.h>
 #include <algorithm>
 #include <cstdlib>
+#include <cassert>
 
 
 namespace Tabs {
@@ -24,24 +25,35 @@ public:
 	virtual ~TabPool() = default;
 
 	void registerController(std::shared_ptr<TabController> controller);
+	void unregisterController(std::shared_ptr<TabController> controller);
 	std::shared_ptr<TabController> findControllerAt(int x, int y);
 private:
 	std::vector<std::weak_ptr<TabController>> controllers_;
+	std::shared_ptr<TabController> mainController_;
 };
 
 TabPool TabController::tabPool_ {};
 
 void TabPool::registerController(std::shared_ptr<TabController> controller) {
+	if(!mainController_)
+		mainController_ = controller;
 	controllers_.push_back(controller);
+}
+
+void TabPool::unregisterController(std::shared_ptr<TabController> controller) {
+	auto i = std::find_if(controllers_.begin(), controllers_.end(),
+			[controller] (std::weak_ptr<TabController> c)
+			{return !c.expired() && controller == c.lock();});
+	if(i != controllers_.end())
+		controllers_.erase(i);
+	if(mainController_ == controller)
+		mainController_ = controllers_.front().lock();
 }
 
 std::shared_ptr<TabController> TabPool::findControllerAt(int x, int y) {
 	auto i = controllers_.begin();
 	while(i != controllers_.end()) {
-		if(i->expired()) {	// cleanup
-			controllers_.erase(i);
-			continue;
-		}
+		assert(!i->expired());
 		auto p = i->lock();
 		if(	p->getX() <= x && x <= p->getRight() &&
 			p->getY() <= y && y <= p->getBottom() )
@@ -59,6 +71,7 @@ void TabController::init() {
 	setEventHandler(WidgetEventType::mouseMove, NewEventExt(*this, &TabController::onMouseMove));
 	setEventHandler(WidgetEventType::mouseLBtnUp, NewEventExt(*this, &TabController::onMouseLBtnUp));
 	setEventHandler(WidgetEventType::setFocus, NewEventExt(*this, &TabController::onSetFocus));
+	setEventHandler(WidgetEventType::close, NewEventExt(*this, &TabController::onCloseInternal));
 }
 
 TabController::TabController() :
@@ -102,10 +115,6 @@ TabController::~TabController() {
 }
 
 int TabController::onChildAttached(Widget& sender, WidgetEventParams& _params) {
-	if(!registered_) {
-		tabPool_.registerController(getShared<TabController>());
-		registered_ = true;
-	}
 	WidgetToWidgetEventParams& params = static_cast<WidgetToWidgetEventParams&> (_params);
 	addTabBtn(params.refWidget.getName());
 	params.refWidget.setSize(getWidth(), getHeight() - tabs_.back()->getSizeY());
@@ -220,6 +229,10 @@ void TabController::DrawWindow(Drawing::Drawer& drawer) {
 }
 
 void TabController::widgetReload() {
+	if(!registered_) {
+		tabPool_.registerController(getShared<TabController>());
+		registered_ = true;
+	}
 	UpdateTabButtons();
 }
 
@@ -287,7 +300,6 @@ int TabController::onMouseLBtnUp(Widget& sender, WidgetEventParams& params) {
 			c = buildController(pos.x, pos.y, getWidthOuter(), getHeightOuter());
 			c->setSelfHoldEnabled(true);
 			c->Show();
-			c->setEventHandler(WidgetEventType::close, NewEventExt(*c, &TabController::onCloseInternal));
 		}
 		if(c == getShared())
 			return 0;
@@ -304,6 +316,7 @@ int TabController::onCloseInternal(Widget& sender, WidgetEventParams& params) {
 		i->Hide();
 		i->setParent(nullptr);
 	}
+	tabPool_.unregisterController(getShared<TabController>());
 	return 1;
 }
 
@@ -319,7 +332,8 @@ void TabController::UpdateTabButtons() {
 }
 
 void TabController::updateCurrentTab() {
-	selectionBtn_->setName(selection_->getName());
+	if(selectionBtn_)
+		selectionBtn_->setName(selection_->getName());
 }
 
 
