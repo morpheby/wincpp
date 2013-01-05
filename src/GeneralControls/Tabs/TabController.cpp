@@ -47,7 +47,12 @@ void TabPool::unregisterController(std::shared_ptr<TabController> controller) {
 	if(i != controllers_.end())
 		controllers_.erase(i);
 	if(mainController_ == controller)
-		mainController_ = controllers_.front().lock();
+		if(controllers_.empty())
+			mainController_ = nullptr;
+		else {
+			assert(!controllers_.front().expired());
+			mainController_ = controllers_.front().lock();
+		}
 }
 
 std::shared_ptr<TabController> TabPool::findControllerAt(int x, int y) {
