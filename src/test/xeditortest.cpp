@@ -1,5 +1,5 @@
 
-#include "labeltest.h"
+#include "xeditortest.h"
 
 
 int __stdcall wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
@@ -15,7 +15,7 @@ int __stdcall wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	window.Show(nCmdShow);
 
 	MessageBoxW(GetActiveWindow(),
-			L"1. The window underneath should have label,\n"
+			L"1. The window underneath should have text,\n"
 			 "   which will provide further instructions",
 			L"Instructions", MB_OK);
 
@@ -36,15 +36,7 @@ int __stdcall wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 MainWnd::MainWnd(void) :
 		Window(L"Test", WS_OVERLAPPEDWINDOW, 50_scaled, 50_scaled,
 				700_scaled, 500_scaled, 0, 0, 0),
-		label(L"", 0, 0, *this) {
-
-	label.setForcedWidth(true);
-
-	label.setText(L"1. This line shall be automatically word-wrapped to the next "
-			"line in case it doesn't fill the size of the window.\n"
-			"2. Try resizing window -- word-wrapping shall occur right while you "
-			"are changing size\n"
-			"3. If everything happens right as described -- close the window and confirm test");
+		editor_(0, 0, getSizeX(), getSizeY(), *this) {
 
 	Sizer();
 }
@@ -62,8 +54,8 @@ void MainWnd::WMSize() {
 }
 
 void MainWnd::Sizer() {
-	label.setSize(getSize());
-	label.ImmediatelyUpdateWindow();
+	editor_.setSize(getSize());
+	editor_.ImmediatelyUpdateWindow();
 }
 
 LRESULT MainWnd::WndProc(UINT msg, WPARAM wParam, LPARAM lParam) {
@@ -74,16 +66,9 @@ LRESULT MainWnd::WndProc(UINT msg, WPARAM wParam, LPARAM lParam) {
 	case WM_CLOSE:
 		WMClose();
 		break;
+	case WM_SETFOCUS:
+		SetFocus(editor_);
+		return 0;
 	}
 	return Window::WndProc(msg, wParam, lParam);
 }
-
-
-
-
-
-
-
-
-
-

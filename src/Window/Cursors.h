@@ -8,7 +8,7 @@
 #ifndef CURSORS_H_
 #define CURSORS_H_
 
-#include <windows.h>
+#include "platform.h"
 
 class Cursor {
 public:

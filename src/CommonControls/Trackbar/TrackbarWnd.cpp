@@ -45,15 +45,20 @@ Window* TrackbarWnd::setUpBuddy(Window* newBuddy) {
 }
 
 LRESULT TrackbarWnd::WndProc(UINT msg, WPARAM wParam, LPARAM lParam) {
-	if(msg == WM_HSCROLL || msg == WM_VSCROLL) {
+	switch (msg) {
+	case WM_HSCROLL:
+	case WM_VSCROLL:
 		onPosChange(*this, getTBInternal().getTrackbarPos());
 		return 0;
+	case WM_SIZE:
+		WMSize(MAKEPOINTS(lParam));
+		break;
 	}
 	return Window::WndProc(msg, wParam, lParam);
 }
 
-void TrackbarWnd::WMSize() {
-	getTBInternal().setSize(getWidth(), getHeight());
+void TrackbarWnd::WMSize(POINTS size) {
+	getTBInternal().setSize(size.x, size.y);
 }
 
 bool TrackbarWnd::isHorizontal() const {

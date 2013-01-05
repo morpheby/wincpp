@@ -20,11 +20,9 @@ EventCallerBase::EventCallerBase() {
 }
 
 EventCallerBase& EventCallerBase::operator =(EventGenBase* event) {
-	delete event_;
-	event_ = event;
+	event_ = std::shared_ptr<EventGenBase>(event);
 	return *this;
 }
 
 EventCallerBase::~EventCallerBase() {
-	delete event_;
 }

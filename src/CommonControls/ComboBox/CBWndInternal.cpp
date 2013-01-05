@@ -49,7 +49,7 @@ wstring CBWndInternal::getItem(int i) const {
 	wchar_t* buff = new wchar_t[txtLength];
 	ComboBox_GetLBText(*this, i, buff);
 	wstring text(buff);
-	delete buff;
+	delete[] buff;
 	return text;
 }
 

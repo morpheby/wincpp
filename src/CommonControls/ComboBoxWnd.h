@@ -50,7 +50,6 @@ protected:
 	bool Autocomplete(EditboxWnd& eb, const std::wstring& inputText);
 
 	LRESULT WndProc(UINT msg, WPARAM wParam, LPARAM lParam);
-	void WMSize();
 
 	virtual int onSelChange(int index) {
 		return onSelChange_(*this, getCurSel());
@@ -59,6 +58,8 @@ protected:
 private:
 	CBWndInternal cb;
 	WndEventExtCaller<const std::wstring&> onSelChange_;
+
+	void WMSize(POINTS size);
 };
 
 template<class Container>

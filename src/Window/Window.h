@@ -1,9 +1,22 @@
+/* Window.h
+ * Provides basic front-end for Win32 windows.
+ * Please, avoid it's direct use. Use Widget class.
+ *
+ * This class is used directly only in special cases,
+ * such as double-layering CommonControls - there is an
+ * Window object, which by fact is just an wrapper of
+ * some default window class, and an Widget, which acts
+ * as real object and contains that Window as its private
+ * inaccessible child
+ */
+
 #ifndef WINDOW_H_
 #define WINDOW_H_
 
 #include <stdlib.h>
+#include <map>
 
-#include <windows.h>
+#include <platform.h>
 
 #include <uxtheme.h>
 
@@ -13,6 +26,8 @@
 #include "vssym32.h"
 #include "Bitmap.h"
 #include "DPIScaler.h"
+#include "DeviceContext.h"
+#include "Drawer.h"
 
 class Window;
 
@@ -43,9 +58,9 @@ public:
 template<typename _ParamT>
 class WndEventExtCaller : protected EventCallerBase {
 public:
-	WndEventExtCaller() { event_ = new WndEventExtBase<_ParamT>(); }
+	WndEventExtCaller() { event_ = std::shared_ptr<EventGenBase>(new WndEventExtBase<_ParamT>()); }
 	int operator() (Window &sentBy, _ParamT param) {
-		return (*dynamic_cast<WndEventExtBase<_ParamT> *>(event_))(sentBy, param);
+		return (*dynamic_cast<WndEventExtBase<_ParamT> *>(event_.get()))(sentBy, param);
 	}
 	using EventCallerBase::operator=;
 };
@@ -56,6 +71,13 @@ WndEventExtBase<_ParamT> * NewEventExt
 	return new WndEventExt<_ParentT, _ParamT> (parent, f);
 }
 
+typedef struct _tagWINMESSAGE{
+	UINT msg;
+	WPARAM wParam;
+	LPARAM lParam;
+	LRESULT retVal;
+} WinMessage_t;
+
 class Window {
 public:
 	Window(void);
@@ -63,11 +85,8 @@ public:
 			HWND parentWindow, HMENU menu, LPVOID lpParam);
 	virtual ~Window(void);
 
-	BOOL MoveWindow(int x, int y, int width, int height);
 	BOOL SetWindowPos(HWND insertAfter, int x, int y, int width, int height,
 			UINT flags);
-	BOOL SetWindowPos(HWND insertAfter, UINT flags);
-	BOOL MoveWindow();
 
 	BOOL Show();
 	BOOL Hide();
@@ -81,32 +100,35 @@ public:
 	std::wstring getName() const;
 
 	BOOL setSize(int width, int height);
-	inline void setWidth(int width) {setSize(width, getHeight());}
-	inline void setHeight(int height) {setSize(getWidth(), height);}
-	inline int getWidth() const {return width_;}
-	inline int getHeight() const {return height_;}
-
+	BOOL setSize(SIZE sz);
 	BOOL setPosition(int x, int y);
-	inline void setX(int x) {setPosition(x, getY());}
-	inline void setY(int y) {setPosition(getX(), y);}
-	inline int getX() const {return x_;}
-	inline int getY() const {return y_;}
+	BOOL setPosition(POINT pos);
+	SIZE getSize() const;
+	POINT getPosition() const;
+	RECT getWindowRect() const;
+	RECT getClientRect() const;
 
-	inline int getRight() const {return getX()+getWidth();}
-	inline int getBottom() const {return getY()+getHeight();}
+	int getPositionX() const { return getPosition().x; }
+	int getPositionY() const { return getPosition().y; }
+	int getSizeX() const { return getSize().cx; }
+	int getSizeY() const { return getSize().cy; }
+	int getCornerX() const { return getPositionX() + getSizeX(); }
+	int getCornerY() const { return getPositionY() + getSizeY(); }
 
-	inline HTHEME getTheme() const {
-		return hTheme;
-	}
+	void setPositionX(int x) { setPosition(x, getPositionY()); }
+	void setPositionY(int y) { setPosition(getPositionX(), y); }
+	void setSizeX(int x) { setSize(x, getSizeY()); }
+	void setSizeY(int y) { setSize(getSizeX(), y); }
 
 	BOOL setMenu(HMENU menu);
 	HMENU getMenu() const;
 
 	LONG_PTR setStyle(LONG_PTR style);
+	LONG_PTR addStyle(LONG_PTR style);
 	LONG_PTR clearStyle(LONG_PTR clearBits);
 	LONG_PTR getStyle() const;
 
-	LONG_PTR setStyleEx(LONG_PTR styleEx);
+	LONG_PTR addStyleEx(LONG_PTR styleEx);
 	LONG_PTR clearStyleEx(LONG_PTR clearBits);
 	LONG_PTR getStyleEx() const;
 
@@ -122,21 +144,20 @@ public:
 	}
 
 	Window *SafeGetWindow(UINT wCmd);
-	void setOnClose(WndEventBase* onClose);
-	void setOnDestroy(WndEventBase* onDestroy);
 	static Window* SafeWindowFromHandle(const HWND wnd);
-	void setOnPaintWindow(WndEventBase* onPaintWindow);
-	void setOnShowWindow(WndEventBase* onShowWindow);
-
-	void setOnSetFocus(WndEventBase* onSetFocus) {
-		this->onSetFocus = onSetFocus;
-	}
-
-	void setOnKillFocus(WndEventBase* onKillFocus) {
-		this->onKillFocus = onKillFocus;
-	}
 
 	void setFont(HFONT font);
+	void setPaintCachingMode(bool cacheOn);
+
+	DC::DeviceContext getDC();
+	DC::DeviceContext getDesktopDC();
+
+	std::shared_ptr<Drawing::Drawer> getDrawer();
+	std::shared_ptr<Drawing::Drawer> getDesktopDrawer();
+
+	void setPainter(WndEventExtBase<Drawing::Drawer&> *painter);
+	void setProcessMessage(UINT msg, WndEventExtBase<WinMessage_t&> *msgProc);
+	void clearMessageMap();
 
 	enum _WMDlgKeys {
 		WM_TAB = WM_USER,
@@ -150,81 +171,42 @@ protected:
 			int height, HWND parentWindow, HMENU menu, LPVOID lpParam);
 
 	void AssignClass();
-	void ReloadSize();
-	void InitVars(int x, int y, int width, int height);
+	void InitVars();
 
 	virtual LRESULT WndProc(UINT msg, WPARAM wParam, LPARAM lParam);
 
-	virtual void PaintWindow(HDC hdc) {
+	virtual void PaintWindow(Drawing::Drawer &drawer) {
 	}
 
-	virtual void PrePaintWindow(LPRECT updateRect) {
+	virtual void PrePaintWindow(RECT &updateRect) {
 	}
 
-	WndEventCaller onShowWindow;
-
-	virtual void ShowWindowInt() {
+	virtual void PostPaintWindow(RECT &updateRect) {
 	}
 
-	virtual void WMSize() {
-	}
+	int CallMsgProc(WinMessage_t &msg);
 
-	virtual void WMMove() {
-	}
-
-	virtual bool WMSetFocus() {
-		return false;
-	}
-
-	virtual bool WMKillFocus() {
-		return false;
-	}
-
-	virtual void WMKeyDown(int vk) {
-	}
-
-	virtual void WMChar(wchar_t ch) {
-	}
-
-	virtual bool WMEraseBackground(HDC hdc);
-	WndEventCaller onPaintWindow;
-	WndEventCaller onClose, onDestroy_;
-	WndEventCaller onSetFocus, onKillFocus;
-
-	virtual bool WMClose() {
-		return false;
-	}
-
-	virtual void WMDestroy() {
-	}
+	virtual bool WMEraseBackground(Drawing::Drawer &drawer);
 
 	static LRESULT __stdcall IntWndProc(HWND wnd, UINT msg, WPARAM wParam, LPARAM lParam);
 	virtual std::wstring GetThemeApplicableClassList();
 	virtual LRESULT DefWndProc(UINT msg, WPARAM wParam, LPARAM lParam);
-	virtual HWND CreateWnd(const std::wstring& wndName, UINT style, HWND parentWnd,
-			HMENU menu, HINSTANCE instance, LPVOID lpParam);
-	HRESULT DrawTText(HDC hdc, int iPartId, int iStateId, const std::wstring& text,
-			DWORD dwFlags, RECT& rect);
-	HRESULT DrawTText(HDC hdc, const std::wstring& text, DWORD dwFlags, RECT& rect);
-	HRESULT DrawTBackground(HDC hdc, int iPartId, int iStateId, RECT& rect);
-	HRESULT DrawTBackground(HDC hdc, int iPartId, int iStateId, RECT& rect,
-			RECT* clipRect);
-	HFONT GetThemeFont(int iPartId, int iStateId);
-	HPEN CreateCosmeticPen(COLORREF color);
-	void OpenTheme();
-	long int GetThemeFontInt(int iPartId, int iStateId, LOGFONT& logFont);
+	virtual HWND CreateWnd(const std::wstring& wndName, UINT style,
+			int x, int y, int width, int height, HWND parentWnd, HMENU menu,
+			HINSTANCE instance, LPVOID lpParam);
+//	HPEN CreateCosmeticPen(COLORREF color);
+//	long int GetThemeFontInt(int iPartId, int iStateId, LOGFONT& logFont);
 	void setDefMsgProcessing();
 	void resetDefMsgProcessing();
-	void setPaintCachingMode(bool cacheOn);
 	void setRedraw(bool redraw);
-	void ReloadPos();
 
+	HTHEME getTheme();
+	void TrackMouseEvent(DWORD event);
 private:
 	HWND hWnd;
-	HTHEME hTheme;
-	int x_, y_, width_, height_;
 	Bitmap* cachedBmp;
 	bool update_, defMsgProc, cacheOn_;
+	HTHEME hTheme_;
 	static bool wndClassRegistered;
 	static unsigned int wndCreating;
 
@@ -236,8 +218,12 @@ private:
 
 	static void RegisterWndClass();
 	static bool CheckScreenResolution(int width, int height);
+	void OpenTheme();
 
-	void IntCachedPaint(HDC dc, RECT updateRect);
+	void IntCachedPaint(DC::DeviceContext dc, RECT updateRect);
+
+	std::map<DWORD, WndEventExtCaller<WinMessage_t&>> msgMap_;
+	WndEventExtCaller<Drawing::Drawer&> painter_;
 
 };
 

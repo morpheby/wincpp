@@ -10,8 +10,8 @@ public:
 	~NotifyWnd(void);
 	void setText(const std::wstring &text);
 protected:
-	void PaintWindow(HDC hdc);
-	bool WMEraseBackground(HDC hdc);
+	void PaintWindow(Drawing::Drawer &drawer) override;
+	bool WMEraseBackground(Drawing::Drawer &drawer);
 	std::wstring GetThemeApplicableClassList();
 private:
 	std::wstring txt;

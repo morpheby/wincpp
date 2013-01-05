@@ -31,7 +31,6 @@ EditboxWnd::EditboxWnd() :
 EditboxWnd::EditboxWnd(const wstring& initialText, int x, int y, int width, int height,
 		HWND parent) :
 		EditboxWnd(ES_AUTOHSCROLL, initialText, x, y, width, height, parent) {
-	InitEBInternal();
 }
 
 EditboxWnd::EditboxWnd(int style, const wstring& initialText, int x, int y, int width,
@@ -46,8 +45,8 @@ EditboxWnd::EditboxWnd(HWND convertFrom) :
 		eb(new EditboxWndInternal(convertFrom)) {
 	InitEBInternal();
 	// Inject itself in-between actual edit and it's parent
-	setPosition(getEBInternal().getX(), getEBInternal().getY());
-	setSize(getEBInternal().getWidth(), getEBInternal().getHeight());
+	setPosition(getEBInternal().getPosition());
+	setSize(getEBInternal().getSize());
 	getEBInternal().setParent(*this);
 	getEBInternal().setPosition(0, 0);
 }
@@ -66,7 +65,8 @@ void EditboxWnd::setEmptyText(const wstring& eText) {
 
 LRESULT EditboxWnd::WndProc(UINT msg, WPARAM wParam, LPARAM lParam) {
 	int retval = 0;
-	if(msg == WM_COMMAND)
+	switch(msg) {
+	case  WM_COMMAND:
 		switch(HIWORD(wParam)) {
 		case EN_CHANGE:
 			// BUGFIX ComboBox behavior: passing this message to Window::WndProc makes
@@ -90,6 +90,17 @@ LRESULT EditboxWnd::WndProc(UINT msg, WPARAM wParam, LPARAM lParam) {
 			retval |= onTextChange_(*this, text_);
 			break;
 		}
+		break;
+	case WM_SIZE:
+		WMSize();
+		break;
+	case WM_SETFOCUS:
+		WMSetFocus();
+		break;
+	case WM_KILLFOCUS:
+		WMKillFocus();
+		break;
+	}
 	return retval ? : Window::WndProc(msg, wParam, lParam);
 }
 
@@ -98,9 +109,8 @@ void EditboxWnd::setSelection(int start, int end) {
 }
 
 void EditboxWnd::WMSize() {
-	if(getEBInternal().getWidth() != getWidth() ||
-			getEBInternal().getHeight() != getHeight()) {
-		getEBInternal().setSize(getWidth(), getHeight());
+	if(getEBInternal().getSize().cx != getSize().cx || getEBInternal().getSize().cy != getSize().cy) {
+		getEBInternal().setSize(getSize());
 	}
 }
 
@@ -113,17 +123,17 @@ bool EditboxWnd::WMKillFocus() {
 	return true;
 }
 
-int EditboxWnd::OnSetFocusInternal(Window& sender) {
-	return onSetFocus(*this); // pass event
+int EditboxWnd::OnSetFocusInternal(Window& sender, WinMessage_t& msg) {
+	return CallMsgProc(msg); // pass event
 }
 
-int EditboxWnd::OnKillFocusInternal(Window& sender) {
-	return onKillFocus(*this); // pass event
+int EditboxWnd::OnKillFocusInternal(Window& sender, WinMessage_t& msg) {
+	return CallMsgProc(msg); // pass event
 }
 
 void EditboxWnd::InitEBInternal() {
-	getEBInternal().setOnSetFocus(NewEvent(*this, &EditboxWnd::OnSetFocusInternal));
-	getEBInternal().setOnKillFocus(NewEvent(*this, &EditboxWnd::OnKillFocusInternal));
+	getEBInternal().setProcessMessage(WM_SETFOCUS, NewEventExt(*this, &EditboxWnd::OnSetFocusInternal));
+	getEBInternal().setProcessMessage(WM_KILLFOCUS, NewEventExt(*this, &EditboxWnd::OnKillFocusInternal));
 	getEBInternal().setEmptyTextMode(true);
 	getEBInternal().setEmptyText(eText_);
 }

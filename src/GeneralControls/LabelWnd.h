@@ -24,18 +24,20 @@ public:
 	}
 
 protected:
+	LRESULT WndProc(UINT msg, WPARAM wParam, LPARAM lParam) override;
 	bool isForcedWidth() const {
 		return forcedWidth_;
 	}
-	void PaintWindow(HDC hdc);
-	bool WMEraseBackground(HDC hdc);
-	void WMSize();
+	void PaintWindow(Drawing::Drawer &drawer) override;
+	bool WMEraseBackground(Drawing::Drawer &drawer) override;
 	std::wstring GetThemeApplicableClassList();
-	void CalcTxtRect();
+	virtual void CalcTxtRect();
 protected:
 	std::wstring txt;
 	RECT txtRect;
 	bool forcedWidth_;
+
+	void WMSize(POINTS size);
 };
 
 

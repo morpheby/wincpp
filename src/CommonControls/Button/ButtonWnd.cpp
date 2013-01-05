@@ -35,8 +35,8 @@ void ButtonWnd::setOnClick(WndEventBase* onClick) {
 LRESULT ButtonWnd::WndProc(UINT msg, WPARAM wParam, LPARAM lParam) {
 	LRESULT res = CommCtlWnd::WndProc(msg, wParam, lParam);
 	if (msg == WM_LBUTTONUP && IsWindowEnabled(getWindowHandle())
-			&& GET_X_LPARAM(lParam) <= getWidth()
-			&& GET_Y_LPARAM(lParam) <= getHeight())
+			&& GET_X_LPARAM(lParam) <= getSize().cx
+			&& GET_Y_LPARAM(lParam) <= getSize().cy)
 		onClick(*this);
 	return res;
 }

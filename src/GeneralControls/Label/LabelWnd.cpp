@@ -10,6 +10,7 @@
 #endif
 
 #include "LabelWnd.h"
+#include <ThemedDrawer.h>
 
 using namespace std;
 
@@ -38,17 +39,20 @@ const wstring& LabelWnd::getText() const {
 	return txt;
 }
 
-void LabelWnd::PaintWindow(HDC hdc) {
-	DrawTText(hdc, TEXT_LABEL, 0, txt, (isForcedWidth() ? DT_WORDBREAK : 0), txtRect);
+void LabelWnd::PaintWindow(Drawing::Drawer &drawer) {
+	if(Drawing::ThemedDrawer *tDrawer = dynamic_cast<Drawing::ThemedDrawer*>(&drawer))
+		tDrawer->setFontThemed(TEXT_LABEL, 0, TMT_FONT);
+	drawer.drawText(txt, (isForcedWidth() ? DT_WORDBREAK : 0), txtRect);
+	drawer.clearFont();
 }
 
-bool LabelWnd::WMEraseBackground(HDC hdc) {
+bool LabelWnd::WMEraseBackground(Drawing::Drawer &drawer) {
 //	Hide();
 //	InvalidateRect(getParent(), 0, TRUE);
 //	::UpdateWindow(getParent());
 //	DrawThemeParentBackground(getWindowHandle(), hdc, 0);
 //	Show();
-	Window::WMEraseBackground(hdc);
+	Window::WMEraseBackground(drawer);
 	return true;
 }
 
@@ -56,20 +60,28 @@ wstring LabelWnd::GetThemeApplicableClassList() {
 	return L"TEXTSTYLE;STATIC;" + Window::GetThemeApplicableClassList();
 }
 
-void LabelWnd::WMSize() {
+void LabelWnd::WMSize(POINTS size) {
 	CalcTxtRect();
-	if(txtRect.bottom != getHeight() || txtRect.right != getWidth())
+	if(txtRect.bottom != size.y || txtRect.right != size.x)
 		setSize(txtRect.right, txtRect.bottom);
 }
 
+LRESULT LabelWnd::WndProc(UINT msg, WPARAM wParam, LPARAM lParam) {
+	if(msg == WM_SIZE)
+		WMSize(MAKEPOINTS(lParam));
+	return Window::WndProc(msg, wParam, lParam);
+}
+
 void LabelWnd::CalcTxtRect() {
-	HDC dc = GetDC(getWindowHandle());
 	if(isForcedWidth())
 		GetClientRect(*this, &txtRect);
 	else
 		memset(&txtRect, 0, sizeof(txtRect));
-	DrawTText(dc, TEXT_LABEL, 0, txt, DT_CALCRECT | (isForcedWidth() ? DT_WORDBREAK : 0), txtRect);
-	ReleaseDC(getWindowHandle(), dc);
+	std::shared_ptr<Drawing::Drawer> drawerPtr = getDrawer();
+	if(shared_ptr<Drawing::ThemedDrawer> tDrawer = std::dynamic_pointer_cast<Drawing::ThemedDrawer>(drawerPtr))
+		tDrawer->setFontThemed(TEXT_LABEL, 0, TMT_FONT);
+	drawerPtr->drawText(txt, ((isForcedWidth() ? DT_WORDBREAK : 0) | DT_CALCRECT), txtRect);
+	drawerPtr->clearFont();
 }
 
 

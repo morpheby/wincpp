@@ -4,6 +4,8 @@
 #endif
 
 #include "Window.h"
+#include "DCFactory.h"
+#include "ThemedDrawer.h"
 
 using namespace std;
 
@@ -25,74 +27,68 @@ Window::Window(const wstring& wndName, DWORD style, int x, int y, int width,
 			lpParam);
 }
 
-void Window::InitVars(int x, int y, int width, int height) {
-	hTheme = 0;
+void Window::InitVars() {
 	cachedBmp = 0;
-	SetLastError(0);
-	x_ = x;
-	y_ = y;
-	width_ = width;
-	height_ = height;
+	::SetLastError(0);
 	defMsgProc = false;
 	cacheOn_ = true;
+	hTheme_ = 0;
 }
 
-void Window::ReloadSize() {
-	// Reload width and height
-	RECT clRect;
-	GetClientRect(*this, &clRect);
-	width_ = clRect.right;
-	height_ = clRect.bottom;
-}
+//void Window::ReloadSize() {
+//	// Reload width and height
+//	RECT clRect;
+//	GetClientRect(*this, &clRect);
+//	width_ = clRect.right;
+//	height_ = clRect.bottom;
+//}
 
 void Window::AssignClass() {
-	SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG_PTR) this);
+	::SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG_PTR) this);
 }
 
-void Window::ReloadPos() {
-	RECT rc = { 0, 0, 0, 0 };
-	GetWindowRect(*this, &rc);
-	MapWindowPoints(0, getParent(), (POINT *) &rc, 2);
-	x_ = rc.left;
-	y_ = rc.top;
-}
+//void Window::ReloadPos() {
+//	RECT rc = { 0, 0, 0, 0 };
+//	GetWindowRect(*this, &rc);
+//	MapWindowPoints(0, getParent(), (POINT *) &rc, 2);
+//	x_ = rc.left;
+//	y_ = rc.top;
+//}
 
 void Window::PostWindowCreate(const wstring& wndName, DWORD style, int x, int y,
 		int width, int height, HWND parentWindow, HMENU menu, LPVOID lpParam) {
 	if (!wndClassRegistered)
 		RegisterWndClass();
 
-	InitVars(x, y, width, height);
+	InitVars();
 
 	++wndCreating;
-	hWnd = CreateWnd(wndName, style | WS_CLIPSIBLINGS, parentWindow, menu, GetModuleHandle(NULL),
-			lpParam);
+	hWnd = CreateWnd(wndName, style | WS_CLIPSIBLINGS,
+			x, y, width, height, parentWindow, menu,
+			::GetModuleHandle(NULL), lpParam);
 	if (!hWnd) {
 		--wndCreating;
 		return;
 	}
 
-	// Reload width and height
-	ReloadSize();
-	ReloadPos();
-
 	AssignClass();
 
 	--wndCreating;
+
 	UpdateWindow();
 }
 
-HWND Window::CreateWnd(const wstring& wndName, UINT style, HWND parentWnd, HMENU menu, HINSTANCE instance,
-		LPVOID lpParam) {
-	if( ! CheckScreenResolution(getWidth(), getHeight()) )
+HWND Window::CreateWnd(const wstring& wndName, UINT style,
+		int x, int y, int width, int height, HWND parentWnd, HMENU menu,
+		HINSTANCE instance, LPVOID lpParam) {
+	if( ! CheckScreenResolution(width, height) )
 		return 0;
 	else
-		return CreateWindow(MYWNDCLASS_NAME, wndName.c_str(), style, getX(), getY(),
-				getWidth(), getHeight(), parentWnd, menu, instance, lpParam);
+		return ::CreateWindow(MYWNDCLASS_NAME, wndName.c_str(), style, x, y,
+				width, height, parentWnd, menu, instance, lpParam);
 }
 
 Window::~Window(void) {
-	CloseThemeData(hTheme);
 	if (hWnd)
 		DestroyWindow(hWnd);
 }
@@ -106,9 +102,9 @@ void Window::resetDefMsgProcessing() {
 
 LRESULT Window::WndProc(UINT msg, WPARAM wParam, LPARAM lParam) {
 	int processed = false;
-	int retVal = 0;
-	HDC dc;
+	LRESULT retVal = 0;
 	HRGN updRgn = 0;
+	bool wndDestroy = false;
 
 	if(defMsgProc && (msg == WM_PAINT || msg == WM_ERASEBKGND)) {
 		if(msg == WM_PAINT) {
@@ -133,16 +129,13 @@ LRESULT Window::WndProc(UINT msg, WPARAM wParam, LPARAM lParam) {
 			InvalidateRgn(*this, updRgn, 0);
 			DeleteObject(updRgn);
 		}
-		// if event doen't do anything good, use internal processing
-		if(!onPaintWindow(*this))
-			IntPaintWindow();
+		IntPaintWindow();
 		processed = true;
 		break;
 	case WM_PRINTCLIENT:
-		BitBlt((HDC)wParam, 0, 0, getWidth(), getHeight(),
-				dc = GetDC(getWindowHandle()), 0, 0, SRCCOPY);
+		BitBlt((HDC)wParam, 0, 0, getSize().cx, getSize().cy,
+				DC::GetDC(*this), 0, 0, SRCCOPY);
 		processed = true;
-		ReleaseDC(getWindowHandle(), dc);
 		break;
 	case WM_CTLCOLORBTN:
 		retVal = (int) COLOR_WINDOW;
@@ -150,62 +143,45 @@ LRESULT Window::WndProc(UINT msg, WPARAM wParam, LPARAM lParam) {
 		break;
 	case WM_ERASEBKGND:
 		processed = true;
-		if(!cacheOn_ && !defMsgProc)
-			WMEraseBackground((HDC)wParam);
+		if(!cacheOn_ && !defMsgProc) {
+			HDC bkgDc = (HDC) wParam;
+			if(getTheme()) {
+				Drawing::ThemedDrawer drawer (bkgDc, getTheme());
+				WMEraseBackground(drawer);
+			} else {
+				Drawing::Drawer drawer (bkgDc);
+				WMEraseBackground(drawer);
+			}
+		}
 		retVal = 1;
 		break;
-	case WM_CLOSE:
-		// We call both internal class function and
-		// event handler
-		processed = WMClose() | onClose(*this) ;
-		break;
-	case WM_MOVE:
-		ReloadPos();
-		ReloadSize(); // If movement occured together with sizing,
-					  // than our size data may become outdated
-		WMMove();
-		break;
-	case WM_SIZE:
-		ReloadPos();
-		ReloadSize();
-		update_ = true;
-		WMSize();
-		break;
-	case WM_SHOWWINDOW:
-		onShowWindow(*this);
-		break;
-	case WM_THEMECHANGED:
-		CloseThemeData(hTheme);
-		OpenTheme();
-		// pass it to defproc
+	case WM_WINDOWPOSCHANGED:
+		if(! (((WINDOWPOS*)lParam)->flags & SWP_NOSIZE) )
+			update_ = true;
 		break;
 	case WM_DESTROY:
-		onDestroy_(*this);
-		WMDestroy();
 		hWnd = 0;
+		wndDestroy = true; // mark as possibly no more existent
 		// pass it to defproc
 		break;
-	case WM_SETFOCUS:
-		if((processed = WMSetFocus()) || defMsgProc)
-			onSetFocus(*this);
-		break;
-	case WM_KILLFOCUS:
-		if((processed = WMKillFocus()) || defMsgProc)
-			onKillFocus(*this);
-		break;
-	case WM_KEYDOWN:
-		WMKeyDown(wParam);
-		break;
-	case WM_CHAR:
-		WMChar((wchar_t)wParam);
+	case WM_THEMECHANGED:
+		if(hTheme_)
+			CloseThemeData(hTheme_);
+		OpenTheme();
+		UpdateWindow();
 		break;
 	default:
 		break;
 	}
 
-	if(hWnd == 0)
+	WinMessage_t winMsg = {msg, wParam, lParam, 0};
+	processed = CallMsgProc(winMsg);
+	retVal = winMsg.retVal;
+
+	if(wndDestroy || !IsWindow(hWnd))
+		return 0;
 		// We may be no longer able to use virtual functions
-		return DefWindowProc(getWindowHandle(), msg, wParam, lParam);
+//		return DefWindowProc(getWindowHandle(), msg, wParam, lParam);
 
 	return defMsgProc && (msg == WM_PAINT || msg == WM_ERASEBKGND) ? retVal :
 			processed ? retVal : DefWndProc(msg, wParam, lParam);
@@ -224,41 +200,129 @@ bool Window::CheckScreenResolution(int width, int height) {
 		return true;
 }
 
-void Window::IntCachedPaint(HDC dc, RECT updateRect) {
+void Window::setPainter(WndEventExtBase<Drawing::Drawer&>* painter) {
+	painter_ = painter;
+}
+
+void Window::setProcessMessage(UINT msg,
+		WndEventExtBase<WinMessage_t&>* msgProc) {
+	msgMap_[msg] = msgProc;
+}
+
+DC::DeviceContext Window::getDC() {
+	return DC::GetDC(*this);
+}
+
+std::shared_ptr<Drawing::Drawer> Window::getDrawer() {
+	if(getTheme())
+		return std::make_shared<Drawing::ThemedDrawer>(getDC(), getTheme());
+	else
+		return std::make_shared<Drawing::Drawer>(getDC());
+}
+
+BOOL Window::setSize(SIZE sz) {
+	return setSize(sz.cx, sz.cy);
+}
+
+BOOL Window::setPosition(POINT pos) {
+	return setPosition(pos.x, pos.y);
+}
+
+int Window::CallMsgProc(WinMessage_t& msg) {
+	return msgMap_[msg.msg] (*this, msg);
+}
+
+void Window::clearMessageMap() {
+	msgMap_.clear();
+}
+
+HTHEME Window::getTheme() {
+	if(!hTheme_)
+		OpenTheme();
+	return hTheme_; // It may still fail, then and only then we'll have zero
+}
+
+LONG_PTR Window::setStyle(LONG_PTR style) {
+	LONG_PTR res = ::SetWindowLongPtr(getWindowHandle(), GWL_STYLE, style);
+	//Setting style does not change anything before we actually move window
+	SetWindowPos(0, 0, 0, 0, 0, SWP_NOACTIVATE | SWP_NOSIZE | SWP_NOMOVE | SWP_NOZORDER | SWP_FRAMECHANGED);
+	return res;
+}
+
+void Window::TrackMouseEvent(DWORD event) {
+	TRACKMOUSEEVENT tme;
+	tme.cbSize = sizeof tme;
+	tme.hwndTrack = getWindowHandle();
+	tme.dwHoverTime = HOVER_DEFAULT;
+	tme.dwFlags = event;
+	::TrackMouseEvent(&tme);
+}
+
+std::shared_ptr<Drawing::Drawer> Window::getDesktopDrawer() {
+	if(getTheme())
+		return std::make_shared<Drawing::ThemedDrawer>(getDesktopDC(), getTheme());
+	else
+		return std::make_shared<Drawing::Drawer>(getDesktopDC());
+}
+
+DC::DeviceContext Window::getDesktopDC() {
+	return ::GetDC(0);
+}
+
+void Window::IntCachedPaint(DC::DeviceContext dc, RECT updateRect) {
 	if (NeedsUpdate()) {
-		HDC cacheDC = CreateCompatibleDC(dc);
-		HBITMAP bmp = CreateCompatibleBitmap(dc, getWidth(), getHeight());
-		bmp = (HBITMAP)(SelectObject(cacheDC, bmp));
-		WMEraseBackground(cacheDC);
-		PaintWindow(cacheDC);
+		DC::DeviceContext cacheDC = DC::CreateCompatibleDC(dc);
+		HBITMAP bmp = CreateCompatibleBitmap(dc, getSize().cx, getSize().cy);
+		bmp = (HBITMAP) cacheDC.selectObject(bmp);
+		// First perform internal painting, then external
+		if(getTheme()) {
+			Drawing::ThemedDrawer drawer (cacheDC, getTheme());
+			WMEraseBackground(drawer);
+			PaintWindow(drawer);
+			painter_(*this, drawer);
+		} else {
+			Drawing::Drawer drawer (cacheDC);
+			WMEraseBackground(drawer);
+			PaintWindow(drawer);
+			painter_(*this, drawer);
+		}
 		delete cachedBmp;
 		cachedBmp = new Bitmap(cacheDC,
-				bmp = (HBITMAP)(SelectObject(cacheDC, bmp)));
+				bmp = (HBITMAP) cacheDC.selectObject(bmp));
 		DeleteObject(bmp);
-		DeleteDC(cacheDC);
 	}
-	HDC cacheDC = CreateCompatibleDC(dc);
-	HBITMAP bmp = (HBITMAP)(SelectObject(cacheDC, cachedBmp->CreateDDB(dc)));
+	DC::DeviceContext cacheDC = DC::CreateCompatibleDC(dc);
+	HBITMAP bmp = (HBITMAP) cacheDC.selectObject(cachedBmp->CreateDDB(dc));
 	BitBlt(dc, updateRect.left, updateRect.top, updateRect.right,
 			updateRect.bottom, cacheDC, updateRect.left, updateRect.top,
 			SRCCOPY);
-	DeleteObject(SelectObject(cacheDC, bmp));
-	DeleteDC(cacheDC);
+	DeleteObject(cacheDC.selectObject(bmp));
 }
 
 void Window::IntPaintWindow() {
 	RECT updateRect;
 	if (GetUpdateRect(getWindowHandle(), &updateRect, 0) != 0) {
-		PrePaintWindow(&updateRect);
+		PrePaintWindow(updateRect);
 		PAINTSTRUCT ps;
 		HDC dc = BeginPaint(getWindowHandle(), &ps);
 
 		if(cacheOn_)
 			IntCachedPaint(dc, updateRect);
-		else
-			PaintWindow(dc);
+		else {
+			// First perform internal painting, then external
+			if(getTheme()) {
+				Drawing::ThemedDrawer drawer (dc, getTheme());
+				PaintWindow(drawer);
+				painter_(*this, drawer);
+			} else {
+				Drawing::Drawer drawer (dc);
+				PaintWindow(drawer);
+				painter_(*this, drawer);
+			}
+		}
 
 		EndPaint(getWindowHandle(), &ps);
+		PostPaintWindow(updateRect);
 	}
 }
 
@@ -266,76 +330,59 @@ wstring Window::GetThemeApplicableClassList() {
 	return L"DIALOG;WINDOW"; // Dialog themes are usually cooler than Window ones ;)
 }
 
-HPEN Window::CreateCosmeticPen(COLORREF color) {
-	LOGBRUSH lbr;
-	lbr.lbHatch = 0;
-	lbr.lbColor = color;
-	lbr.lbStyle = BS_SOLID;
-	return ExtCreatePen(PS_COSMETIC | PS_SOLID, 1, &lbr, 0, 0);
-}
-
-HRESULT Window::DrawTText(HDC hdc, int iPartId, int iStateId,
-		const wstring& text, DWORD dwFlags, RECT& rect) {
-	OpenTheme();
-#if WINVER>=0x600
-	if(hTheme)
-		return DrawThemeTextEx(hTheme, hdc, iPartId, iStateId, text.c_str(),
-				text.size(), dwFlags, &rect, 0);
-#else
-	if(dwFlags & DT_CALCRECT)
-		return GetThemeTextExtent(hTheme, hdc, iPartId, iStateId,
-				text.c_str(), text.size(), dwFlags, rect.left || rect.right ? &rect : 0, &rect);
-	else if(hTheme)
-		return DrawThemeText(hTheme, hdc, iPartId, iStateId, text.c_str(),
-				text.size(), dwFlags, 0, &rect);
-	else
-		// fall-back mode
-		return DrawTextW(hdc, text.c_str(), -1, &rect, dwFlags);
-#endif
-}
-
-HRESULT Window::DrawTText(HDC hdc, const wstring& text, DWORD dwFlags, RECT& rect) {
-	return DrawTText(hdc, 0, 0, text, dwFlags, rect);
-}
-
-HRESULT Window::DrawTBackground(HDC hdc, int iPartId, int iStateId,
-		RECT& rect) {
-	return DrawTBackground(hdc, iPartId, iStateId, rect, 0);
-}
-
-HRESULT Window::DrawTBackground(HDC hdc, int iPartId, int iStateId,
-		RECT& rect, RECT *clipRect) {
-	OpenTheme();
-
-	if(!hTheme)
-		// fall-back mode
-		return FillRect(hdc, &rect, (HBRUSH) GetStockObject(WHITE_BRUSH));
-
-	if (IsThemeBackgroundPartiallyTransparent(hTheme, iPartId, iStateId))
-		DrawThemeParentBackground(getWindowHandle(), hdc, 0);
-
-	return DrawThemeBackground(hTheme, hdc, iPartId, iStateId, &rect, clipRect);
-}
+//HPEN Window::CreateCosmeticPen(COLORREF color) {
+//	LOGBRUSH lbr;
+//	lbr.lbHatch = 0;
+//	lbr.lbColor = color;
+//	lbr.lbStyle = BS_SOLID;
+//	return ExtCreatePen(PS_COSMETIC | PS_SOLID, 1, &lbr, 0, 0);
+//}
+//
+//HRESULT Window::DrawTText(HDC hdc, int iPartId, int iStateId,
+//		const wstring& text, DWORD dwFlags, RECT& rect) {
+//	OpenTheme();
+//#if WINVER>=0x600
+//	if(hTheme)
+//		return DrawThemeTextEx(hTheme, hdc, iPartId, iStateId, text.c_str(),
+//				text.size(), dwFlags, &rect, 0);
+//#else
+//	if(dwFlags & DT_CALCRECT)
+//		return GetThemeTextExtent(hTheme, hdc, iPartId, iStateId,
+//				text.c_str(), text.size(), dwFlags, rect.left || rect.right ? &rect : 0, &rect);
+//	else if(hTheme)
+//		return DrawThemeText(hTheme, hdc, iPartId, iStateId, text.c_str(),
+//				text.size(), dwFlags, 0, &rect);
+//	else
+//		// fall-back mode
+//		return DrawTextW(hdc, text.c_str(), -1, &rect, dwFlags);
+//#endif
+//}
+//
+//HRESULT Window::DrawTText(HDC hdc, const wstring& text, DWORD dwFlags, RECT& rect) {
+//	return DrawTText(hdc, 0, 0, text, dwFlags, rect);
+//}
+//
+//HRESULT Window::DrawTBackground(HDC hdc, int iPartId, int iStateId,
+//		RECT& rect) {
+//	return DrawTBackground(hdc, iPartId, iStateId, rect, 0);
+//}
+//
+//HRESULT Window::DrawTBackground(HDC hdc, int iPartId, int iStateId,
+//		RECT& rect, RECT *clipRect) {
+//	OpenTheme();
+//
+//	if(!hTheme)
+//		// fall-back mode
+//		return FillRect(hdc, &rect, (HBRUSH) GetStockObject(WHITE_BRUSH));
+//
+//	if (IsThemeBackgroundPartiallyTransparent(hTheme, iPartId, iStateId))
+//		DrawThemeParentBackground(getWindowHandle(), hdc, 0);
+//
+//	return DrawThemeBackground(hTheme, hdc, iPartId, iStateId, &rect, clipRect);
+//}
 
 void Window::OpenTheme() {
-	if(!hTheme)
-		hTheme = OpenThemeData(getWindowHandle(), GetThemeApplicableClassList().c_str());
-}
-
-void Window::setOnClose(WndEventBase *onClose) {
-	this->onClose = onClose;
-}
-
-void Window::setOnDestroy(WndEventBase *onDestroy) {
-	onDestroy_ = onDestroy;
-}
-
-void Window::setOnPaintWindow(WndEventBase *onPaintWindow) {
-	this->onPaintWindow = onPaintWindow;
-}
-
-void Window::setOnShowWindow(WndEventBase *onShowWindow) {
-	this->onShowWindow = onShowWindow;
+	hTheme_ = OpenThemeData(getWindowHandle(), GetThemeApplicableClassList().c_str());
 }
 
 Window* Window::SafeWindowFromHandle(const HWND wnd) {
@@ -351,27 +398,14 @@ Window* Window::SafeWindowFromHandle(const HWND wnd) {
 	return pwnd;
 }
 
-bool Window::WMEraseBackground(HDC hdc) {
-	RECT rc = {0, 0, getWidth(), getHeight()};
-	FillRect(hdc, &rc, (HBRUSH) COLOR_WINDOW);
+bool Window::WMEraseBackground(Drawing::Drawer &drawer) {
+	RECT rc = getClientRect();
+	drawer.drawBackground(rc);
 	return false;
 }
 
-long int Window::GetThemeFontInt(int iPartId, int iStateId, LOGFONT& logFont) {
-	OpenTheme();
-	return ::GetThemeFont(getTheme(), 0, iPartId, iStateId, TMT_FONT, &logFont);
-}
-
-HFONT Window::GetThemeFont(int iPartId, int iStateId) {
-	LOGFONT logFont;
-	if(GetThemeFontInt(iPartId, iStateId, logFont))
-		return (HFONT) GetStockObject(DEFAULT_GUI_FONT);
-	return CreateFontIndirect(&logFont);
-}
-
 void Window::setFont(HFONT font) {
-	SendMessage(*this, WM_SETFONT,
-			(WPARAM) font, 1);
+	::SendMessage(*this, WM_SETFONT, (WPARAM) font, 1);
 }
 
 void Window::RegisterWndClass() {
@@ -386,98 +420,94 @@ void Window::RegisterWndClass() {
 	wcex.hInstance = GetModuleHandle(0);
 	wcex.hIcon = NULL;
 	wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
-	wcex.hbrBackground = (HBRUSH) (COLOR_WINDOW);
+	wcex.hbrBackground = NULL; //(HBRUSH) (COLOR_WINDOW+1);
 	wcex.lpszMenuName = NULL;
 	wcex.lpszClassName = MYWNDCLASS_NAME;
 	wcex.hIconSm = NULL;
 
-	wndClassRegistered = (RegisterClassEx(&wcex) != 0);
+	wndClassRegistered = (::RegisterClassEx(&wcex) != 0);
 }
 
 LRESULT __stdcall Window::IntWndProc(HWND wnd, UINT msg, WPARAM wParam,
 		LPARAM lParam) {
-	Window *pwnd = static_cast<Window*>((void*) GetWindowLongPtr(wnd,
+	Window *pwnd = static_cast<Window*>((void*) ::GetWindowLongPtr(wnd,
 			GWLP_USERDATA));
 	try {
-		if ((!pwnd || wnd != pwnd->getWindowHandle()) && !wndCreating)
-			DestroyWindow(wnd); //the window has a wrong pointer. KILL IT! ;)
+		if (pwnd && wnd == pwnd->getWindowHandle() && !wndCreating)
+			return pwnd->WndProc(msg, wParam, lParam);
 	} catch (...) {
-		if (wndCreating)
-			return DefWindowProc(wnd, msg, wParam, lParam); //OK
-		// Seems we've got something wrong... force
-		// the window destruction
-		DestroyWindow(wnd);
+		// Possible bug: if we got there, than it is possible that
+		// window is invalid. However it is quite normal in process
+		// of window destruction - so we shall just fall back to
+		// the default API. Destroying that window in any way may
+		// result in deep recursion and/or segfaults
+		return ::DefWindowProc(wnd, msg, wParam, lParam);
 	}
-	if (wndCreating)
-		return DefWindowProc(wnd, msg, wParam, lParam); //OK
-	return pwnd->WndProc(msg, wParam, lParam);
+	return ::DefWindowProc(wnd, msg, wParam, lParam);
 }
 
 BOOL Window::Show() {
-	BOOL res = ShowWindow(getWindowHandle(), SW_SHOW);
-	ShowWindowInt();
-	onShowWindow(*this);
-	return res;
+	return Show(SW_SHOW);
 }
 
 BOOL Window::Hide() {
-	return ShowWindow(getWindowHandle(), SW_HIDE);
+	return Show(SW_HIDE);
 }
 
 BOOL Window::Show(int type) {
-	BOOL res = ShowWindow(getWindowHandle(), type);
-	ShowWindowInt();
-	onShowWindow(*this);
+	BOOL res = ::ShowWindow(getWindowHandle(), type);
 	return res;
 }
 
-BOOL Window::MoveWindow() {
-	return SetWindowPos(0, SWP_NOACTIVATE);
-}
-BOOL Window::SetWindowPos(HWND insertAfter, UINT flags) {
-	return ::SetWindowPos(getWindowHandle(), insertAfter, getX(), getY(),
-			getWidth(), getHeight(), flags);
-}
 BOOL Window::SetWindowPos(HWND insertAfter, int x, int y, int width, int height,
 		UINT flags) {
-	this->x_ = x;
-	this->y_ = y;
-	this->width_ = width;
-	this->height_ = height;
-	return SetWindowPos(insertAfter, flags);
-}
-
-BOOL Window::MoveWindow(int x, int y, int width, int height) {
-	this->x_ = x;
-	this->y_ = y;
-	this->width_ = width;
-	this->height_ = height;
-	return MoveWindow();
+	return ::SetWindowPos(getWindowHandle(), insertAfter, x, y,
+			width, height, flags);
 }
 
 BOOL Window::setName(const wstring& name) {
-	return SetWindowText(getWindowHandle(), name.c_str());
+	return ::SetWindowText(getWindowHandle(), name.c_str());
 }
 
 wstring Window::getName() const {
-	size_t txtLength = SendMessageW(getWindowHandle(), WM_GETTEXTLENGTH, 0, 0) + 1;
+	size_t txtLength = ::SendMessageW(getWindowHandle(), WM_GETTEXTLENGTH, 0, 0) + 1;
 	wchar_t *buff = new wchar_t[txtLength];
-	GetWindowTextW(getWindowHandle(), buff, txtLength);
+	::GetWindowTextW(getWindowHandle(), buff, txtLength);
 	wstring text(buff);
-	delete buff;
+	delete[] buff;
 	return text;
 }
 
-BOOL Window::setSize(int width, int height) {
-	this->width_ = width;
-	this->height_ = height;
-	return MoveWindow();
+BOOL Window::setPosition(int x, int y) {
+	if(getPositionX() != x || getPositionY() != y)
+		return SetWindowPos(0, x, y, 0 ,0, SWP_NOACTIVATE | SWP_NOSIZE);
 }
 
-BOOL Window::setPosition(int x, int y) {
-	this->x_ = x;
-	this->y_ = y;
-	return MoveWindow();
+BOOL Window::setSize(int width, int height) {
+	if(getSizeX() != width || getSizeY() != height)
+		return SetWindowPos(0, 0, 0, width, height, SWP_NOACTIVATE | SWP_NOMOVE);
+}
+
+RECT Window::getWindowRect() const {
+	RECT r;
+	::GetWindowRect(getWindowHandle(), &r);
+	return r;
+}
+
+RECT Window::getClientRect() const {
+	RECT r;
+	::GetClientRect(getWindowHandle(), &r);
+	return r;
+}
+
+SIZE Window::getSize() const {
+	return SIZE{getClientRect().right, getClientRect().bottom};
+}
+
+POINT Window::getPosition() const {
+	POINT pos = {getWindowRect().left, getWindowRect().top};
+	MapWindowPoints(0, getParent(), (POINT *) &pos, 1);
+	return pos;
 }
 
 BOOL Window::setMenu(HMENU hMenu) {
@@ -488,51 +518,57 @@ HMENU Window::getMenu() const {
 	return ::GetMenu(getWindowHandle());
 }
 
-LONG_PTR Window::setStyle(LONG_PTR style) {
-	LONG_PTR res = SetWindowLongPtr(getWindowHandle(), GWL_STYLE,
-			getStyle() | style);
-	MoveWindow(); //Setting style does not change anything before we actually move window
-	return res;
+LONG_PTR Window::addStyle(LONG_PTR style) {
+	return setStyle(getStyle() | style);
 }
 
 LONG_PTR Window::getStyle() const {
-	return GetWindowLongPtr(getWindowHandle(), GWL_STYLE);
+	return ::GetWindowLongPtr(getWindowHandle(), GWL_STYLE);
 }
 
 LONG_PTR Window::clearStyle(LONG_PTR clearBits) {
-	LONG_PTR res = SetWindowLongPtr(getWindowHandle(), GWL_STYLE,
-			getStyle() & ~clearBits);
-	SetWindowPos(0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
-	// Setting style does not change anything before we actually move window
-	return res;
+	return setStyle(getStyle() & ~clearBits);
 }
 
 LONG_PTR Window::clearStyleEx(LONG_PTR clearBits) {
-	LONG_PTR res = SetWindowLongPtr(getWindowHandle(), GWL_EXSTYLE,
+	LONG_PTR res = ::SetWindowLongPtr(getWindowHandle(), GWL_EXSTYLE,
 			getStyleEx() & ~clearBits);
-	SetWindowPos(0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
 	// Setting style does not change anything before we actually move window
+	SetWindowPos(0, 0, 0, 0, 0, SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
 	return res;
 }
 
-LONG_PTR Window::setStyleEx(LONG_PTR styleEx) {
-	LONG_PTR res = SetWindowLongPtr(getWindowHandle(), GWL_EXSTYLE,
+LONG_PTR Window::addStyleEx(LONG_PTR styleEx) {
+	LONG_PTR res = ::SetWindowLongPtr(getWindowHandle(), GWL_EXSTYLE,
 			getStyleEx() | styleEx);
-	SetWindowPos(0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED); // see Window::SetStyle
+	// Setting style does not change anything before we actually move window
+	SetWindowPos(0, 0, 0, 0, 0, SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
 	return res;
 }
 
 LONG_PTR Window::getStyleEx() const {
-	return GetWindowLongPtr(getWindowHandle(), GWL_EXSTYLE);
+	return ::GetWindowLongPtr(getWindowHandle(), GWL_EXSTYLE);
 }
 
 HWND Window::setParent(HWND parentWindow) {
-	HWND res = ::SetParent(getWindowHandle(), parentWindow);
-	return res;
+	RECT tmpRect = getWindowRect();
+	HWND oldParent = getParent();
+	if(oldParent)
+		::MapWindowPoints(0, oldParent, (POINT *) &tmpRect, 2);
+	oldParent = ::SetParent(getWindowHandle(), parentWindow);
+	if(oldParent) {
+		if(Window * w = SafeWindowFromHandle(oldParent))
+			w->UpdateWindow(&tmpRect);
+		else
+			::InvalidateRect(oldParent, &tmpRect, 1);
+		::UpdateWindow(oldParent);
+	}
+	// XXX MSDN recommends synchronization of UISTATE through WM_CHANGEUISTATE
+	return oldParent;
 }
 
 HWND Window::getParent() const {
-	return ::GetParent(getWindowHandle());
+	return ::GetAncestor(getWindowHandle(), GA_PARENT);
 }
 
 void Window::UpdateWindow() {
@@ -541,7 +577,7 @@ void Window::UpdateWindow() {
 
 void Window::UpdateWindow(RECT *updateRect) {
 	update_ = true;
-	InvalidateRect(getWindowHandle(), updateRect, 1);
+	::InvalidateRect(getWindowHandle(), updateRect, 1);
 }
 
 void Window::ImmediatelyUpdateWindow() {
@@ -550,7 +586,7 @@ void Window::ImmediatelyUpdateWindow() {
 }
 
 Window *Window::SafeGetWindow(UINT wCmd) {
-	HWND wnd = GetWindow(getWindowHandle(), wCmd);
+	HWND wnd = ::GetWindow(getWindowHandle(), wCmd);
 	if (!wnd)
 		return 0;
 	return SafeWindowFromHandle(wnd);
@@ -561,5 +597,5 @@ void Window::setPaintCachingMode(bool cacheOn) {
 }
 
 void Window::setRedraw(bool redraw) {
-	SendMessage(getWindowHandle(), WM_SETREDRAW, redraw, 0);
+	::SendMessage(getWindowHandle(), WM_SETREDRAW, redraw, 0);
 }

@@ -12,23 +12,29 @@
 #include <config.h>
 #endif
 
-#include "Window.h"
+#include <Window.h>
 #include <cfloat>
 
 #include <string>
 
 #include <sstream>
+
+#include <XEditorWindow.h>
+
 using namespace std;
+using namespace XEditor;
 
 class MainWnd: public Window {
 public:
 	MainWnd(void);
 	~MainWnd(void);
 protected:
-	LRESULT WndProc(UINT msg, WPARAM wParam, LPARAM lParam) override;
-private:
+	LRESULT WndProc(UINT msg, WPARAM wParam, LPARAM lParam);
 	bool WMClose();
 	void WMSize();
+private:
+	XEditorWindow editor_;
+
 	void Sizer();
 };
 

@@ -26,7 +26,7 @@ EditboxWndInternal::EditboxWndInternal(int style, int x, int y,
 		int width, int height, HWND parent) : CommCtlWnd (L"",	style,
 				parent, x, y, width, height, VSCLASS_EDIT), etMode_(true), charPlus_(false),
 				parentBack_(false) {
-	setStyleEx(WS_EX_CLIENTEDGE);
+	addStyleEx(WS_EX_CLIENTEDGE);
 }
 
 EditboxWndInternal::EditboxWndInternal(int x, int y, int width, int height,
@@ -50,7 +50,7 @@ wstring EditboxWndInternal::getText() const {
 	wchar_t *buff = new wchar_t[txtLength];
 	Edit_GetText(getWindowHandle(), buff, txtLength);
 	wstring text(buff);
-	delete buff;
+	delete[] buff;
 	return text;
 }
 
@@ -73,24 +73,17 @@ bool EditboxWndInternal::WMKillFocus() {
 	return false;
 }
 
-void EditboxWndInternal::PaintWindow(HDC hdc) {
+void EditboxWndInternal::PaintWindow(Drawing::Drawer &drawer) {
 	if(getEmptyTextMode() && getTextLength() == 0) {
 		RECT rect;
 		Edit_GetRect(*this, &rect);
 		LOGFONT font;
-		HFONT prevFont;
-		SetBkMode(hdc, TRANSPARENT);
-		COLORREF prevColor = SetTextColor(hdc, GetSysColor(COLOR_GRAYTEXT));
-		if(GetThemeFontInt(TEXT_BODYTEXT, 0, font))
-			// GetThemeFont failed. Use fall-back font
-			prevFont = (HFONT) SelectObject(hdc, GetStockObject(DEFAULT_GUI_FONT));
-		else {
-			font.lfItalic = true;
-			prevFont = (HFONT) SelectObject(hdc, CreateFontIndirect(&font));
-		}
-		DrawTextW(hdc, eText_.c_str(), -1, &rect, DT_EDITCONTROL | DT_SINGLELINE);
-		DeleteObject(SelectObject(hdc, prevFont));
-		SetTextColor(hdc, prevColor);
+		SetBkMode(drawer.getDC(), TRANSPARENT);
+		COLORREF prevColor = drawer.setTextColor(GetSysColor(COLOR_GRAYTEXT));
+		drawer.setFontDefault();
+		drawer.drawText(eText_, DT_EDITCONTROL | DT_SINGLELINE, rect);
+		drawer.clearFont();
+		drawer.setTextColor(prevColor);
 	}
 }
 
@@ -104,18 +97,41 @@ void EditboxWndInternal::WMChar(wchar_t ch) {
 		charPlus_ = true;
 }
 
-void EditboxWndInternal::WMSize() {
+void EditboxWndInternal::WMSize(POINTS size) {
 	if(parentBack_)
-		SafeWindowFromHandle(getParent())->setSize(getWidth(), getHeight());
+		SafeWindowFromHandle(getParent())->setSize(size.x, size.y);
+}
+
+LRESULT EditboxWndInternal::WndProc(UINT msg, WPARAM wParam, LPARAM lParam) {
+	switch(msg) {
+	case WM_MOVE:
+		WMMove(MAKEPOINTS(lParam));
+		break;
+	case WM_SIZE:
+		WMSize(MAKEPOINTS(lParam));
+		break;
+	case WM_SETFOCUS:
+		WMSetFocus();
+		break;
+	case WM_KILLFOCUS:
+		WMKillFocus();
+		break;
+	case WM_CHAR:
+		WMChar((wchar_t) wParam);
+		break;
+	default:
+		break;
+	}
+	return CommCtlWnd::WndProc(msg, wParam, lParam);
 }
 
 int EditboxWndInternal::getTextLength() const {
 	return Edit_GetTextLength(getWindowHandle());
 }
 
-void EditboxInternal::EditboxWndInternal::WMMove() {
+void EditboxWndInternal::WMMove(POINTS pos) {
 	// Check if something moved us
-	if(getX() != 0 || getY() != 0)
+	if(pos.x != 0 || pos.y != 0)
 		// The position is locked to (0;0)
 		setPosition(0, 0);
 }

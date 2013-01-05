@@ -36,11 +36,17 @@ void ComboBoxWnd::selString(const wstring& str) {
 }
 
 LRESULT ComboBoxWnd::WndProc(UINT msg, WPARAM wParam, LPARAM lParam) {
-	if(msg == WM_COMMAND)
+	switch(msg) {
+	case WM_COMMAND:
 		switch(HIWORD(wParam)) {
 		case CBN_SELCHANGE:
 			return onSelChange(cb.getCurSelNum());
 		}
+		break;
+	case WM_SIZE:
+		WMSize(MAKEPOINTS(lParam));
+		break;
+	}
 	return Window::WndProc(msg, wParam, lParam);
 }
 
@@ -94,8 +100,8 @@ bool ComboBoxWnd::Autocomplete(EditboxWnd& eb,
 	return true;
 }
 
-void ComboBoxWnd::WMSize() {
-	cb.setSize(getWidth(), getHeight());
+void ComboBoxWnd::WMSize(POINTS size) {
+	cb.setSize(size.x, size.y);
 }
 
 int ComboBoxWnd::getCurSelNum() const {

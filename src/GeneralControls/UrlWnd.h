@@ -24,14 +24,15 @@ public:
 	bool isVisited() const;
 
 protected:
-	void PaintWindow(HDC hdc);
+	void PaintWindow(Drawing::Drawer &drawer) override;
 	LRESULT WndProc(UINT msg, WPARAM wParam, LPARAM lParam);
+
+	void CalcTxtRect() override;
 private:
-	bool visited_;
+	short int state_;
 	std::wstring url_;
 	NotifyWnd urlFull_;
-
-	void TrackMouseEvent(DWORD event);
+	bool mBtnDown_;
 };
 
 #endif /* URLWND_H_ */

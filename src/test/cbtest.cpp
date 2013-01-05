@@ -38,13 +38,13 @@ MainWnd::MainWnd(void) :
 		Window(L"Test", WS_OVERLAPPEDWINDOW, 50_scaled, 50_scaled,
 				700_scaled, 500_scaled, 0, 0, 0),
 		label(L"", 0, 0, *this),
-		cb1(5_scaled, 0, getWidth()-10_scaled, 25_scaled, *this),
-		cb2(5_scaled, 0, getWidth()-10_scaled, 25_scaled, *this),
-		cb3(5_scaled, 0, getWidth()-10_scaled, 100_scaled, *this),
+		cb1(5_scaled, 0, getSizeX()-10_scaled, 25_scaled, *this),
+		cb2(5_scaled, 0, getSizeX()-10_scaled, 25_scaled, *this),
+		cb3(5_scaled, 0, getSizeX()-10_scaled, 100_scaled, *this),
 		edit1(L"Item text gets displayed here", 5_scaled, 0,
-				getWidth()-10_scaled, 25_scaled, *this),
+				getSizeX()-10_scaled, 25_scaled, *this),
 		edit2(L"Item text from SimpleCB gets displayed here", 5_scaled, 0,
-				getWidth()-10_scaled, 25_scaled, *this) {
+				getSizeX()-10_scaled, 25_scaled, *this) {
 
 	label.setForcedWidth(true);
 	cb1.setItems({
@@ -103,19 +103,19 @@ void MainWnd::WMSize() {
 }
 
 void MainWnd::Sizer() {
-	label.setWidth(getWidth());
+	label.setSizeX(getSizeX());
 	label.ImmediatelyUpdateWindow();
 
-	cb1.setY(label.getBottom()+5_scaled);
-	cb1.setWidth(getWidth()-10_scaled);
-	cb2.setY(cb1.getBottom()+5_scaled);
-	cb2.setWidth(getWidth()-10_scaled);
-	cb3.setY(cb2.getBottom()+5_scaled);
-	cb3.setWidth(getWidth()-10_scaled);
-	edit1.setY(cb3.getBottom()+5_scaled);
-	edit1.setWidth(getWidth()-10_scaled);
-	edit2.setY(edit1.getBottom()+5_scaled);
-	edit2.setWidth(getWidth()-10_scaled);
+	cb1.setPositionY(label.getCornerY()+5_scaled);
+	cb1.setSizeX(getSizeX()-10_scaled);
+	cb2.setPositionY(cb1.getCornerY()+5_scaled);
+	cb2.setSizeX(getSizeX()-10_scaled);
+	cb3.setPositionY(cb2.getCornerY()+5_scaled);
+	cb3.setSizeX(getSizeX()-10_scaled);
+	edit1.setPositionY(cb3.getCornerY()+5_scaled);
+	edit1.setSizeX(getSizeX()-10_scaled);
+	edit2.setPositionY(edit1.getCornerY()+5_scaled);
+	edit2.setSizeX(getSizeX()-10_scaled);
 }
 
 int MainWnd::onCBChange(Window& sender, shared_ptr<wstring> pstr) {
@@ -149,4 +149,16 @@ int MainWnd::onTextChange2(Window& sender, const wstring& text) {
 	if(selection2)
 		*selection2 = text;
 	cb3.resetList();
+}
+
+LRESULT MainWnd::WndProc(UINT msg, WPARAM wParam, LPARAM lParam) {
+	switch(msg) {
+	case WM_CLOSE:
+		WMClose();
+		break;
+	case WM_SIZE:
+		WMSize();
+		break;
+	}
+	return Window::WndProc(msg, wParam, lParam);
 }

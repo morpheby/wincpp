@@ -1,3 +1,59 @@
+2012-12-23  Morphe  <Morphe@Morphe-PC>
+
+	* src\GeneralControls\XEditor\XEditorWindow.cpp (XEditorWindow::setSelection): Clears selection before setting new 
+	(XEditorWindow::undo): Implemented
+	(XEditorWindow::redo): Implemented
+	(XEditorWindow::charInput): Added undo/redo functionality
+	(XEditorWindow::WMKeyDown): same
+	(XEditorWindow::pasteAtCursor): same
+	(XEditorWindow::controlKey): Added use of cutSelection
+	* src\GeneralControls\XEditorWindow.h (XEditorWindow): Added cutSelection
+	* src\GeneralControls\XEditor\UndoOperation.h (UndoOperation): Implemented
+	(InsertOperation): Implemented
+	(RemoveOperation): Implemented
+	(ReplaceOperation): Implemented
+	* src\GeneralControls\XEditor\UndoMaintainer.h (UndoMaintainer): Implemented
+
+2012-12-22  Morphe  <Morphe@Morphe-PC>
+
+	* src\GeneralControls\XEditorWindow.h (XEditorWindow): Added removeText method
+	Added prototypes for undo and redo
+
+2012-12-17  Morphe  <Morphe@Morphe-PC>
+
+	* src\Window\platform.h: Added WM_MOUSEHWHEEL, since it is OS-version specific
+	* src\Window\Window.h: Including paltform.h instead of window.h
+	* src\GeneralControls\XEditor\XEditorWindow.cpp (XEditorWindow::setCurrentCharPosition): Scrolls screen so that caret is visible
+
+2012-12-16  Morphe  <Morphe@Morphe-PC>
+
+	* src\GeneralControls\XEditor\XEditorWindow.cpp: Added config.h
+	Using custom font
+	Added copy-paste support
+	Added selection (only keyboard controlled) support
+	(XEditorWindow::outputLine): Selection processing part doesn't need to be executed in simulation
+
+2012-12-15  Morphe  <Morphe@Morphe-PC>
+
+	* src\GeneralControls\XEditorWindow.h (XEditorWindow): Moved lots of code handling position to methods
+	* src\GeneralControls\XEditor\XEditorWindow.cpp (XEditorWindow::invalidateLine): Replaced stub with actual code
+	(XEditorWindow::PaintWindow): Now using outputLine
+	* src\test\xeditortest.cpp: Changed info-text
+
+2012-12-02  Morphe  <Morphe@Morphe-PC>
+
+	* src\Window\Window.cpp (Window::WndProc): Used move ctor instead of copy in ERASEBKGND
+	* src\Widget\Widget.cpp (Widget::Widget): Ctor with size and style was using WidgetStyle::none instead of style
+	(Widget::getParent): Implemented
+
+2012-12-01  Morphe  <Morphe@Morphe-PC>
+
+	* src\Window\ThemedDrawer.cpp (Drawing::ThemedDrawer::drawThemedEdges): Impleneted
+	* src\Window\Window.cpp (Window::TrackMouseEvent): Moved from URLWnd
+	* src\Window\Drawer.cpp (Drawer::getDefaultGuiFont): Changed to recieve font from SystemParametersInfo
+	* src\Widget\Widget.h: Added mouse events for Widget class
+
+2012-11-30  Morphe  <Morphe@Morphe-PC>
 2012-11-30  Morphe  <Morphe@Morphe-PC>
 
 	* ChangeLog: Created new changelog

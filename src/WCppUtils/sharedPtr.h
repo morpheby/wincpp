@@ -18,6 +18,11 @@ std::shared_ptr<T> SharePtr(T* ptr) {
 	return std::shared_ptr<T> (ptr);
 }
 
+template <typename T, typename _Del>
+std::shared_ptr<T> SharePtr(T* ptr, _Del deleter) {
+	return std::shared_ptr<T> (ptr, deleter);
+}
+
 #endif
 
 template <typename _PtrType>

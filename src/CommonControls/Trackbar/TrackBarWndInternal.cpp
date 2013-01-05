@@ -57,7 +57,7 @@ void TrackBarWndInternal::setPos(int pos) {
 
 void TrackBarWndInternal::setTicksPos(tbTicksPos pos) {
 	clearStyle(TBS_TOP | TBS_BOTTOM | TBS_LEFT | TBS_RIGHT);
-	setStyle((int)pos);
+	addStyle((int)pos);
 }
 
 void TrackBarWndInternal::setTicksFreq(int freq) {
