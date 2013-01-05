@@ -55,7 +55,12 @@ AC_PROG_MKDIR_P
 AC_PROG_LN_S
 AC_PROG_SED
 AM_PROG_AR
-AC_CHECK_PROG(RESCOMP, windres, windres ${rescomp_target})
+if [[ ${build} != ${host} ]]; then
+	AC_CHECK_PROG(RESCOMP, ${target}-windres, [${target}-windres ${rescomp_target}])
+else
+	AC_CHECK_PROG(RESCOMP, windres, [windres ${rescomp_target}])
+fi
+#AC_CHECK_TARGET_TOOL(RESCOMP, [windres])
 AC_PROG_INSTALL
 
 CFLAGS="${CFLAGS} ${cxx_target}"
@@ -99,10 +104,9 @@ AC_TYPE_SIZE_T
 AC_CHECK_TYPES([ptrdiff_t])
 
 # Checks for library functions.
-AC_FUNC_MALLOC
+#AC_FUNC_MALLOC
+# malloc test doesn't check if we are cross-compling, and thus may actually fail...
 AC_CHECK_FUNCS([memset])
-
-
 
 
 AC_CONFIG_FILES([	Makefile
