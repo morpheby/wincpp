@@ -132,11 +132,6 @@ WidgetEventExtBase<_ParamT> * NewEventExt
 /*
  * Widget
  * NOTE: Always store Widget objects in shared_ptr.
- * 		 When creating child widgets, consider following
- * 		 syntax:
- * 		 	weak_ptr<Widget> child = (new Widget(*mainWidget))->getShared();
- * 		 		OR
- * 		 	shahred_ptr<Widget> child (new Widget(*mainWidget));
  */
 class Widget : public std::enable_shared_from_this<Widget> {
 public:
