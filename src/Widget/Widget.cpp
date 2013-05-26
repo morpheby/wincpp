@@ -422,3 +422,18 @@ int Widget::getHeightOuter() const {
 int Widget::getWidthOuter() const {
 	return widthOuter_;
 }
+
+void Widget::RegisterFields() {
+	RegisterField(windowName_);
+	RegisterField(x_);
+	RegisterField(y_);
+	RegisterField(width_);
+	RegisterField(height_);
+	RegisterField(style_);
+	RegisterField(visible_);
+	RegisterField(showState_);
+	RegisterField(widthOuter_);
+	RegisterField(heightOuter_);
+	// RegisterField(msgMap_); // wtf? how would you map realtime objects??
+	RegisterField(attachedWidgets_);
+}

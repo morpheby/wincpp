@@ -15,6 +15,7 @@
 #include <Drawer.h>
 #include <Events.h>
 #include <DPIScaler.h>
+#include <Serializable.h>
 
 #include "WidgetEventParams.h"
 #include <vector>
@@ -133,7 +134,7 @@ WidgetEventExtBase<_ParamT> * NewEventExt
  * Widget
  * NOTE: Always store Widget objects in shared_ptr.
  */
-class Widget : public std::enable_shared_from_this<Widget> {
+class Widget : public std::enable_shared_from_this<Widget>, public serializing::Serializable {
 public:
 	Widget();
 	Widget(Widget &parent);
@@ -228,6 +229,8 @@ protected:
 	Window & getWindowConst() const;
 
 	virtual void widgetReload();
+
+	void RegisterFields() override;
 private:
 	/* Platform-dependent members */
 	std::unique_ptr<Window> window_; // to allow Window reload

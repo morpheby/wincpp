@@ -9,8 +9,10 @@ noinst_LIBRARIES				= libwcpputils.a
 libwcpputils_a_SOURCES			=					\
 								  errorParse.cpp	\
 	 							  sharedPtr.cpp		\
-	 							  utf8.cpp				
+	 							  utf8.cpp			\
+	 							  Serializable.cpp	\
+								  serialized_io.cpp
 libwcpputils_a_CPPFLAGS			=
 
 
-pkginclude_HEADERS				= errorParse.h sharedPtr.h utf8.h
+pkginclude_HEADERS				= errorParse.h sharedPtr.h utf8.h Serializable.h Serializable.hpp serialized_io.h serialized_io.hpp
