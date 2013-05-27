@@ -16,6 +16,7 @@
 
 #include <windows.h>
 #include <Widget.h>
+#include <TabController.h>
 
 #include <CommonControlsInit.h>
 
@@ -27,6 +28,7 @@ BOOLEAN DllMain(HINSTANCE hDllHandle, DWORD nReason, LPVOID Reserved) {
 		DisableThreadLibraryCalls( hDllHandle );
 		InitCommCtl();
 		serializing::Serializable::RegisterSerializableClass<Widget>();
+		serializing::Serializable::RegisterSerializableClass<Tabs::TabController>();
 		break;
 	case DLL_PROCESS_DETACH:
 		break;

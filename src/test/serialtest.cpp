@@ -26,7 +26,7 @@ private:
 	void checkNLoadComponents();
 	void Sizer();
 
-	int TextDeserialize(serializing::_internal::SFieldNotifying<std::wstring> &sender);
+	void TextDeserialize();
 };
 
 class Main {
@@ -110,7 +110,7 @@ int __stdcall wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 }
 
 inline void MainWidget::RegisterFields() {
-	RegisterField(text_, NewEvent(*this, &MainWidget::TextDeserialize));
+	RegisterField(text_, std::bind(&MainWidget::TextDeserialize, std::ref(*this)));
 	TabWidget::RegisterFields();
 }
 
@@ -169,11 +169,9 @@ int MainWidget::onGeometryChange(Widget& sender,
 	return 0;
 }
 
-int MainWidget::TextDeserialize(
-		serializing::_internal::SFieldNotifying<std::wstring>& sender) {
+void MainWidget::TextDeserialize() {
 	if(input)
 		input->setText(text_);
 	if(output)
 		output->setText(text_);
-	return 0;
 }

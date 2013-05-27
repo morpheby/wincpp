@@ -428,21 +428,19 @@ int Widget::getWidthOuter() const {
 	return widthOuter_;
 }
 
-int Widget::ReattachDeserializedChildsEvent(serializing::_internal::SFieldNotifying<decltype(attachedWidgets_)> &sender) {
+void Widget::ReattachDeserializedChildsEvent() {
 	std::vector<std::shared_ptr<Widget>> widgetsToReattach;
 	std::swap(widgetsToReattach, attachedWidgets_);
 	if(widgetsToReattach.empty())
-		return 0; // XXX Actually, reloading window is not a good idea in case it is a
+		return;   // XXX Actually, reloading window is not a good idea in case it is a
 	              // XXX child window -- size and position may reset.
 	LoadWindow(); // Prepare window without children
 	for(auto w : widgetsToReattach)
 		w->setParent(getShared());
-	return 0;
 }
 
-int Widget::UpdateStateDeserializedEvent(serializing::_internal::SFieldNotifying<int> &sender) {
+void Widget::UpdateStateDeserializedEvent() {
 //	LoadWindow();
-	return 0;
 }
 
 void Widget::RegisterFields() {
@@ -455,7 +453,7 @@ void Widget::RegisterFields() {
 	RegisterField(visible_);
 	RegisterField(showState_);
 	RegisterField(widthOuter_);
-	RegisterField(heightOuter_, NewEvent(*this, &Widget::UpdateStateDeserializedEvent));
+	RegisterField(heightOuter_, std::bind(&Widget::UpdateStateDeserializedEvent, std::ref(*this)));
 	// RegisterField(msgMap_); // wtf? how would you map realtime objects??
-	RegisterField(attachedWidgets_, NewEvent(*this, &Widget::ReattachDeserializedChildsEvent));
+	RegisterField(attachedWidgets_, std::bind(&Widget::ReattachDeserializedChildsEvent, std::ref(*this)));
 }

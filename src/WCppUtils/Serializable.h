@@ -105,7 +105,7 @@ class SField_helper;
 
 template<typename T>
 class SField;
-template<typename T>
+template<typename T, typename _Ftp>
 class SFieldNotifying;
 
 class SerializableConstructorBase {
@@ -147,8 +147,8 @@ protected:
 
 	template<typename T>
 	void RegisterField(T &field);
-	template<typename T>
-	void RegisterField(T &field, EventBase<_internal::SFieldNotifying<T>> *onDeserializeEvent);
+	template<typename T, typename _Ftp>
+	void RegisterField(T &field, _Ftp &&onDeserializeEvent);
 
 private:
 	static std::shared_ptr<Serializable> ConstructType(const std::string &name);
@@ -226,11 +226,11 @@ public:
 	SField(T &data);
 };
 
-template<typename T>
+template<typename T, typename _Ftp>
 class SFieldNotifying : public SField_helper<T, SField_type<T>::value> {
-	EventCaller<SFieldNotifying<T>> event_;
+	_Ftp event_;
 public:
-	SFieldNotifying(T &data, EventBase<SFieldNotifying<T>> *onDeserializeEvent);
+	SFieldNotifying(T &data, _Ftp&& onDeserializeEvent);
 
 	void Deserialize(std::istream &input) override;
 };
@@ -238,8 +238,8 @@ public:
 template<typename T>
 std::shared_ptr<SFieldBase> make_sfield(T &field);
 
-template<typename T>
-std::shared_ptr<SFieldBase> make_sfield(T &field, EventBase<SFieldNotifying<T>> *onDeserializeEvent);
+template<typename T, typename _Ftp>
+std::shared_ptr<SFieldBase> make_sfield(T &field, _Ftp&& onDeserializeEvent);
 
 
 template<typename _Tp, typename _Up>

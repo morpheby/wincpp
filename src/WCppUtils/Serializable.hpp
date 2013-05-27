@@ -20,9 +20,9 @@ void Serializable::RegisterField(T &field) {
 	fields_.push_back(_internal::make_sfield(field));
 }
 
-template<typename T>
-void Serializable::RegisterField(T &field, EventBase<_internal::SFieldNotifying<T>> *onDeserializeEvent) {
-	fields_.push_back(_internal::make_sfield(field, onDeserializeEvent));
+template<typename T, typename _Ftp>
+void Serializable::RegisterField(T &field, _Ftp&& onDeserializeEvent) {
+	fields_.push_back(_internal::make_sfield(field, std::forward<_Ftp>(onDeserializeEvent)));
 }
 
 namespace _internal {
@@ -31,15 +31,16 @@ template<typename T>
 SField<T>::SField(T &data) : SField_helper<T, SField_type<T>::value>(data) {
 }
 
-template<typename T>
-SFieldNotifying<T>::SFieldNotifying(T &data, EventBase<SFieldNotifying<T>> *onDeserializeEvent) : SField_helper<T, SField_type<T>::value>(data) {
-	event_ = onDeserializeEvent;
+template<typename T, typename _Ftp>
+SFieldNotifying<T, _Ftp>::SFieldNotifying(T &data, _Ftp&& onDeserializeEvent) :
+		SField_helper<T, SField_type<T>::value>(data),
+		event_(std::forward<_Ftp>(onDeserializeEvent)) {
 }
 
-template<typename T>
-void SFieldNotifying<T>::Deserialize(std::istream &input) {
+template<typename T, typename _Ftp>
+void SFieldNotifying<T, _Ftp>::Deserialize(std::istream &input) {
 	SField_helper<T, SField_type<T>::value>::Deserialize(input);
-	event_(*this);
+	event_();
 }
 
 template<class T>
@@ -150,9 +151,9 @@ std::shared_ptr<SFieldBase> make_sfield(T &field) {
 	return std::make_shared<SField<T>>(field);
 }
 
-template<typename T>
-std::shared_ptr<SFieldBase> make_sfield(T &field, EventBase<SFieldNotifying<T>> *onDeserializeEvent) {
-	return std::make_shared<SFieldNotifying<T>>(field, onDeserializeEvent);
+template<typename T, typename _Ftp>
+std::shared_ptr<SFieldBase> make_sfield(T &field, _Ftp&& onDeserializeEvent) {
+	return std::make_shared<SFieldNotifying<T, _Ftp>>(field, std::forward<_Ftp>(onDeserializeEvent));
 }
 
 template<typename _Tp, typename _Up>
