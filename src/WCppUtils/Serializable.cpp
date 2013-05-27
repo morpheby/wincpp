@@ -25,6 +25,7 @@ void Serializable::Serialize(std::ostream &output) {
 }
 
 void Serializable::Deserialize(std::istream &input) {
+	EnsureFieldsRegistered();
 	for(auto o : fields_)
 		o->Deserialize(input);
 }

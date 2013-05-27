@@ -15,6 +15,7 @@
 #endif
 
 #include <windows.h>
+#include <Widget.h>
 
 #include <CommonControlsInit.h>
 
@@ -25,6 +26,7 @@ BOOLEAN DllMain(HINSTANCE hDllHandle, DWORD nReason, LPVOID Reserved) {
 	case DLL_PROCESS_ATTACH:
 		DisableThreadLibraryCalls( hDllHandle );
 		InitCommCtl();
+		serializing::Serializable::RegisterSerializableClass<Widget>();
 		break;
 	case DLL_PROCESS_DETACH:
 		break;

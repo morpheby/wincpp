@@ -16,7 +16,8 @@ enum class WidgetEventType : UINT;
 
 struct WidgetEventParams {
 	WidgetEventType event;
-	constexpr WidgetEventParams(WidgetEventType _event) : event(_event) {}
+	bool final;
+	constexpr WidgetEventParams(WidgetEventType _event) : event(_event), final{false} {}
 };
 
 typedef struct _tagWINMESSAGE WinMessage_t;

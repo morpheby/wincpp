@@ -14,6 +14,7 @@
 #include <map>
 #include <type_traits>
 #include <typeinfo>
+#include <Events.h>
 
 namespace serializing {
 
@@ -104,6 +105,8 @@ class SField_helper;
 
 template<typename T>
 class SField;
+template<typename T>
+class SFieldNotifying;
 
 class SerializableConstructorBase {
 public:
@@ -115,7 +118,7 @@ template<class T>
 class SerializableConstructor : public SerializableConstructorBase {
 public:
 	SerializableConstructor();
-	
+
 	std::shared_ptr<Serializable> operator() () override;
 };
 
@@ -123,8 +126,7 @@ public:
 
 // If you want support of arrays of derived classes, register each class with RegisterClass()
 // and use std::shared_ptr for storage in arrays
-// Declare in class as private
-// static auto registered_ = RegisterClass<MyClass>();
+// Call RegisterSerializableClass for each of your classes in main()
 class Serializable {
 	static std::map<std::string, std::shared_ptr<_internal::SerializableConstructorBase>> constructors_;
 	std::vector<std::shared_ptr<_internal::SFieldBase>> fields_;
@@ -136,20 +138,22 @@ public:
 
 	virtual void Serialize(std::ostream &output);
 	virtual void Deserialize(std::istream &input);
-	
+
+	template<class T>
+	static bool RegisterSerializableClass();
+
 protected:
 	virtual void RegisterFields() = 0;
 
-	template<class T>
-	static bool RegisterClass();
-
 	template<typename T>
 	void RegisterField(T &field);
+	template<typename T>
+	void RegisterField(T &field, EventBase<_internal::SFieldNotifying<T>> *onDeserializeEvent);
 
 private:
 	static std::shared_ptr<Serializable> ConstructType(const std::string &name);
 	void EnsureFieldsRegistered();
-	
+
 	template<typename T, int _TypeSpec>
 	friend class _internal::SField_helper;
 };
@@ -171,7 +175,7 @@ class SField_helper<T, _SSharedPtr> : public SFieldBase {
 	T &value_;
 public:
 	SField_helper(T &value);
-	
+
 	void Serialize(std::ostream& output) override;
 	void Deserialize(std::istream& input) override;
 };
@@ -181,7 +185,7 @@ class SField_helper<T, _Container> : public SFieldBase {
 	T &container_;
 public:
 	SField_helper(T &container);
-	
+
 	void Serialize(std::ostream& output) override;
 	void Deserialize(std::istream& input) override;
 };
@@ -190,7 +194,7 @@ class SField_helper<T, _Pair> : public SFieldBase {
 	T &pair_;
 public:
 	SField_helper(T &pair);
-	
+
 	void Serialize(std::ostream& output) override;
 	void Deserialize(std::istream& input) override;
 };
@@ -201,17 +205,17 @@ public:
 // 	T &container_;
 // public:
 // 	SField_helper(T &container);
-// 	
+//
 // 	void Serialize(std::ostream& output) override;
 // 	void Deserialize(std::istream& input) override;
 // };
-// 
+//
 // template<class T>
 // class SField_helper<T, _SContainer> : public SFieldBase {
 // 	T &container_;
 // public:
 // 	SField_helper(T &container);
-// 	
+//
 // 	void Serialize(std::ostream& output) override;
 // 	void Deserialize(std::istream& input) override;
 // };
@@ -223,7 +227,19 @@ public:
 };
 
 template<typename T>
-std::shared_ptr<SField<T>> make_sfield(T &field);
+class SFieldNotifying : public SField_helper<T, SField_type<T>::value> {
+	EventCaller<SFieldNotifying<T>> event_;
+public:
+	SFieldNotifying(T &data, EventBase<SFieldNotifying<T>> *onDeserializeEvent);
+
+	void Deserialize(std::istream &input) override;
+};
+
+template<typename T>
+std::shared_ptr<SFieldBase> make_sfield(T &field);
+
+template<typename T>
+std::shared_ptr<SFieldBase> make_sfield(T &field, EventBase<SFieldNotifying<T>> *onDeserializeEvent);
 
 
 template<typename _Tp, typename _Up>

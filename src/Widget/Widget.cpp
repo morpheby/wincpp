@@ -211,9 +211,11 @@ std::weak_ptr<Widget> Widget::setParent(std::weak_ptr<Widget> parent) {
 	if(!parent_.expired()) {
 		auto parentPtr = parent_.lock();
 		parentPtr->attachChild(*this);
-		getWindow().setParent(parentPtr->getWindow());
+		if(window_)
+			getWindow().setParent(parentPtr->getWindow());
 	} else
-		LoadWindow();
+		if(window_)
+			LoadWindow();
 //		getWindow().setParent(0);
 
 	recycleEvent(WidgetEventType::parentChanged);
@@ -228,8 +230,7 @@ int Widget::recycleEvent(WidgetEventType event, WidgetEventParams &params) {
 		t = getShared();
 	switch(event) {
 	default:
-		msgMap_[event](*this, params);
-		break;
+		return msgMap_[event](*this, params);
 	}
 	return 0;
 }
@@ -254,7 +255,8 @@ void Widget::Show() {
 
 void Widget::Hide() {
 	visible_ = false;
-	getWindow().Hide();
+	if(window_)
+		getWindow().Hide();
 }
 
 void Widget::setEventHandler(WidgetEventType event,
@@ -343,13 +345,15 @@ void Widget::setOnWidgetReload(WidgetEventBase* handler) {
 
 void Widget::setName(const std::wstring &name) {
 	windowName_ = name;
-	getWindow().setName(name);
+	if(window_)
+			getWindow().setName(name);
 }
 
 WidgetStyle Widget::setStyle(WidgetStyle newStyle) {
 	WidgetStyle oldStyle = style_;
 	style_ = newStyle;
-	getWindow().setStyle((LONG_PTR)style_);
+	if(window_)
+		getWindow().setStyle((LONG_PTR)style_);
 	return oldStyle;
 }
 
@@ -411,8 +415,9 @@ int Widget::wndMessage(Window& wnd, WinMessage_t& msg) {
 	default:
 		break;
 	}
-	msg.retVal = recycleEvent((WidgetEventType)msg.msg, WidgetWinMsgParams{(WidgetEventType) msg.msg, msg});
-	return 0;
+	WidgetWinMsgParams params {(WidgetEventType) msg.msg, msg};
+	msg.retVal = recycleEvent((WidgetEventType)msg.msg, params);
+	return params.final;
 }
 
 int Widget::getHeightOuter() const {
@@ -421,6 +426,23 @@ int Widget::getHeightOuter() const {
 
 int Widget::getWidthOuter() const {
 	return widthOuter_;
+}
+
+int Widget::ReattachDeserializedChildsEvent(serializing::_internal::SFieldNotifying<decltype(attachedWidgets_)> &sender) {
+	std::vector<std::shared_ptr<Widget>> widgetsToReattach;
+	std::swap(widgetsToReattach, attachedWidgets_);
+	if(widgetsToReattach.empty())
+		return 0; // XXX Actually, reloading window is not a good idea in case it is a
+	              // XXX child window -- size and position may reset.
+	LoadWindow(); // Prepare window without children
+	for(auto w : widgetsToReattach)
+		w->setParent(getShared());
+	return 0;
+}
+
+int Widget::UpdateStateDeserializedEvent(serializing::_internal::SFieldNotifying<int> &sender) {
+//	LoadWindow();
+	return 0;
 }
 
 void Widget::RegisterFields() {
@@ -433,7 +455,7 @@ void Widget::RegisterFields() {
 	RegisterField(visible_);
 	RegisterField(showState_);
 	RegisterField(widthOuter_);
-	RegisterField(heightOuter_);
+	RegisterField(heightOuter_, NewEvent(*this, &Widget::UpdateStateDeserializedEvent));
 	// RegisterField(msgMap_); // wtf? how would you map realtime objects??
-	RegisterField(attachedWidgets_);
+	RegisterField(attachedWidgets_, NewEvent(*this, &Widget::ReattachDeserializedChildsEvent));
 }

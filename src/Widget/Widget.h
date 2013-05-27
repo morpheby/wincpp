@@ -260,6 +260,8 @@ private:
 	void attachChild(Widget &child);
 	void detachChild(Widget &child);
 
+	int ReattachDeserializedChildsEvent(serializing::_internal::SFieldNotifying<decltype(attachedWidgets_)> &sender);
+	int UpdateStateDeserializedEvent(serializing::_internal::SFieldNotifying<int> &sender);
 
 	/* Internal events */
 	int wndDrawWindow(Window &sender, Drawing::Drawer &drawer); // Call DrawWindow

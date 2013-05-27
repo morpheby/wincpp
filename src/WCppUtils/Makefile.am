@@ -12,7 +12,8 @@ libwcpputils_a_SOURCES			=					\
 	 							  utf8.cpp			\
 	 							  Serializable.cpp	\
 								  serialized_io.cpp
-libwcpputils_a_CPPFLAGS			=
+libwcpputils_a_CPPFLAGS			=									\
+								  -I$(top_srcdir)/src/EventSystem
 
 
 pkginclude_HEADERS				= errorParse.h sharedPtr.h utf8.h Serializable.h Serializable.hpp serialized_io.h serialized_io.hpp

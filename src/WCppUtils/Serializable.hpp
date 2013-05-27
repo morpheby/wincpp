@@ -1,19 +1,18 @@
 /*
  * Serializable.hpp
  * wincpp
- * 
+ *
  * Created by Илья Михальцов on 2013-05-26.
  * Copyright 2013 Илья Михальцов. All rights reserved.
  */
 
 #include "serialized_io.h"
 
-
 namespace serializing {
 
 template<class T>
-bool Serializable::RegisterClass() {
-	constructors_[typeid(T).name()] = _internal::SerializableConstructor<T>();
+bool Serializable::RegisterSerializableClass() {
+	constructors_[typeid(T).name()] = std::make_shared<_internal::SerializableConstructor<T>>();
 }
 
 template<typename T>
@@ -21,10 +20,26 @@ void Serializable::RegisterField(T &field) {
 	fields_.push_back(_internal::make_sfield(field));
 }
 
+template<typename T>
+void Serializable::RegisterField(T &field, EventBase<_internal::SFieldNotifying<T>> *onDeserializeEvent) {
+	fields_.push_back(_internal::make_sfield(field, onDeserializeEvent));
+}
+
 namespace _internal {
 
 template<typename T>
 SField<T>::SField(T &data) : SField_helper<T, SField_type<T>::value>(data) {
+}
+
+template<typename T>
+SFieldNotifying<T>::SFieldNotifying(T &data, EventBase<SFieldNotifying<T>> *onDeserializeEvent) : SField_helper<T, SField_type<T>::value>(data) {
+	event_ = onDeserializeEvent;
+}
+
+template<typename T>
+void SFieldNotifying<T>::Deserialize(std::istream &input) {
+	SField_helper<T, SField_type<T>::value>::Deserialize(input);
+	event_(*this);
 }
 
 template<class T>
@@ -71,7 +86,7 @@ void SField_helper<T, _SSharedPtr>::Deserialize(std::istream &input) {
 		value_ = nullptr;
 		return;
 	}
-	
+
 	value_ = std::dynamic_pointer_cast<typename T::element_type>(Serializable::ConstructType(name));
 	value_->Deserialize(input);
 }
@@ -80,12 +95,12 @@ void SField_helper<T, _SSharedPtr>::Deserialize(std::istream &input) {
 // template<typename T>
 // SField_helper<T, _PODContainer>::SField_helper(T& container) : container_(container) {
 // }
-// 
+//
 // template<typename T>
 // void SField_helper<T, _PODContainer>::Serialize(std::ostream &output) {
 // 	_io::write_container(container_, output);
 // }
-// 
+//
 // template<typename T>
 // void SField_helper<T, _PODContainer>::Deserialize(std::istream &input) {
 // 	_io::read_container(container_, input);
@@ -131,8 +146,13 @@ void SField_helper<T, _Pair>::Deserialize(std::istream &input) {
 }
 
 template<typename T>
-std::shared_ptr<SField<T>> make_sfield(T &field) {
+std::shared_ptr<SFieldBase> make_sfield(T &field) {
 	return std::make_shared<SField<T>>(field);
+}
+
+template<typename T>
+std::shared_ptr<SFieldBase> make_sfield(T &field, EventBase<SFieldNotifying<T>> *onDeserializeEvent) {
+	return std::make_shared<SFieldNotifying<T>>(field, onDeserializeEvent);
 }
 
 template<typename _Tp, typename _Up>
