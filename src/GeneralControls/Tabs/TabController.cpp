@@ -25,14 +25,24 @@ public:
 	virtual ~TabPool() = default;
 
 	void registerController(std::shared_ptr<TabController> controller);
-	void unregisterController(std::shared_ptr<TabController> controller);
+	void unregisterController(TabController *controller);
+	void switchMain(std::shared_ptr<TabController> controller);
 	std::shared_ptr<TabController> findControllerAt(int x, int y);
+
+	static TabPool & getInstance();
 private:
+	static std::shared_ptr<TabPool> Singleton_;
 	std::vector<std::weak_ptr<TabController>> controllers_;
 	std::shared_ptr<TabController> mainController_;
 };
 
-TabPool TabController::tabPool_ {};
+std::shared_ptr<TabPool> TabPool::Singleton_ = nullptr;
+
+TabPool & TabPool::getInstance() {
+	if(!Singleton_)
+		Singleton_ = std::make_shared<TabPool>();
+	return *Singleton_;
+}
 
 void TabPool::registerController(std::shared_ptr<TabController> controller) {
 	if(!mainController_)
@@ -40,19 +50,26 @@ void TabPool::registerController(std::shared_ptr<TabController> controller) {
 	controllers_.push_back(controller);
 }
 
-void TabPool::unregisterController(std::shared_ptr<TabController> controller) {
+void TabPool::unregisterController(TabController *controller) {
 	auto i = std::find_if(controllers_.begin(), controllers_.end(),
 			[controller] (std::weak_ptr<TabController> c)
-			{return !c.expired() && controller == c.lock();});
+			{return !c.expired() && controller == c.lock().get();});
 	if(i != controllers_.end())
 		controllers_.erase(i);
-	if(mainController_ == controller)
-		if(controllers_.empty())
-			mainController_ = nullptr;
-		else {
-			assert(!controllers_.front().expired());
-			mainController_ = controllers_.front().lock();
-		}
+}
+
+void TabPool::switchMain(std::shared_ptr<TabController> controller) {
+	if(mainController_ != controller)
+		return;
+	auto i = std::find_if(controllers_.begin(), controllers_.end(),
+			[controller] (std::weak_ptr<TabController> c)
+			{return !c.expired() && controller != c.lock();});
+	if(i == controllers_.end())
+		mainController_ = nullptr;
+	else {
+		assert(!i->expired());
+		mainController_ = i->lock();
+	}
 }
 
 std::shared_ptr<TabController> TabPool::findControllerAt(int x, int y) {
@@ -117,6 +134,7 @@ TabController::TabController(const std::wstring& name, int x, int y, int width, 
 	Widget(name, x, y, width, height, style, parent) {init();}
 
 TabController::~TabController() {
+	TabPool::getInstance().unregisterController(this);
 }
 
 int TabController::onChildAttached(Widget& sender, WidgetEventParams& _params) {
@@ -237,7 +255,7 @@ void TabController::DrawWindow(Drawing::Drawer& drawer) {
 
 void TabController::widgetReload() {
 	if(!registered_) {
-		tabPool_.registerController(getShared<TabController>());
+		TabPool::getInstance().registerController(getShared<TabController>());
 		registered_ = true;
 	}
 	UpdateTabButtons();
@@ -303,7 +321,7 @@ int TabController::onMouseLBtnUp(Widget& sender, WidgetEventParams& params) {
 		GetCursorPos(&pos);
 		std::shared_ptr<TabController> c;
 		auto tab = selection_;
-		if(!(c = tabPool_.findControllerAt(pos.x, pos.y))) {
+		if(!(c = TabPool::getInstance().findControllerAt(pos.x, pos.y))) {
 			c = buildController(pos.x, pos.y, getWidthOuter(), getHeightOuter());
 			c->setSelfHoldEnabled(true);
 			c->Show();
@@ -323,7 +341,7 @@ int TabController::onCloseInternal(Widget& sender, WidgetEventParams& params) {
 		i->Hide();
 		i->setParent(nullptr);
 	}
-	tabPool_.unregisterController(getShared<TabController>());
+	TabPool::getInstance().switchMain(getShared<TabController>());
 	return 1;
 }
 
