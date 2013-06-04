@@ -89,7 +89,7 @@ __bins__windowtest_exe_LDFLAGS	= -municode -mwindows
 CLEANFILES					   += $(bins)/windowtest.exe.manifest
 windowtest.$(OBJEXT): $(bins)/windowtest.exe.manifest
 $(bins)/windowtest.exe.manifest: app.manifest
-	$(LN_S) $< $@
+	cp -f $< $@
 
 __bins__widgettest_exe_SOURCES	= test/widgettest.cpp
 __bins__widgettest_exe_LDADD	= -lwincpp -L$(bins)
@@ -97,7 +97,7 @@ __bins__widgettest_exe_LDFLAGS	= -municode -mwindows
 CLEANFILES					   += $(bins)/widgettest.exe.manifest
 widgettest.$(OBJEXT): $(bins)/widgettest.exe.manifest
 $(bins)/widgettest.exe.manifest: app.manifest
-	$(LN_S) $< $@
+	cp -f $< $@
 
 __bins__editboxtest_exe_SOURCES	= test/editboxtest.cpp
 __bins__editboxtest_exe_LDADD	= -lwincpp -L$(bins)
@@ -105,7 +105,7 @@ __bins__editboxtest_exe_LDFLAGS	= -municode -mwindows
 CLEANFILES					   += $(bins)/editboxtest.exe.manifest
 editboxtest.$(OBJEXT): $(bins)/editboxtest.exe.manifest
 $(bins)/editboxtest.exe.manifest: app.manifest
-	$(LN_S) $< $@
+	cp -f $< $@
 
 __bins__labeltest_exe_SOURCES	= test/labeltest.cpp test/labeltest.h
 __bins__labeltest_exe_LDADD		= -lwincpp -L$(bins)
@@ -113,7 +113,7 @@ __bins__labeltest_exe_LDFLAGS	= -municode -mwindows
 CLEANFILES					   += $(bins)/labeltest.exe.manifest
 labeltest.$(OBJEXT): $(bins)/labeltest.exe.manifest
 $(bins)/labeltest.exe.manifest: app.manifest
-	$(LN_S) $< $@
+	cp -f $< $@
 
 __bins__btntest_exe_SOURCES		= test/btntest.cpp test/btntest.h
 __bins__btntest_exe_LDADD		= -lwincpp -L$(bins)
@@ -121,7 +121,7 @@ __bins__btntest_exe_LDFLAGS		= -municode -mwindows
 CLEANFILES					   += $(bins)/btntest.exe.manifest
 btntest.$(OBJEXT): $(bins)/btntest.exe.manifest
 $(bins)/btntest.exe.manifest: app.manifest
-	$(LN_S) $< $@
+	cp -f $< $@
 
 __bins__cbtest_exe_SOURCES		= test/cbtest.cpp test/cbtest.h
 __bins__cbtest_exe_LDADD		= -lwincpp -L$(bins)
@@ -129,7 +129,7 @@ __bins__cbtest_exe_LDFLAGS		= -municode -mwindows
 CLEANFILES					   += $(bins)/cbtest.exe.manifest
 cbtest.$(OBJEXT): $(bins)/cbtest.exe.manifest
 $(bins)/cbtest.exe.manifest: app.manifest
-	$(LN_S) $< $@
+	cp -f $< $@
 
 __bins__urltest_exe_SOURCES		= test/urltest.cpp test/urltest.h
 __bins__urltest_exe_LDADD		= -lwincpp -L$(bins)
@@ -137,7 +137,7 @@ __bins__urltest_exe_LDFLAGS		= -municode -mwindows
 CLEANFILES					   += $(bins)/urltest.exe.manifest
 urltest.$(OBJEXT): $(bins)/urltest.exe.manifest
 $(bins)/urltest.exe.manifest: app.manifest
-	$(LN_S) $< $@
+	cp -f $< $@
 
 __bins__tabstest_exe_SOURCES		= test/tabstest.cpp
 __bins__tabstest_exe_LDADD			= -lwincpp -L$(bins)
@@ -145,7 +145,7 @@ __bins__tabstest_exe_LDFLAGS		= -municode -mwindows
 CLEANFILES						   += $(bins)/tabstest.exe.manifest
 tabstest.$(OBJEXT): $(bins)/tabstest.exe.manifest
 $(bins)/tabstest.exe.manifest: app.manifest
-	$(LN_S) $< $@
+	cp -f $< $@
 
 __bins__serialtest_exe_SOURCES		= test/serialtest.cpp
 __bins__serialtest_exe_LDADD		= -lwincpp -L$(bins)
@@ -153,7 +153,7 @@ __bins__serialtest_exe_LDFLAGS		= -municode -mwindows
 CLEANFILES						   += $(bins)/serialtest.exe.manifest
 serialtest.$(OBJEXT): $(bins)/serialtest.exe.manifest
 $(bins)/serialtest.exe.manifest: app.manifest
-	$(LN_S) $< $@
+	cp -f $< $@
 
 __bins__xeditortest_exe_SOURCES		= test/xeditortest.cpp test/xeditortest.h
 __bins__xeditortest_exe_LDADD		= -lwincpp -L$(bins)
@@ -161,7 +161,7 @@ __bins__xeditortest_exe_LDFLAGS		= -municode -mwindows
 CLEANFILES						   += $(bins)/xeditortest.exe.manifest
 xeditortest.$(OBJEXT): $(bins)/xeditortest.exe.manifest
 $(bins)/xeditortest.exe.manifest: app.manifest
-	$(LN_S) $< $@
+	cp -f $< $@
 
 # dependencies for resource file
 resources/wincpp.$(OBJEXT): $(srcdir)/resources/wincpp.rc \

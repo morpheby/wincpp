@@ -57,8 +57,6 @@ protected:
 
 	void updateCurrentTab();
 private:
-	static class TabPool tabPool_;
-
 	std::wstring origName_;
 	bool mouseCaptured_ {false};
 	bool btnMouseDown_ {false};
