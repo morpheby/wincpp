@@ -16,3 +16,5 @@ depcomp
 install-sh
 missing
 config.sub
+.DS_Store
+
