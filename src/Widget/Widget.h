@@ -136,28 +136,33 @@ WidgetEventExtBase<_ParamT> * NewEventExt
  */
 class Widget : public std::enable_shared_from_this<Widget>, public serializing::Serializable {
 public:
-	Widget();
-	Widget(Widget &parent);
-	Widget(WidgetStyle style);
-	Widget(WidgetStyle style, Widget &parent);
-	Widget(const std::wstring &name);
-	Widget(const std::wstring &name, Widget &parent);
-	Widget(const std::wstring &name, WidgetStyle style);
-	Widget(const std::wstring &name, WidgetStyle style, Widget &parent);
-	Widget(int x, int y, int width, int height);
-	Widget(int x, int y, int width, int height, Widget &parent);
-	Widget(int x, int y, int width, int height, WidgetStyle style);
-	Widget(int x, int y, int width, int height, WidgetStyle style, Widget &parent);
-	Widget(const std::wstring &name, int x, int y, int width, int height);
-	Widget(const std::wstring &name, int x, int y, int width, int height,
-			Widget &parent);
-	Widget(const std::wstring &name, int x, int y, int width, int height,
-			WidgetStyle style);
-	Widget(const std::wstring &name, int x, int y, int width, int height,
-			WidgetStyle style, Widget &parent);
-
 	Widget(const Widget &w) = delete;
 	Widget(Widget &&w) = delete;
+
+	Widget();
+
+	template<typename... _Args>
+	Widget(Widget &parent, _Args... args) : Widget(args...) {
+		parent_ = parent.getShared();
+		parent.attachChild(*this);
+	}
+
+	template<typename... _Args>
+	Widget(WidgetStyle style, _Args... args) : Widget(args...) {
+		style_ = style;
+	}
+
+	template<typename... _Args>
+	Widget(const std::wstring &name, _Args... args) : Widget(args...) {
+		windowName_ = name;
+	}
+
+	template<typename... _Args>
+	Widget(int x, int y, int width, int height, _Args... args) :
+				Widget(args...) {
+		x_ = x; y_ = y; width_ = width; height_ = height;
+		widthOuter_ = width; heightOuter_ = height;
+	}
 
 	virtual ~Widget();
 
@@ -231,6 +236,7 @@ protected:
 	virtual void widgetReload();
 
 	void RegisterFields() override;
+
 private:
 	/* Platform-dependent members */
 	std::unique_ptr<Window> window_; // to allow Window reload
