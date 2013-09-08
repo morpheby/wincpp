@@ -17,6 +17,7 @@ libwcppgenctl_a_SOURCES			=							\
 								Tabs/TabButton.h			\
 								Tabs/TabCloseButton.cpp		\
 								Tabs/TabCloseButton.h		\
+								Timer/TimerWnd.cpp			\
 								XEditor/UndoOperation.h		\
 								XEditor/UndoOperation.cpp	\
 								XEditor/UndoMaintainer.h	\
@@ -37,6 +38,7 @@ pkginclude_HEADERS				=						\
 								NotifyWnd.h				\
 								TabController.h			\
 								TabWidget.h				\
+								TimerWnd.h				\
 								XEditorWindow.h
 
 

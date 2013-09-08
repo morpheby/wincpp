@@ -66,6 +66,7 @@ lib_LIBRARIES				= $(bins)/libwincpp.a
 __bins__libwincpp_a_SOURCES	=
 
 check_PROGRAMS				= $(bins)/eventtest.exe		\
+							  $(bins)/timertest.exe		\
 							  $(bins)/windowtest.exe	\
 							  $(bins)/widgettest.exe	\
 							  $(bins)/editboxtest.exe 	\
@@ -82,6 +83,10 @@ TESTS						= $(check_PROGRAMS)
 
 __bins__eventtest_exe_SOURCES	= test/eventtest.cpp
 __bins__eventtest_exe_LDADD		= -lwincpp -L$(bins)
+
+__bins__timertest_exe_SOURCES		= test/timertest.cpp
+__bins__timertest_exe_LDADD			= -lwincpp -L$(bins)
+__bins__timertest_exe_LDFLAGS		= -municode
 
 __bins__windowtest_exe_SOURCES	= test/windowtest.cpp test/windowtest.h
 __bins__windowtest_exe_LDADD	= -lwincpp -L$(bins)
