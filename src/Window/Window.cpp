@@ -269,6 +269,14 @@ DC::DeviceContext Window::getDesktopDC() {
 	return ::GetDC(0);
 }
 
+BOOL Window::setIcon(int type, HICON icon) {
+	return (BOOL) ::SendMessage(getWindowHandle(), WM_SETICON, type, (LPARAM) icon);
+}
+
+HICON Window::getIcon(int type) const {
+	return (HICON) ::SendMessage(getWindowHandle(), WM_GETICON, type, 0);
+}
+
 void Window::IntCachedPaint(DC::DeviceContext dc, RECT updateRect) {
 	if (NeedsUpdate()) {
 		DC::DeviceContext cacheDC = DC::CreateCompatibleDC(dc);

@@ -123,6 +123,10 @@ public:
 	BOOL setMenu(HMENU menu);
 	HMENU getMenu() const;
 
+	BOOL setIcon(int type, HICON icon);
+	HICON getIcon(int type) const;
+
+
 	LONG_PTR setStyle(LONG_PTR style);
 	LONG_PTR addStyle(LONG_PTR style);
 	LONG_PTR clearStyle(LONG_PTR clearBits);
