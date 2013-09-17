@@ -132,6 +132,10 @@ public:
 		this->setStrings(selector_);
 	}
 
+	bool contains(const std::wstring &name) {
+		return selector_.count(_Mapper(name, T()));
+	}
+
 	void setItems(std::initializer_list<
 			std::pair<std::wstring, T>> l) {
 		selector_.clear();
@@ -146,7 +150,7 @@ public:
 	}
 
 	void removeItem(const std::wstring& name) {
-		selector_.remove(_Mapper(name, T()));
+		selector_.erase(_Mapper(name, T()));
 		this->setStrings(selector_);
 	}
 
