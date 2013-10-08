@@ -24,9 +24,10 @@ public:
 	~ButtonWnd(void);
 	void SetButtonType(ButtonType btnType);
 	void setOnClick(WndEventBase *onClick);
+protected:
+	LRESULT WndProc(UINT msg, WPARAM wParam, LPARAM lParam);
 private:
 	WndEventCaller onClick;
-	LRESULT WndProc(UINT msg, WPARAM wParam, LPARAM lParam);
 };
 
 #endif /* BUTTON_WND_H_ */
