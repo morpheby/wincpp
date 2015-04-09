@@ -12,7 +12,7 @@ SUBDIRS						= 					\
 
 AM_CPPFLAGS						=						\
 							-I$(srcdir)/Window			\
-									-I$(srcdir)/Widget			\
+							-I$(srcdir)/Widget			\
 							-I$(srcdir)/WCppUtils		\
 							-I$(srcdir)/EventSystem		\
 							-I$(srcdir)/CommonControls	\
