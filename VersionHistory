@@ -1,3 +1,14 @@
+0.0.2.2:
+	Changed Widget constructors
+	Added some features to Window
+	Implemented TimerWnd
+	Note, that changing widget constructors again broke compatibility
+
+0.0.2.1:
+	Added serialization
+	Tabs, different controls, bugfixes, etc...
+	Note, that serialization breaks widget compatibility with previous version
+
 0.0.2.0:
 	Shifted to widget model
 	Events now using shared_ptr's 

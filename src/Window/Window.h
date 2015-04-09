@@ -123,6 +123,10 @@ public:
 	BOOL setMenu(HMENU menu);
 	HMENU getMenu() const;
 
+	BOOL setIcon(int type, HICON icon);
+	HICON getIcon(int type) const;
+
+
 	LONG_PTR setStyle(LONG_PTR style);
 	LONG_PTR addStyle(LONG_PTR style);
 	LONG_PTR clearStyle(LONG_PTR clearBits);
@@ -158,6 +162,9 @@ public:
 	void setPainter(WndEventExtBase<Drawing::Drawer&> *painter);
 	void setProcessMessage(UINT msg, WndEventExtBase<WinMessage_t&> *msgProc);
 	void clearMessageMap();
+
+	void setRescaleFactor(unsigned int factor);
+	unsigned int rescaleFactor() const;
 
 	enum _WMDlgKeys {
 		WM_TAB = WM_USER,
@@ -209,6 +216,7 @@ private:
 	HTHEME hTheme_;
 	static bool wndClassRegistered;
 	static unsigned int wndCreating;
+	unsigned int rescaleFactor_;
 
 	void IntPaintWindow();
 

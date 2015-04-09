@@ -46,54 +46,11 @@ Widget::~Widget() {
 }
 
 Widget::Widget() :
-	Widget(WidgetStyle::none) {}
-Widget::Widget(Widget& parent) :
-	Widget(WidgetStyle::none, parent) {}
-Widget::Widget(WidgetStyle style) :
-	Widget(L"", style) {}
-Widget::Widget(WidgetStyle style, Widget& parent) :
-	Widget(L"", style, parent) {}
-Widget::Widget(const std::wstring& name) :
-	Widget(name, WidgetStyle::none) {}
-Widget::Widget(const std::wstring& name, Widget& parent) :
-	Widget(name, WidgetStyle::none, parent) {}
-Widget::Widget(const std::wstring& name, WidgetStyle style) :
-	Widget(name, 0, 0, 0, 0, style) {}
-Widget::Widget(const std::wstring& name, WidgetStyle style, Widget& parent) :
-	Widget(name, 0, 0, 0, 0, style, parent) {}
-Widget::Widget(int x, int y, int width, int height) :
-	Widget(x, y, width, height, WidgetStyle::none) {}
-Widget::Widget(int x, int y, int width, int height, Widget& parent) :
-	Widget(x, y, width, height, WidgetStyle::none, parent) {}
-Widget::Widget(int x, int y, int width, int height, WidgetStyle style) :
-	Widget(L"", x, y, width, height, style) {}
-Widget::Widget(int x, int y, int width, int height, WidgetStyle style,
-		Widget& parent) :
-	Widget(L"", x, y, width, height, style, parent) {}
-Widget::Widget(const std::wstring& name, int x, int y, int width, int height) :
-	Widget(name, x, y, width, height, WidgetStyle::none) {}
-Widget::Widget(const std::wstring& name, int x, int y, int width, int height,
-		Widget& parent) :
-	Widget(name, x, y, width, height, WidgetStyle::none, parent) {}
-
-Widget::Widget(const std::wstring& name, int x, int y, int width, int height,
-		WidgetStyle style) :
-	windowName_{name}, style_{style},
-	visible_{false}, showState_{0},
-	x_{x}, y_{y}, width_{width}, height_{height},
-	widthOuter_{width}, heightOuter_{height} {
-}
-
-Widget::Widget(const std::wstring& name, int x, int y, int width, int height,
-		WidgetStyle style, Widget& parent) :
-	window_{nullptr},
-	windowName_{name}, style_{style},
-	visible_{false}, showState_{0},
-	x_{x}, y_{y}, width_{width}, height_{height},
-	widthOuter_{width}, heightOuter_{height},
-	parent_{parent.getShared()} {
-	parent.attachChild(*this);
-	// Window will be loaded as soon as it is necessary - initially it is not shown
+			window_{nullptr},
+			windowName_{L""}, style_{WidgetStyle::none},
+			visible_{false}, showState_{0},
+			x_{0}, y_{0}, width_{0}, height_{0},
+			widthOuter_{0}, heightOuter_{0} {
 }
 
 void Widget::setSize(int width, int height) {

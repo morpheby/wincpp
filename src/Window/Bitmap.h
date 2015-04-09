@@ -17,9 +17,17 @@ public:
 	virtual ~Bitmap();
 
 	HBITMAP CreateDDB(HDC dc);
+
+	const BITMAPINFO& getBitmapInfo() const;
+	void *getBitmapBits() const;
+
 private:
-	BITMAPINFO bmi_;
+	BITMAPINFO *bmi_;
 	void *bits_;
+
+	static WORD DIBNumColors(LPVOID lpv);
+	static BOOL DIBInfo (HANDLE hbi, LPBITMAPINFOHEADER lpbih);
+
 };
 
 #endif /* BITMAP_H_ */

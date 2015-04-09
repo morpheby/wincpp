@@ -66,6 +66,7 @@ template<class Container>
 inline void ComboBoxWnd::setStrings(
 		const Container& strings) {
 	cb.setStrings(strings);
+	onSelChange(-1);
 }
 
 
