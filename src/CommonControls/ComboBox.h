@@ -16,6 +16,7 @@
 #include <vector>
 #include <algorithm>
 
+
 namespace ComboBox {
 
 template <class T>
@@ -58,12 +59,14 @@ public:
 	}
 
 	void resetList() {
+        resetting_ = true;
 		std::wstring selectionUpdated;
 		if(this->getCurSelNum() >= 0)
 			selectionUpdated = (std::wstring) dataContainer[this->getCurSelNum()];
 		sort(dataContainer.begin(), dataContainer.end());
 		this->setStrings(dataContainer);
 		this->setCurSelNum(this->findString(selectionUpdated));
+        resetting_ = false;
 	}
 
 	void setOnItemChange(WndEventExtBase<T> *onItemChange) {
@@ -107,14 +110,17 @@ public:
 
 protected:
 	int onSelChange(int index) {
-		if(index == -1)
-			onItemChange_(*this, T());
-		else
-			onItemChange_(*this, dataContainer[index].getData());
+        if (!resetting_) {
+    		if(index == -1)
+    			onItemChange_(*this, T());
+    		else
+    			onItemChange_(*this, dataContainer[index].getData());
+        }
 		return _ComboBoxT::onSelChange(index);
 	}
 
 private:
+    bool resetting_ = false;
 	std::vector<_Mapper> dataContainer;
 	WndEventExtCaller<T> onItemChange_;
 };
