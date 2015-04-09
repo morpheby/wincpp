@@ -163,6 +163,9 @@ public:
 	void setProcessMessage(UINT msg, WndEventExtBase<WinMessage_t&> *msgProc);
 	void clearMessageMap();
 
+	void setRescaleFactor(unsigned int factor);
+	unsigned int rescaleFactor() const;
+
 	enum _WMDlgKeys {
 		WM_TAB = WM_USER,
 		WM_ESC = WM_USER + 1,
@@ -213,6 +216,7 @@ private:
 	HTHEME hTheme_;
 	static bool wndClassRegistered;
 	static unsigned int wndCreating;
+	unsigned int rescaleFactor_;
 
 	void IntPaintWindow();
 

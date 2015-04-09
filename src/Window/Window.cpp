@@ -33,6 +33,7 @@ void Window::InitVars() {
 	defMsgProc = false;
 	cacheOn_ = true;
 	hTheme_ = 0;
+	rescaleFactor_ = 1;
 }
 
 //void Window::ReloadSize() {
@@ -280,7 +281,7 @@ HICON Window::getIcon(int type) const {
 void Window::IntCachedPaint(DC::DeviceContext dc, RECT updateRect) {
 	if (NeedsUpdate()) {
 		DC::DeviceContext cacheDC = DC::CreateCompatibleDC(dc);
-		HBITMAP bmp = CreateCompatibleBitmap(dc, getSize().cx, getSize().cy);
+		HBITMAP bmp = CreateCompatibleBitmap(dc, getSize().cx * rescaleFactor_, getSize().cy * rescaleFactor_);
 		bmp = (HBITMAP) cacheDC.selectObject(bmp);
 		// First perform internal painting, then external
 		if(getTheme()) {
@@ -299,12 +300,18 @@ void Window::IntCachedPaint(DC::DeviceContext dc, RECT updateRect) {
 				bmp = (HBITMAP) cacheDC.selectObject(bmp));
 		DeleteObject(bmp);
 	}
-	DC::DeviceContext cacheDC = DC::CreateCompatibleDC(dc);
-	HBITMAP bmp = (HBITMAP) cacheDC.selectObject(cachedBmp->CreateDDB(dc));
-	BitBlt(dc, updateRect.left, updateRect.top, updateRect.right,
-			updateRect.bottom, cacheDC, updateRect.left, updateRect.top,
+	SetStretchBltMode(dc, HALFTONE);
+	StretchDIBits(dc,
+			updateRect.left, updateRect.top, updateRect.right - updateRect.left,
+			updateRect.bottom - updateRect.top,
+			updateRect.left * rescaleFactor_,
+			updateRect.top * rescaleFactor_,
+			(updateRect.right - updateRect.left) * rescaleFactor_,
+			(updateRect.bottom - updateRect.top) * rescaleFactor_,
+			cachedBmp->getBitmapBits(),
+			&cachedBmp->getBitmapInfo(),
+			DIB_RGB_COLORS,
 			SRCCOPY);
-	DeleteObject(cacheDC.selectObject(bmp));
 }
 
 void Window::IntPaintWindow() {
@@ -408,6 +415,8 @@ Window* Window::SafeWindowFromHandle(const HWND wnd) {
 
 bool Window::WMEraseBackground(Drawing::Drawer &drawer) {
 	RECT rc = getClientRect();
+	rc.right *= rescaleFactor_;
+	rc.bottom *= rescaleFactor_;
 	drawer.drawBackground(rc);
 	return false;
 }
@@ -484,6 +493,14 @@ wstring Window::getName() const {
 	wstring text(buff);
 	delete[] buff;
 	return text;
+}
+
+void Window::setRescaleFactor(unsigned int factor) {
+	rescaleFactor_ = factor;
+}
+
+unsigned int Window::rescaleFactor() const {
+	return rescaleFactor_;
 }
 
 BOOL Window::setPosition(int x, int y) {
