@@ -53,6 +53,23 @@ Widget::Widget() :
 			widthOuter_{0}, heightOuter_{0} {
 }
 
+// Widget::Widget(Widget &&w) :
+//             window_{w.window_},
+//             msgMap_{w.msgMap_},
+//             widgetReload_{w.widgetReload_},
+//             attachedWidgets_{w.attachedWidgets_},
+//             windowName_{w.windowName_},
+//             style_{w.style_},
+//             showState_{w.showState_},
+//             visible_{w.visible_},
+//             x_{w.x_}, y_{w.y_}, width_{w.width_}, height_{w.height_},
+//             widthOuter_{w.widthOuter_},
+//             heightOuter_{w.heightOuter_},
+//             parent_{w.parent_},
+//             deleting_{w.deleting_},
+//             selfHoldEnabled_{w.selfHoldEnabled_} {
+// }
+
 void Widget::setSize(int width, int height) {
 	getWindow().setSize(width, height);
 }

@@ -137,7 +137,9 @@ WidgetEventExtBase<_ParamT> * NewEventExt
 class Widget : public std::enable_shared_from_this<Widget>, public serializing::Serializable {
 public:
 	Widget(const Widget &w) = delete;
-	Widget(Widget &&w) = delete;
+
+    // NOTE: move method not tested. It is better of this way
+// Widget(Widget &&w);
 
 	Widget();
 
